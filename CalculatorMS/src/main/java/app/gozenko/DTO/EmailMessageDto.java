@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailMessage {
+public class EmailMessageDto {
     private String address;
     //TODO: сделать EmailTheme enum
     private Long statementId;
