@@ -32,7 +32,6 @@ public class LoanOfferDto {
         dto.setRate(rate);
         dto.setIsInsuranceEnabled(isInsuranceEnabled);
         dto.setIsSalaryClient(isSalaryClient);
-        return LoanOfferDto.builder().statementId(UUID.randomUUID())
-                .build();
+        return dto;
     }
 }
