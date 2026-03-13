@@ -1,4 +1,4 @@
-package app.gozenko.Enums;
+package app.gozenko.enums;
 
 public enum Gender {
     MALE("М"),

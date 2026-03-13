@@ -1,6 +1,6 @@
-package app.gozenko.DTO;
-import app.gozenko.Enums.StatementStatus;
-import app.gozenko.Enums.StatusChangeType;
+package app.gozenko.dto;
+import app.gozenko.enums.StatementStatus;
+import app.gozenko.enums.StatusChangeType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

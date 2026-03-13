@@ -1,7 +1,7 @@
-package app.gozenko.Services;
+package app.gozenko.service;
 
-import app.gozenko.DTO.LoanStatementRequestDto;
-import static app.gozenko.Validations.ValidateData.*;
+import app.gozenko.dto.LoanStatementRequestDto;
+import static app.gozenko.validation.ValidateData.*;
 import org.springframework.stereotype.Service;
 
 @Service

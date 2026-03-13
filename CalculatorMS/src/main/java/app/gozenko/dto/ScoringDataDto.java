@@ -1,7 +1,7 @@
-package app.gozenko.DTO;
+package app.gozenko.dto;
 
-import app.gozenko.Enums.Gender;
-import app.gozenko.Enums.MaritalStatus;
+import app.gozenko.enums.Gender;
+import app.gozenko.enums.MaritalStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,6 @@
-package app.gozenko.DTO;
+package app.gozenko.dto;
 
-import app.gozenko.Enums.EmploymentStatus;
+import app.gozenko.enums.EmploymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

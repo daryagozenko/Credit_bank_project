@@ -1,4 +1,4 @@
-package app.gozenko.DTO;
+package app.gozenko.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EmailMessageDto {
     private String address;
-    //TODO: сделать EmailTheme enum
+    //TODO: сделать EmailTheme enum (тема письма при отправке)
     private Long statementId;
     private String text;
 }

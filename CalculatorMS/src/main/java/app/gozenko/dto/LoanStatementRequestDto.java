@@ -1,4 +1,4 @@
-package app.gozenko.DTO;
+package app.gozenko.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

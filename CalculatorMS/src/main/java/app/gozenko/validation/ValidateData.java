@@ -1,4 +1,4 @@
-package app.gozenko.Validations;
+package app.gozenko.validation;
 
 
 import java.math.BigDecimal;

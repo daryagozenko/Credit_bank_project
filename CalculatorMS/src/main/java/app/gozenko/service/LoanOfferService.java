@@ -1,6 +1,7 @@
-package app.gozenko.Services;
+package app.gozenko.service;
 
-import app.gozenko.DTO.LoanOfferDto;
+import app.gozenko.dto.LoanOfferDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class LoanOfferService {
     @Value("${app.gozenko.base-rate}")
     private String propertyRate;
@@ -27,7 +29,7 @@ public class LoanOfferService {
                 rate,
                 true,true
         ));
-
+        log.info(result.toString());
         return result;
     }
 

@@ -1,4 +1,4 @@
-package app.gozenko.DTO;
+package app.gozenko.dto;
 
 import lombok.*;
 
@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoanOfferDto {
@@ -31,6 +32,7 @@ public class LoanOfferDto {
         dto.setRate(rate);
         dto.setIsInsuranceEnabled(isInsuranceEnabled);
         dto.setIsSalaryClient(isSalaryClient);
-        return dto;
+        return LoanOfferDto.builder().statementId(UUID.randomUUID())
+                .build();
     }
 }
