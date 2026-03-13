@@ -38,7 +38,7 @@ public class CalculatorControllerImpl implements CalculatorController {
 
     @PostMapping("/calc")
     @Override
-    public CreditDto validateAndCalc(ScoringDataDto scoringData){
+    public CreditDto validateAndCalc(@RequestBody ScoringDataDto scoringData){
 
         return new CreditDto();
     }

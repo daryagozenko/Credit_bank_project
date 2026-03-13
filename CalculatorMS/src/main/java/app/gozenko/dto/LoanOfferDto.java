@@ -19,19 +19,8 @@ public class LoanOfferDto {
     private Boolean isInsuranceEnabled;
     private Boolean isSalaryClient;
 
-    public static LoanOfferDto createWithNewId(BigDecimal requestedAmount, BigDecimal totalAmount,
-                                               Integer term, BigDecimal monthlyPayment,
-                                               BigDecimal rate, Boolean isInsuranceEnabled,
-                                               Boolean isSalaryClient) {
-        LoanOfferDto dto = new LoanOfferDto();
-        dto.setStatementId(UUID.randomUUID());
-        dto.setRequestedAmount(requestedAmount);
-        dto.setTotalAmount(totalAmount);
-        dto.setTerm(term);
-        dto.setMonthlyPayment(monthlyPayment);
-        dto.setRate(rate);
-        dto.setIsInsuranceEnabled(isInsuranceEnabled);
-        dto.setIsSalaryClient(isSalaryClient);
-        return dto;
+    public static LoanOfferDtoBuilder builderWithNewId() {
+        return builder()
+                .statementId(UUID.randomUUID());
     }
 }
