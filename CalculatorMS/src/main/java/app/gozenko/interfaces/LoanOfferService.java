@@ -1,5 +1,7 @@
 package app.gozenko.interfaces;
 
+import app.gozenko.dto.LoanOfferDto;
+
 import java.math.BigDecimal;
 import java.util.List;
 

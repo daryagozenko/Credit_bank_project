@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScoringServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">calculator</a> &gt; <a href="index.source.html" class="el_package">app.gozenko.service</a> &gt; <span class="el_source">ScoringServiceImpl.java</span></div><h1>ScoringServiceImpl.java</h1><pre class="source lang-java linenums">package app.gozenko.service;
+
+import app.gozenko.dto.CreditDto;
+import app.gozenko.dto.EmploymentDto;
+import app.gozenko.dto.ScoringDataDto;
+import app.gozenko.enums.EmploymentStatus;
+import app.gozenko.enums.Gender;
+import app.gozenko.enums.MaritalStatus;
+import app.gozenko.enums.Position;
+import app.gozenko.exception.UnScoringDataException;
+import app.gozenko.interfaces.ScoringService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Period;
+
+@Service
+@RequiredArgsConstructor
+public class ScoringServiceImpl implements ScoringService {
+
+    @Value(&quot;${app.gozenko.rate-manager}&quot;)
+    private BigDecimal rateToManager;
+    @Value(&quot;${app.gozenko.rate-topmanager}&quot;)
+    private BigDecimal rateToTopManager;
+    @Value(&quot;${app.gozenko.rate-married}&quot;)
+    private BigDecimal rateMarried;
+    @Value(&quot;${app.gozenko.rate-divorced}&quot;)
+    private BigDecimal rateDivorced;
+    @Value(&quot;${app.gozenko.rate-with-age}&quot;)
+    private BigDecimal rateWithAge;
+    @Value(&quot;${app.gozenko.rate-with-dependent}&quot;)
+    private BigDecimal rateWithDependent;
+
+    private final CheckValueService checkValueService;
+    private final CalcCreditValueService calcCreditValueService;
+
+    private BigDecimal rate;
+    private Integer term;
+    private BigDecimal amount;
+
+
+    @Override
+    public CreditDto createScoringData(ScoringDataDto request){
+<span class="fc" id="L47">        String message = hasConstraint(request);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if(message != null){</span>
+<span class="fc" id="L49">            throw new UnScoringDataException(message);</span>
+        }
+<span class="fc" id="L51">        setBeginningValues(request);</span>
+<span class="fc" id="L52">        updateData(request);</span>
+
+<span class="fc" id="L54">        return calcCreditValueService.mainCounting(request, rate);</span>
+    }
+
+
+    private String hasConstraint(ScoringDataDto req){
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if(req.getEmployment().getEmploymentStatus().equals(EmploymentStatus.NOT_WORK))</span>
+<span class="fc" id="L60">            return &quot;Безработный&quot;;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if(req.getAmount().compareTo(req.getEmployment().getSalary().multiply(BigDecimal.valueOf(24))) &gt; 0)</span>
+<span class="fc" id="L62">            return &quot;Сумма займа больше, чем 24 зарплаты&quot;;</span>
+
+<span class="fc" id="L64">        int age = calculateAge(req.getBirthday());</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if(age &lt; 20) return &quot;Моложе 20&quot;;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if(age &gt; 65) return &quot;Старше 65&quot;;</span>
+
+<span class="fc" id="L68">        int workExpTotal = req.getEmployment().getWorkExperienceTotal();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if(workExpTotal &lt; 12) return &quot;Общий стаж работы менее 12 месяцев&quot;;</span>
+<span class="fc" id="L70">        int workExpCurr = req.getEmployment().getWorkExperienceCurrent();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if(workExpCurr &lt; 3) return &quot;Текущий стаж работы менее 3 месяцев&quot;;</span>
+
+<span class="fc" id="L73">        return null;</span>
+    }
+
+    //тут основная логика прескоринга
+    private void updateData(ScoringDataDto req){
+<span class="fc" id="L78">        EmploymentDto empl = req.getEmployment();</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if(empl.getPosition().equals(Position.MANAGER))</span>
+<span class="fc" id="L81">            rate = rate.subtract(rateToManager);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if(empl.getPosition().equals(Position.TOP_MANAGER))</span>
+<span class="fc" id="L83">            rate = rate.subtract(rateToTopManager);</span>
+
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if(req.getMaritalStatus().equals(MaritalStatus.MARRIED))</span>
+<span class="fc" id="L86">            rate = rate.subtract(rateMarried);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if(req.getMaritalStatus().equals(MaritalStatus.DIVORCED))</span>
+<span class="fc" id="L88">            rate = rate.add(rateDivorced);</span>
+
+<span class="fc" id="L90">        int age = calculateAge(req.getBirthday());</span>
+<span class="pc bpc" id="L91" title="2 of 6 branches missed.">        if(req.getGender().equals(Gender.FEMALE) &amp;&amp; (age &gt; 31 &amp;&amp; age &lt; 61))</span>
+<span class="fc" id="L92">            rate = rate.subtract(rateWithAge);</span>
+<span class="pc bpc" id="L93" title="2 of 6 branches missed.">        if(req.getGender().equals(Gender.MALE) &amp;&amp; (age &gt; 29 &amp;&amp; age &lt; 56))</span>
+<span class="fc" id="L94">            rate = rate.subtract(rateWithAge);</span>
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if(req.getDependentAmount() &gt; 2)</span>
+<span class="fc" id="L97">            rate = rate.subtract(rateWithDependent);</span>
+
+<span class="fc" id="L99">    }</span>
+
+    private void setBeginningValues(ScoringDataDto req){
+<span class="fc" id="L102">        this.term = req.getTerm();</span>
+<span class="fc" id="L103">        this.amount = req.getAmount();</span>
+
+<span class="fc bfc" id="L105" title="All 4 branches covered.">        if(req.getIsSalaryClient() &amp;&amp; req.getIsInsuranceEnabled())</span>
+<span class="fc" id="L106">            rate = checkValueService.isSalaryAndInsurance(amount,term).getRate();</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        else if(req.getIsInsuranceEnabled())</span>
+<span class="fc" id="L109">            rate = checkValueService.isInsurance(amount,term).getRate();</span>
+
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        else if(req.getIsSalaryClient())</span>
+<span class="fc" id="L112">            rate = checkValueService.isSalary(amount, term).getRate();</span>
+
+        else
+<span class="fc" id="L115">            rate = checkValueService.noneSalaryAndInsurance(amount, term).getRate();</span>
+<span class="fc" id="L116">    }</span>
+
+    private int calculateAge(LocalDate birthday) {
+<span class="fc" id="L119">        return Period.between(birthday, LocalDate.now()).getYears();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

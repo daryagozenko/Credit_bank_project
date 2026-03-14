@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CheckValueService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">calculator</a> &gt; <a href="index.source.html" class="el_package">app.gozenko.service</a> &gt; <span class="el_source">CheckValueService.java</span></div><h1>CheckValueService.java</h1><pre class="source lang-java linenums">package app.gozenko.service;
+
+import app.gozenko.dto.LoanOfferDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+@Service
+@RequiredArgsConstructor
+public class CheckValueService {
+
+    @Value(&quot;${app.gozenko.base-rate}&quot;)
+    private BigDecimal propertyRate;
+    @Value(&quot;${app.gozenko.insurance}&quot;)
+    private BigDecimal insuranceRate;
+    @Value(&quot;${app.gozenko.rate-salary-client}&quot;)
+    private BigDecimal rateSalaryClient;
+
+    private final CalcCreditValueService calcCreditValueService;
+
+    public LoanOfferDto isSalaryAndInsurance(BigDecimal amount, Integer term){
+        //Текущая ставка по кредиту
+<span class="fc" id="L27">        BigDecimal totalRate = propertyRate</span>
+<span class="fc" id="L28">                .subtract(insuranceRate)</span>
+<span class="fc" id="L29">                .subtract(rateSalaryClient);</span>
+
+        // Расчет страховки
+<span class="fc" id="L32">        BigDecimal priceInsurance = amount.multiply(</span>
+<span class="fc" id="L33">                insuranceRate.divide(BigDecimal.valueOf(100)));</span>
+
+<span class="fc" id="L35">        BigDecimal totalAmount = amount.add(priceInsurance);</span>
+
+<span class="fc" id="L37">        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(totalRate, totalAmount, term);</span>
+
+<span class="fc" id="L39">        return LoanOfferDto.builderWithNewId()</span>
+<span class="fc" id="L40">                .requestedAmount(amount)</span>
+<span class="fc" id="L41">                .totalAmount(totalAmount)</span>
+<span class="fc" id="L42">                .term(term)</span>
+<span class="fc" id="L43">                .monthlyPayment(monthlyPayment)</span>
+<span class="fc" id="L44">                .rate(totalRate)</span>
+<span class="fc" id="L45">                .isInsuranceEnabled(true)</span>
+<span class="fc" id="L46">                .isSalaryClient(true)</span>
+<span class="fc" id="L47">                .build();</span>
+
+    }
+
+    public LoanOfferDto isSalary(BigDecimal amount, Integer term){
+        //Текущая ставка по кредиту
+<span class="fc" id="L53">        BigDecimal totalRate = propertyRate</span>
+<span class="fc" id="L54">                .subtract(rateSalaryClient);</span>
+
+<span class="fc" id="L56">        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(totalRate, amount, term);</span>
+
+<span class="fc" id="L58">        return LoanOfferDto.builderWithNewId()</span>
+<span class="fc" id="L59">                .requestedAmount(amount)</span>
+<span class="fc" id="L60">                .totalAmount(amount)</span>
+<span class="fc" id="L61">                .term(term)</span>
+<span class="fc" id="L62">                .monthlyPayment(monthlyPayment)</span>
+<span class="fc" id="L63">                .rate(totalRate)</span>
+<span class="fc" id="L64">                .isInsuranceEnabled(false)</span>
+<span class="fc" id="L65">                .isSalaryClient(true)</span>
+<span class="fc" id="L66">                .build();</span>
+    }
+
+    public LoanOfferDto isInsurance(BigDecimal amount, Integer term){
+        //Текущая ставка по кредиту
+<span class="fc" id="L71">        BigDecimal totalRate = propertyRate</span>
+<span class="fc" id="L72">                .subtract(insuranceRate);</span>
+
+        // Расчет страховки
+<span class="fc" id="L75">        BigDecimal priceInsurance = amount.multiply(</span>
+<span class="fc" id="L76">                insuranceRate.divide(BigDecimal.valueOf(100), RoundingMode.FLOOR));</span>
+
+<span class="fc" id="L78">        BigDecimal totalAmount = amount.add(priceInsurance);</span>
+
+<span class="fc" id="L80">        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(totalRate, totalAmount, term);</span>
+
+<span class="fc" id="L82">        return LoanOfferDto.builderWithNewId()</span>
+<span class="fc" id="L83">                .requestedAmount(amount)</span>
+<span class="fc" id="L84">                .totalAmount(totalAmount)</span>
+<span class="fc" id="L85">                .term(term)</span>
+<span class="fc" id="L86">                .monthlyPayment(monthlyPayment)</span>
+<span class="fc" id="L87">                .rate(totalRate)</span>
+<span class="fc" id="L88">                .isInsuranceEnabled(true)</span>
+<span class="fc" id="L89">                .isSalaryClient(false)</span>
+<span class="fc" id="L90">                .build();</span>
+
+    }
+
+    public LoanOfferDto noneSalaryAndInsurance(BigDecimal amount, Integer term){
+
+<span class="fc" id="L96">        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(propertyRate, amount, term);</span>
+
+<span class="fc" id="L98">        return LoanOfferDto.builderWithNewId()</span>
+<span class="fc" id="L99">                .requestedAmount(amount)</span>
+<span class="fc" id="L100">                .totalAmount(amount)</span>
+<span class="fc" id="L101">                .term(term)</span>
+<span class="fc" id="L102">                .monthlyPayment(monthlyPayment)</span>
+<span class="fc" id="L103">                .rate(propertyRate)</span>
+<span class="fc" id="L104">                .isInsuranceEnabled(false)</span>
+<span class="fc" id="L105">                .isSalaryClient(false)</span>
+<span class="fc" id="L106">                .build();</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

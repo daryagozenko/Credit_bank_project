@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalcCreditValueService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">calculator</a> &gt; <a href="index.source.html" class="el_package">app.gozenko.service</a> &gt; <span class="el_source">CalcCreditValueService.java</span></div><h1>CalcCreditValueService.java</h1><pre class="source lang-java linenums">package app.gozenko.service;
+
+import app.gozenko.dto.CreditDto;
+import app.gozenko.dto.PaymentScheduleElementDto;
+import app.gozenko.dto.ScoringDataDto;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+<span class="fc" id="L15">public class CalcCreditValueService {</span>
+    private Integer term;
+    private BigDecimal amount;
+
+    public BigDecimal calcMonthlyPayment(BigDecimal totalRate, BigDecimal totalAmount, Integer term){
+        // Расчет месячной ставки
+<span class="fc" id="L21">        BigDecimal monthlyRate = totalRate</span>
+<span class="fc" id="L22">                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L23">                .divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);</span>
+
+        // Расчет (1 + monthlyRate)^term
+<span class="fc" id="L26">        BigDecimal one = BigDecimal.ONE;</span>
+<span class="fc" id="L27">        BigDecimal temp = one.add(monthlyRate).pow(term);</span>
+
+        // Расчет monthlyRate * temp / (temp - 1)
+<span class="fc" id="L30">        BigDecimal tempMinusOne = temp.subtract(one);</span>
+<span class="fc" id="L31">        BigDecimal annuityCoefficient = monthlyRate</span>
+<span class="fc" id="L32">                .multiply(temp)</span>
+<span class="fc" id="L33">                .divide(tempMinusOne, 10, RoundingMode.HALF_UP);</span>
+
+        // Расчет totalAmount * annuityCoefficient
+<span class="fc" id="L36">        BigDecimal monthlyPayment = totalAmount</span>
+<span class="fc" id="L37">                .multiply(annuityCoefficient)</span>
+<span class="fc" id="L38">                .setScale(2, RoundingMode.HALF_UP);</span>
+
+<span class="fc" id="L40">        return monthlyPayment;</span>
+    }
+
+    //основная логика формирования кредитного предложения
+    public CreditDto mainCounting(ScoringDataDto request, BigDecimal rate){
+<span class="fc" id="L45">        this.amount = request.getAmount();</span>
+<span class="fc" id="L46">        this.term = request.getTerm();</span>
+
+<span class="fc" id="L48">        BigDecimal monthlyPayment = calcMonthlyPayment(</span>
+                rate, amount, term
+        );
+
+<span class="fc" id="L52">        List&lt;PaymentScheduleElementDto&gt; schedule = createPaymentSchedule(</span>
+                amount, term, rate, monthlyPayment);
+
+<span class="fc" id="L55">        BigDecimal psk = calcPsk(amount, schedule, term);</span>
+
+<span class="fc" id="L57">        return CreditDto.builder()</span>
+<span class="fc" id="L58">                .amount(amount)</span>
+<span class="fc" id="L59">                .term(term)</span>
+<span class="fc" id="L60">                .monthlyPayment(monthlyPayment)</span>
+<span class="fc" id="L61">                .rate(rate)</span>
+<span class="fc" id="L62">                .psk(psk)</span>
+<span class="fc" id="L63">                .isInsuranceEnabled(request.getIsInsuranceEnabled())</span>
+<span class="fc" id="L64">                .isSalaryClient(request.getIsSalaryClient())</span>
+<span class="fc" id="L65">                .paymentSchedule(schedule)</span>
+<span class="fc" id="L66">                .build();</span>
+    }
+
+    public BigDecimal calcPsk(
+            BigDecimal loanAmount,
+            List&lt;PaymentScheduleElementDto&gt; schedule,
+            Integer termMonths
+    ) {
+        // Общая сумма всех платежей по графику
+<span class="fc" id="L75">        BigDecimal totalPayments = schedule.stream()</span>
+<span class="fc" id="L76">                .map(PaymentScheduleElementDto::getTotalPayment)</span>
+<span class="fc" id="L77">                .reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+
+        // Общая переплата
+<span class="fc" id="L80">        BigDecimal overpayment = totalPayments.subtract(loanAmount);</span>
+
+        // Средний срок кредита в днях
+<span class="fc" id="L83">        BigDecimal avgTermDays = BigDecimal.valueOf(termMonths)</span>
+<span class="fc" id="L84">                .multiply(BigDecimal.valueOf(365.0 / 12 / 2)); // term * (365/12/2)</span>
+
+        // ПСК = (переплата / сумма_выдачи) * (365 / средний_срок) * 100
+<span class="fc" id="L87">        BigDecimal psk = overpayment</span>
+<span class="fc" id="L88">                .divide(loanAmount, 10, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L89">                .multiply(BigDecimal.valueOf(365))</span>
+<span class="fc" id="L90">                .divide(avgTermDays, 10, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L91">                .multiply(BigDecimal.valueOf(100));</span>
+
+<span class="fc" id="L93">        return psk.setScale(2, RoundingMode.HALF_UP);</span>
+    }
+
+    public List&lt;PaymentScheduleElementDto&gt; createPaymentSchedule(
+            BigDecimal loanAmount,
+            Integer termMonths,
+            BigDecimal annualRate,
+            BigDecimal monthlyPayment
+    ) {
+<span class="fc" id="L102">        List&lt;PaymentScheduleElementDto&gt; schedule = new ArrayList&lt;&gt;();</span>
+
+        // Месячная ставка в долях
+<span class="fc" id="L105">        BigDecimal monthlyRate = annualRate</span>
+<span class="fc" id="L106">                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L107">                .divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);</span>
+
+<span class="fc" id="L109">        LocalDate currentDate = LocalDate.now();</span>
+<span class="fc" id="L110">        BigDecimal remainingDebt = loanAmount;</span>
+
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        for (int i = 1; i &lt;= termMonths; i++) {</span>
+            // Расчет процентов за текущий месяц
+<span class="fc" id="L114">            BigDecimal interestPayment = remainingDebt</span>
+<span class="fc" id="L115">                    .multiply(monthlyRate)</span>
+<span class="fc" id="L116">                    .setScale(2, RoundingMode.HALF_UP);</span>
+
+            // Расчет погашения основного долга
+<span class="fc" id="L119">            BigDecimal debtPayment = monthlyPayment</span>
+<span class="fc" id="L120">                    .subtract(interestPayment)</span>
+<span class="fc" id="L121">                    .setScale(2, RoundingMode.HALF_UP);</span>
+
+            // Для последнего месяца корректируем, чтобы остаток сошелся
+<span class="fc bfc" id="L124" title="All 2 branches covered.">            if (i == termMonths) {</span>
+<span class="fc" id="L125">                debtPayment = remainingDebt;</span>
+<span class="fc" id="L126">                monthlyPayment = interestPayment.add(debtPayment);</span>
+            }
+
+            // Здесь уменьшаем остаток долга
+<span class="fc" id="L130">            remainingDebt = remainingDebt</span>
+<span class="fc" id="L131">                    .subtract(debtPayment)</span>
+<span class="fc" id="L132">                    .setScale(2, RoundingMode.HALF_UP);</span>
+
+<span class="fc" id="L134">            PaymentScheduleElementDto element = PaymentScheduleElementDto.builder()</span>
+<span class="fc" id="L135">                    .number(i)</span>
+<span class="fc" id="L136">                    .date(currentDate.plusMonths(i))</span>
+<span class="fc" id="L137">                    .totalPayment(monthlyPayment)</span>
+<span class="fc" id="L138">                    .interestPayment(interestPayment)</span>
+<span class="fc" id="L139">                    .debtPayment(debtPayment)</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">                    .remainingDebt(remainingDebt.compareTo(BigDecimal.ZERO) &lt; 0</span>
+<span class="pc" id="L141">                            ? BigDecimal.ZERO : remainingDebt)</span>
+<span class="fc" id="L142">                    .build();</span>
+
+<span class="fc" id="L144">            schedule.add(element);</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">            if (remainingDebt.compareTo(BigDecimal.ZERO) &lt;= 0) {</span>
+<span class="fc" id="L147">                break;</span>
+            }
+        }
+
+<span class="fc" id="L151">        return schedule;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

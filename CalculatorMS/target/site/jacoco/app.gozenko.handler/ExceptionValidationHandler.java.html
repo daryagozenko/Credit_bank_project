@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionValidationHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">calculator</a> &gt; <a href="index.source.html" class="el_package">app.gozenko.handler</a> &gt; <span class="el_source">ExceptionValidationHandler.java</span></div><h1>ExceptionValidationHandler.java</h1><pre class="source lang-java linenums">package app.gozenko.handler;
+
+import app.gozenko.exception.UnScoringDataException;
+import app.gozenko.exception.ValidationDataException;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+<span class="fc" id="L17">public class ExceptionValidationHandler {</span>
+
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity&lt;String&gt; mismatchException(MethodArgumentTypeMismatchException ex) {
+<span class="nc" id="L23">        return ResponseEntity</span>
+<span class="nc" id="L24">                .status(HttpStatus.BAD_REQUEST)</span>
+<span class="nc" id="L25">                .body(ex.getMessage());</span>
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity&lt;?&gt; constraintException(ConstraintViolationException ex) {
+<span class="nc" id="L31">        Map&lt;String, String&gt; exceptions = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L33">        ex.getConstraintViolations().forEach(violation -&gt; {</span>
+<span class="nc" id="L34">            String field = extractFieldName(violation.getPropertyPath().toString());</span>
+<span class="nc" id="L35">            String message = violation.getMessage();</span>
+<span class="nc" id="L36">            exceptions.put(field, message);</span>
+<span class="nc" id="L37">        });</span>
+
+<span class="nc" id="L39">        return ResponseEntity</span>
+<span class="nc" id="L40">                .status(HttpStatus.BAD_REQUEST)</span>
+<span class="nc" id="L41">                .body(exceptions);</span>
+    }
+
+    @ExceptionHandler(ValidationDataException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity&lt;String&gt; legalAgeException(ValidationDataException ex){
+<span class="nc" id="L47">        return ResponseEntity</span>
+<span class="nc" id="L48">                .status(HttpStatus.BAD_REQUEST)</span>
+<span class="nc" id="L49">                .body(ex.getField()+&quot;: &quot;+ex.getMessage());</span>
+    }
+
+    @ExceptionHandler(UnScoringDataException.class)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ResponseEntity&lt;String&gt; scoringException(UnScoringDataException ex){
+<span class="nc" id="L55">        return ResponseEntity</span>
+<span class="nc" id="L56">                .status(HttpStatus.ACCEPTED)</span>
+<span class="nc" id="L57">                .body(&quot;Отказ: по причине &quot;+ex.getMessage());</span>
+    }
+
+    private String extractFieldName(String propertyPath) {
+<span class="nc" id="L61">        String[] parts = propertyPath.split(&quot;\\.&quot;);</span>
+
+<span class="nc" id="L63">        return parts[parts.length - 1];</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

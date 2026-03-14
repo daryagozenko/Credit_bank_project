@@ -31,10 +31,7 @@
         <lombok.version>1.18.38</lombok.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.8.16</springdoc-openapi-starter-webmvc-ui.version>
 
-        <!-- Тестовые зависимости -->
-        <junit-jupiter.version>5.11.4</junit-jupiter.version>
-        <mockito.version>5.14.2</mockito.version>
-        <allure.version>2.29.1</allure.version>
+        <allure.version>2.27.0</allure.version>
         <aspectj.version>1.9.24</aspectj.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
         <jacoco.version>0.8.12</jacoco.version>
@@ -78,31 +75,10 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JUnit 5 (эти зависимости уже есть в spring-boot-starter-test, но явно указываем для версионности) -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -168,6 +144,7 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <argLine>
+                        @{jacoco.agent.argLine}
                         -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
                         -Xmx1024m
                     </argLine>
@@ -220,6 +197,7 @@
                         </goals>
                         <configuration>
                             <propertyName>jacoco.agent.argLine</propertyName>
+                            <destFile>${project.build.directory}/jacoco.exec</destFile>
                         </configuration>
                     </execution>
                     <execution>
@@ -229,6 +207,7 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
+                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
                             <outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>
                         </configuration>
                     </execution>
