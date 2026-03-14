@@ -6,6 +6,8 @@ import app.gozenko.interfaces.CalculatorController;
 import app.gozenko.interfaces.LoanOfferService;
 import app.gozenko.interfaces.PreScoringService;
 import app.gozenko.interfaces.ScoringService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/calculator")
 @RequiredArgsConstructor
+@Tag(name = "CalculatorController")
 public class CalculatorControllerImpl implements CalculatorController {
 
     private final PreScoringService preScoringService;
@@ -29,6 +31,7 @@ public class CalculatorControllerImpl implements CalculatorController {
 
 
     @PostMapping("/offers")
+    @Operation(summary = "создание кредитной заявки")
     @Override
     public ResponseEntity<List<?>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState){
         preScoringService.preScoringLoan(loanState);
@@ -38,6 +41,7 @@ public class CalculatorControllerImpl implements CalculatorController {
     }
 
     @PostMapping("/calc")
+    @Operation(summary = "расчет полной стоимости кредита и графика платежей")
     @Override
     public ResponseEntity<?> validateAndCalc(@RequestBody ScoringDataDto scoringData){
         preScoringService.preScoringScoreData(scoringData);

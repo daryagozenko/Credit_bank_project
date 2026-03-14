@@ -2,9 +2,9 @@ package app.gozenko.dto;
 
 import app.gozenko.enums.EmploymentStatus;
 import app.gozenko.enums.Position;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,16 +17,31 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmploymentDto {
+
     @NotNull
+    @Schema(description = "Статус занятости", example = "WORK")
     private EmploymentStatus employmentStatus;
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    private String employerINN;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private BigDecimal salary;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Position position;
+
     @NotNull
+    @Schema(description = "ИНН работодателя", example = "123456")
+    private String employerINN;
+
+    @NotNull
+    @Min(value = 0, message = "Зарплата должна быть положительной")
+    @Schema(description = "Зарплата", example = "80000")
+    private BigDecimal salary;
+
+    @NotNull
+    @Schema(description = "Должность", example = "WORKER")
+    private Position position;
+
+    @NotNull
+    @Min(value = 0, message = "Общий стаж должен быть положительным")
+    @Schema(description = "Общий стаж работы в месяцах", example = "12")
     private Integer workExperienceTotal;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+
+    @NotNull
+    @Min(value = 0, message = "Текущий стаж должен быть положительным")
+    @Schema(description = "Текущий стаж работы в месяцах", example = "6")
     private Integer workExperienceCurrent;
 }
