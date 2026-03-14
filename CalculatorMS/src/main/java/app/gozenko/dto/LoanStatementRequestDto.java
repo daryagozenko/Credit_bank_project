@@ -15,9 +15,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoanStatementRequestDto {
-    @Min(value = 20000, message = "Сумма должно быть больше 20000")
+    @Min(value = 20000, message = "Сумма должна быть больше 20000")
     private BigDecimal amount;
-    @Min(value = 6, message = "Срок должно быть не меньше 6")
+    @Min(value = 6, message = "Срок должен быть не меньше 6")
     private Integer term;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",

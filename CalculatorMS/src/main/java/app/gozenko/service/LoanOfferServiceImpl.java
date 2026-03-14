@@ -34,7 +34,7 @@ public class LoanOfferServiceImpl implements LoanOfferService {
         return result;
     }
 
-    private LoanOfferDto isSalaryAndInsurance(BigDecimal amount, Integer term){
+    LoanOfferDto isSalaryAndInsurance(BigDecimal amount, Integer term){
         //Текущая ставка по кредиту
         BigDecimal totalRate = propertyRate
                 .subtract(insuranceRate)
@@ -46,7 +46,7 @@ public class LoanOfferServiceImpl implements LoanOfferService {
 
         BigDecimal totalAmount = amount.add(priceInsurance);
 
-        BigDecimal monthlyPayment = calcMonthlyRate(totalRate, totalAmount, term);
+        BigDecimal monthlyPayment = calcMonthlyPayment(totalRate, totalAmount, term);
 
         return LoanOfferDto.builderWithNewId()
                 .requestedAmount(amount)
@@ -60,12 +60,12 @@ public class LoanOfferServiceImpl implements LoanOfferService {
 
     }
 
-    private LoanOfferDto isSalary(BigDecimal amount, Integer term){
+    LoanOfferDto isSalary(BigDecimal amount, Integer term){
         //Текущая ставка по кредиту
         BigDecimal totalRate = propertyRate
                 .subtract(rateSalaryClient);
 
-        BigDecimal monthlyPayment = calcMonthlyRate(totalRate, amount, term);
+        BigDecimal monthlyPayment = calcMonthlyPayment(totalRate, amount, term);
 
         return LoanOfferDto.builderWithNewId()
                 .requestedAmount(amount)
@@ -78,7 +78,7 @@ public class LoanOfferServiceImpl implements LoanOfferService {
                 .build();
     }
 
-    private LoanOfferDto isInsurance(BigDecimal amount, Integer term){
+    LoanOfferDto isInsurance(BigDecimal amount, Integer term){
         //Текущая ставка по кредиту
         BigDecimal totalRate = propertyRate
                 .subtract(insuranceRate);
@@ -89,7 +89,7 @@ public class LoanOfferServiceImpl implements LoanOfferService {
 
         BigDecimal totalAmount = amount.add(priceInsurance);
 
-        BigDecimal monthlyPayment = calcMonthlyRate(totalRate, totalAmount, term);
+        BigDecimal monthlyPayment = calcMonthlyPayment(totalRate, totalAmount, term);
 
         return LoanOfferDto.builderWithNewId()
                 .requestedAmount(amount)
@@ -103,9 +103,9 @@ public class LoanOfferServiceImpl implements LoanOfferService {
 
     }
 
-    private LoanOfferDto noneSalaryAndInsurance(BigDecimal amount, Integer term){
+    LoanOfferDto noneSalaryAndInsurance(BigDecimal amount, Integer term){
 
-        BigDecimal monthlyPayment = calcMonthlyRate(propertyRate, amount, term);
+        BigDecimal monthlyPayment = calcMonthlyPayment(propertyRate, amount, term);
 
         return LoanOfferDto.builderWithNewId()
                 .requestedAmount(amount)
@@ -119,7 +119,7 @@ public class LoanOfferServiceImpl implements LoanOfferService {
 
     }
 
-    private BigDecimal calcMonthlyRate(BigDecimal totalRate, BigDecimal totalAmount, Integer term){
+    BigDecimal calcMonthlyPayment(BigDecimal totalRate, BigDecimal totalAmount, Integer term){
         // Расчет месячной ставки
         BigDecimal monthlyRate = totalRate
                 .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)

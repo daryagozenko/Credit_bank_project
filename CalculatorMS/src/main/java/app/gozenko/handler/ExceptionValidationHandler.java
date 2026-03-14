@@ -1,5 +1,6 @@
 package app.gozenko.handler;
 
+import app.gozenko.exception.UnScoringDataException;
 import app.gozenko.exception.ValidationDataException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,14 @@ public class ExceptionValidationHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getField()+": "+ex.getMessage());
+    }
+
+    @ExceptionHandler(UnScoringDataException.class)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ResponseEntity<String> scoringException(UnScoringDataException ex){
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body("Отказ: по причине "+ex.getMessage());
     }
 
     private String extractFieldName(String propertyPath) {

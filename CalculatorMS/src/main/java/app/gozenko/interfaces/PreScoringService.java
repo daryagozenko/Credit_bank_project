@@ -1,8 +1,10 @@
 package app.gozenko.interfaces;
 
 import app.gozenko.dto.LoanStatementRequestDto;
+import app.gozenko.dto.ScoringDataDto;
 import jakarta.validation.Valid;
 
 public interface PreScoringService {
-    void preScoring(@Valid LoanStatementRequestDto request);
+    void preScoringLoan(@Valid LoanStatementRequestDto request);
+    void preScoringScoreData(@Valid ScoringDataDto request);
 }

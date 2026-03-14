@@ -1,36 +1,39 @@
 package app.gozenko.controller;
 
-import app.gozenko.dto.CreditDto;
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.interfaces.CalculatorController;
-import app.gozenko.service.LoanOfferServiceImpl;
-import app.gozenko.service.PreScoringServiceImpl;
+import app.gozenko.interfaces.LoanOfferService;
+import app.gozenko.interfaces.PreScoringService;
+import app.gozenko.interfaces.ScoringService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/calculator")
+@RequiredArgsConstructor
 public class CalculatorControllerImpl implements CalculatorController {
 
-    private final PreScoringServiceImpl preScoringService;
-    private final LoanOfferServiceImpl loanOfferService;
+    private final PreScoringService preScoringService;
+    private final LoanOfferService loanOfferService;
+    private final ScoringService scoringService;
 
-    public CalculatorControllerImpl(PreScoringServiceImpl preScoringService, LoanOfferServiceImpl loanOfferService) {
-        this.preScoringService = preScoringService;
-        this.loanOfferService = loanOfferService;
-    }
+    private BigDecimal totalRate;
+
 
     @PostMapping("/offers")
     @Override
     public ResponseEntity<List<?>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState){
-        preScoringService.preScoring(loanState);
+        preScoringService.preScoringLoan(loanState);
         return ResponseEntity.ok(loanOfferService.createLoanOffers(
                 loanState.getAmount(),
                 loanState.getTerm()));
@@ -38,8 +41,9 @@ public class CalculatorControllerImpl implements CalculatorController {
 
     @PostMapping("/calc")
     @Override
-    public CreditDto validateAndCalc(@RequestBody ScoringDataDto scoringData){
-
-        return new CreditDto();
+    public ResponseEntity<?> validateAndCalc(@RequestBody ScoringDataDto scoringData){
+        preScoringService.preScoringScoreData(scoringData);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(scoringService.createScoringData(scoringData));
     }
 }
