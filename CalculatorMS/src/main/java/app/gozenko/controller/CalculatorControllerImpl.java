@@ -27,8 +27,6 @@ public class CalculatorControllerImpl implements CalculatorController {
     private final LoanOfferService loanOfferService;
     private final ScoringService scoringService;
 
-    private BigDecimal totalRate;
-
 
     @PostMapping("/offers")
     @Override
