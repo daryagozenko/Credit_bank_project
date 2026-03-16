@@ -148,7 +148,7 @@ class CalculatorControllerImplTest {
     @DisplayName("Ошибка валидации при получении предложений")
     void calcConditionOfCredit_ValidationFailed() {
         String errorMessage = "Возраст должен быть больше 18";
-        doThrow(new ValidationDataException("birthday", errorMessage))
+        doThrow(new ValidationDataException(errorMessage))
                 .when(preScoringService).preScoringLoan(any(LoanStatementRequestDto.class));
 
         assertThrows(ValidationDataException.class,
@@ -200,7 +200,7 @@ class CalculatorControllerImplTest {
     @DisplayName("Ошибка валидации при расчете кредита")
     void validateAndCalc_ValidationFailed() {
         String errorMessage = "Возраст должен быть больше 18";
-        doThrow(new ValidationDataException("birthday", errorMessage))
+        doThrow(new ValidationDataException(errorMessage))
                 .when(preScoringService).preScoringScoreData(any(ScoringDataDto.class));
 
         assertThrows(ValidationDataException.class,
@@ -215,7 +215,7 @@ class CalculatorControllerImplTest {
     void validateAndCalc_ScoringFailed() {
         String errorMessage = "Безработный";
         doNothing().when(preScoringService).preScoringScoreData(any(ScoringDataDto.class));
-        doThrow(new ValidationDataException("employment", errorMessage))
+        doThrow(new ValidationDataException(errorMessage))
                 .when(scoringService).createScoringData(any(ScoringDataDto.class));
 
         assertThrows(ValidationDataException.class,

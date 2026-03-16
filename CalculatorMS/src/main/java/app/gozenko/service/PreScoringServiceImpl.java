@@ -28,7 +28,7 @@ public class PreScoringServiceImpl implements PreScoringService {
         log.debug("LoanStatement request: {}",request);
 
         if(!(checkLegalAge(request.getBirthday())))
-            throw new ValidationDataException("birthday", "Возраст должен быть больше "+legalAge);
+            throw new ValidationDataException("Возраст должен быть больше "+legalAge);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class PreScoringServiceImpl implements PreScoringService {
         log.debug("ScoringData request: {}",request);
 
         if(!(checkLegalAge(request.getBirthday())))
-            throw new ValidationDataException("birthday", "Возраст должен быть больше "+legalAge);
+            throw new ValidationDataException("Возраст должен быть больше "+legalAge);
 
     }
 

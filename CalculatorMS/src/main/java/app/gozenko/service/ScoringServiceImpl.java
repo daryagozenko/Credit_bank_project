@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -53,9 +54,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Override
     public CreditDto createScoringData(ScoringDataDto request) {
-        String message = hasConstraint(request);
-        if (message != null) {
-            throw new UnScoringDataException(message);
+        Optional<String> message = checkConstraint(request);
+        if (message != null && message.isPresent()) {
+            throw new UnScoringDataException(message.get());
         }
         initialValues(request);
         updateData(request);
@@ -65,20 +66,20 @@ public class ScoringServiceImpl implements ScoringService {
     }
 
 
-    private String hasConstraint(ScoringDataDto request) {
+    private Optional<String> checkConstraint(ScoringDataDto request) {
         if (request.getEmployment().getEmploymentStatus().equals(EmploymentStatus.UNEMPLOYED))
-            return "Безработный";
+            return Optional.of("Безработный");
         if (request.getAmount().compareTo(request.getEmployment().getSalary().multiply(BigDecimal.valueOf(24))) > 0)
-            return "Сумма займа больше, чем 24 зарплаты";
+            return Optional.of("Сумма займа больше, чем 24 зарплаты");
 
         int age = calculateAge(request.getBirthday());
-        if (age < 20) return "Моложе 20";
-        if (age > 65) return "Старше 65";
+        if (age < 20) return Optional.of("Моложе 20");
+        if (age > 65) return Optional.of("Старше 65");
 
         int workExpTotal = request.getEmployment().getWorkExperienceTotal();
-        if (workExpTotal < 12) return "Общий стаж работы менее 12 месяцев";
+        if (workExpTotal < 12) return Optional.of("Общий стаж работы менее 12 месяцев");
         int workExpCurr = request.getEmployment().getWorkExperienceCurrent();
-        if (workExpCurr < 3) return "Текущий стаж работы менее 3 месяцев";
+        if (workExpCurr < 3) return Optional.of("Текущий стаж работы менее 3 месяцев");
 
         return null;
     }

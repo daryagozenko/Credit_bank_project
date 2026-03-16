@@ -50,7 +50,9 @@ public class CalculatorControllerImpl implements CalculatorController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Неверные параметры запроса"
+                    description = "Неверные параметры запроса",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
     @Override
     public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState) {
@@ -75,7 +77,9 @@ public class CalculatorControllerImpl implements CalculatorController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Неверные параметры запроса"
+                    description = "Неверные параметры запроса",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
     @Override
     public ResponseEntity<CreditDto> validateAndCalc(@RequestBody ScoringDataDto scoringData) {
