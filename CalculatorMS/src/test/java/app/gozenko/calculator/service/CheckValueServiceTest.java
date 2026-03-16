@@ -1,6 +1,6 @@
 package app.gozenko.calculator.service;
 
-import app.gozenko.calculator.utils.TestDataGenerator;
+import app.gozenko.calculator.utils.StubGenerator;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.service.CalcCreditValueService;
 import app.gozenko.service.CheckValueService;
@@ -65,7 +65,7 @@ class CheckValueServiceTest {
 
         LoanOfferDto result = checkValueService.salaryAndInsuranceClient(amount, term);
 
-        LoanOfferDto expected = TestDataGenerator.createLoanOfferWithTotal(
+        LoanOfferDto expected = StubGenerator.createLoanOfferWithTotal(
                 amount,
                 expectedTotalAmount,
                 term,
@@ -98,7 +98,7 @@ class CheckValueServiceTest {
 
         LoanOfferDto result = checkValueService.salaryClient(amount, term);
 
-        LoanOfferDto expected = TestDataGenerator.createLoanOffer(
+        LoanOfferDto expected = StubGenerator.createLoanOffer(
                 amount,
                 term,
                 expectedMonthlyPayment,
@@ -133,7 +133,7 @@ class CheckValueServiceTest {
 
         LoanOfferDto result = checkValueService.insuranceClient(amount, term);
 
-        LoanOfferDto expected = TestDataGenerator.createLoanOfferWithTotal(
+        LoanOfferDto expected = StubGenerator.createLoanOfferWithTotal(
                 amount,
                 expectedTotalAmount,
                 term,
@@ -164,7 +164,7 @@ class CheckValueServiceTest {
 
         LoanOfferDto result = checkValueService.noneSalaryAndInsuranceClient(amount, term);
 
-        LoanOfferDto expected = TestDataGenerator.createLoanOffer(
+        LoanOfferDto expected = StubGenerator.createLoanOffer(
                 amount,
                 term,
                 expectedMonthlyPayment,
@@ -202,7 +202,7 @@ class CheckValueServiceTest {
 
         LoanOfferDto result = checkValueService.salaryAndInsuranceClient(amount, term);
 
-        LoanOfferDto expected = TestDataGenerator.createLoanOfferWithTotal(
+        LoanOfferDto expected = StubGenerator.createLoanOfferWithTotal(
                 amount,
                 expectedTotalAmount,
                 term,
@@ -252,7 +252,7 @@ class CheckValueServiceTest {
 
         LoanOfferDto result = checkValueService.insuranceClient(amount, term);
 
-        LoanOfferDto expected = TestDataGenerator.createLoanOfferWithTotal(
+        LoanOfferDto expected = StubGenerator.createLoanOfferWithTotal(
                 amount,
                 expectedTotalAmount,
                 term,
@@ -275,7 +275,7 @@ class CheckValueServiceTest {
 
         LoanOfferDto result = checkValueService.noneSalaryAndInsuranceClient(amount, term);
 
-        LoanOfferDto expected = TestDataGenerator.createLoanOffer(
+        LoanOfferDto expected = StubGenerator.createLoanOffer(
                 amount,
                 term,
                 BigDecimal.ZERO,

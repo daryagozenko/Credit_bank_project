@@ -32,7 +32,7 @@ public class PreScoringServiceImpl implements PreScoringService {
     }
 
     @Override
-    public void preScoringScoreData(@Valid ScoringDataDto request){
+    public void preScoringScoreData(ScoringDataDto request){
         log.debug("ScoringData request: {}",request);
 
         if(!(checkLegalAge(request.getBirthday())))

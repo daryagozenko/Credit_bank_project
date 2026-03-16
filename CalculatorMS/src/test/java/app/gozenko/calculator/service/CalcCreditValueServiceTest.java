@@ -1,6 +1,6 @@
 package app.gozenko.calculator.service;
 
-import app.gozenko.calculator.utils.TestDataGenerator;
+import app.gozenko.calculator.utils.StubGenerator;
 import app.gozenko.dto.CreditDto;
 import app.gozenko.dto.PaymentScheduleElementDto;
 import app.gozenko.dto.ScoringDataDto;
@@ -41,7 +41,7 @@ class CalcCreditValueServiceTest {
         term = 12;
         rate = new BigDecimal("20.00");
         expectedMonthlyPayment = new BigDecimal("92634.51");
-        baseScoringData = TestDataGenerator.createValidScoringRequest();
+        baseScoringData = StubGenerator.createValidScoringRequest();
     }
 
     @Test
@@ -272,9 +272,9 @@ class CalcCreditValueServiceTest {
     }
 
     @Test
-    @DisplayName("Проверка с разными данными из TestDataGenerator")
+    @DisplayName("Проверка с разными данными из StubGenerator")
     void mainCounting_WithDifferentScoringData() {
-        ScoringDataDto differentRequest = TestDataGenerator.createScoringRequestWithAge(25);
+        ScoringDataDto differentRequest = StubGenerator.createScoringRequestWithAge(25);
         differentRequest.setAmount(new BigDecimal("500000"));
         differentRequest.setTerm(24);
 

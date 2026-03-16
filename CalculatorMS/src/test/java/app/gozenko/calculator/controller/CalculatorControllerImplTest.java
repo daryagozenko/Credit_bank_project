@@ -1,6 +1,6 @@
 package app.gozenko.calculator.controller;
 
-import app.gozenko.calculator.utils.TestDataGenerator;
+import app.gozenko.calculator.utils.StubGenerator;
 import app.gozenko.controller.CalculatorControllerImpl;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
@@ -55,25 +55,25 @@ class CalculatorControllerImplTest {
         amount = new BigDecimal("300000");
         term = 12;
 
-        validLoanStatement = TestDataGenerator.createValidLoanStatementRequest();
-        validScoringData = TestDataGenerator.createValidScoringRequest();
+        validLoanStatement = StubGenerator.createValidLoanStatementRequest();
+        validScoringData = StubGenerator.createValidScoringRequest();
 
-        LoanOfferDto offer1 = TestDataGenerator.createLoanOffer(
+        LoanOfferDto offer1 = StubGenerator.createLoanOffer(
                 amount, term, new BigDecimal("27790.57"), new BigDecimal("17.00"), true, true
         );
-        LoanOfferDto offer2 = TestDataGenerator.createLoanOffer(
+        LoanOfferDto offer2 = StubGenerator.createLoanOffer(
                 amount, term, new BigDecimal("27900.00"), new BigDecimal("18.00"), true, false
         );
-        LoanOfferDto offer3 = TestDataGenerator.createLoanOffer(
+        LoanOfferDto offer3 = StubGenerator.createLoanOffer(
                 amount, term, new BigDecimal("28000.00"), new BigDecimal("19.00"), false, true
         );
-        LoanOfferDto offer4 = TestDataGenerator.createLoanOffer(
+        LoanOfferDto offer4 = StubGenerator.createLoanOffer(
                 amount, term, new BigDecimal("28100.00"), new BigDecimal("20.00"), false, false
         );
 
         expectedLoanOffers = Arrays.asList(offer1, offer2, offer3, offer4);
 
-        expectedCreditDto = TestDataGenerator.createExpectedCreditDto(
+        expectedCreditDto = StubGenerator.createExpectedCreditDto(
                 validScoringData.getAmount(),
                 validScoringData.getTerm(),
                 new BigDecimal("92634.51"),
@@ -231,7 +231,7 @@ class CalculatorControllerImplTest {
         BigDecimal[] amounts = {new BigDecimal("100000"), new BigDecimal("500000"), new BigDecimal("1000000")};
 
         for (BigDecimal testAmount : amounts) {
-            LoanStatementRequestDto request = TestDataGenerator.createLoanStatementRequestWithAmount(testAmount);
+            LoanStatementRequestDto request = StubGenerator.createLoanStatementRequestWithAmount(testAmount);
 
             doNothing().when(preScoringService).preScoringLoan(any(LoanStatementRequestDto.class));
             doReturn(expectedLoanOffers)
@@ -256,7 +256,7 @@ class CalculatorControllerImplTest {
         Integer[] terms = {6, 12, 24, 36};
 
         for (Integer testTerm : terms) {
-            ScoringDataDto request = TestDataGenerator.createValidScoringRequest();
+            ScoringDataDto request = StubGenerator.createValidScoringRequest();
             request.setTerm(testTerm);
 
             doNothing().when(preScoringService).preScoringScoreData(any(ScoringDataDto.class));

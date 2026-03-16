@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class TestDataGenerator {
+public class StubGenerator {
 
     public static EmploymentDto createValidEmployment() {
         return EmploymentDto.builder()

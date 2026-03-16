@@ -25,6 +25,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ScoringServiceImpl implements ScoringService {
 
+    private static final Integer REQUIRED_TOTAL_WORK_EXPERIENCE = 3;
+    private static final Integer REQUIRED_COMMON_WORK_EXPERIENCE = 12;
+    private static final Integer MAX_AMOUNT_DIFF_SALARY = 24;
+    private static final Integer MIN_AGE = 20;
+    private static final Integer MAX_AGE = 65;
+    private static final Integer MIN_AGE_FEMALE = 31;
+    private static final Integer MAX_AGE_FEMALE = 61;
+    private static final Integer MIN_AGE_MALE = 29;
+    private static final Integer MAX_AGE_MALE = 56;
+    private static final Integer TOTAL_DEPENDENT = 2;
+
     private final CheckValueService checkValueService;
     private final CalcCreditValueService calcCreditValueService;
 
@@ -69,17 +80,20 @@ public class ScoringServiceImpl implements ScoringService {
     private Optional<String> checkConstraint(ScoringDataDto request) {
         if (request.getEmployment().getEmploymentStatus().equals(EmploymentStatus.UNEMPLOYED))
             return Optional.of("Безработный");
-        if (request.getAmount().compareTo(request.getEmployment().getSalary().multiply(BigDecimal.valueOf(24))) > 0)
-            return Optional.of("Сумма займа больше, чем 24 зарплаты");
+        if (request.getAmount().compareTo(request.getEmployment()
+                .getSalary().multiply(BigDecimal.valueOf(MAX_AMOUNT_DIFF_SALARY))) > 0)
+            return Optional.of(String.format("Сумма займа больше, чем %d зарплаты", MAX_AMOUNT_DIFF_SALARY));
 
         int age = calculateAge(request.getBirthday());
-        if (age < 20) return Optional.of("Моложе 20");
-        if (age > 65) return Optional.of("Старше 65");
+        if (age < MIN_AGE) return Optional.of(String.format("Моложе %d",MIN_AGE));
+        if (age > MAX_AGE) return Optional.of(String.format("Старше %d",MAX_AGE));
 
         int workExpTotal = request.getEmployment().getWorkExperienceTotal();
-        if (workExpTotal < 12) return Optional.of("Общий стаж работы менее 12 месяцев");
+        if (workExpTotal < REQUIRED_COMMON_WORK_EXPERIENCE) return Optional.of(
+                String.format("Общий стаж работы менее %d месяцев", REQUIRED_COMMON_WORK_EXPERIENCE));
         int workExpCurr = request.getEmployment().getWorkExperienceCurrent();
-        if (workExpCurr < 3) return Optional.of("Текущий стаж работы менее 3 месяцев");
+        if (workExpCurr < REQUIRED_TOTAL_WORK_EXPERIENCE) return Optional.of(
+                String.format("Текцщий стаж работы менее %d месяцев", REQUIRED_TOTAL_WORK_EXPERIENCE));
 
         return null;
     }
@@ -108,16 +122,16 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         int age = calculateAge(request.getBirthday());
-        if (request.getGender().equals(Gender.FEMALE) && (age > 31 && age < 61)) {
+        if (request.getGender().equals(Gender.FEMALE) && (age > MIN_AGE_FEMALE && age < MAX_AGE_FEMALE)) {
             rate = rate.subtract(rateWithAge);
             log.debug("rate subtract rateWithAge to Female={}",rate);
         }
-        if (request.getGender().equals(Gender.MALE) && (age > 29 && age < 56)) {
+        if (request.getGender().equals(Gender.MALE) && (age > MIN_AGE_MALE && age < MAX_AGE_MALE)) {
             rate = rate.subtract(rateWithAge);
             log.debug("rate subtract rateWithAge to Male={}",rate);
         }
 
-        if (request.getDependentAmount() > 2) {
+        if (request.getDependentAmount() > TOTAL_DEPENDENT) {
             rate = rate.subtract(rateWithDependent);
             log.debug("rate subtract rateWithDependent={}",rate);
         }

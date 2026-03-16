@@ -1,6 +1,6 @@
 package app.gozenko.calculator.service;
 
-import app.gozenko.calculator.utils.TestDataGenerator;
+import app.gozenko.calculator.utils.StubGenerator;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.service.CalcCreditValueService;
 import app.gozenko.service.CheckValueService;
@@ -62,7 +62,7 @@ class LoanOfferServiceImplTest {
         ReflectionTestUtils.setField(loanOfferService, "insuranceRate", insuranceRate);
         ReflectionTestUtils.setField(loanOfferService, "rateSalaryClient", salaryRate);
 
-        salaryAndInsuranceOffer = TestDataGenerator.createLoanOffer(
+        salaryAndInsuranceOffer = StubGenerator.createLoanOffer(
                 baseAmount,
                 baseTerm,
                 expectedMonthlyPayment,
@@ -71,7 +71,7 @@ class LoanOfferServiceImplTest {
                 true
         );
 
-        insuranceOffer = TestDataGenerator.createLoanOffer(
+        insuranceOffer = StubGenerator.createLoanOffer(
                 baseAmount,
                 baseTerm,
                 expectedMonthlyPayment,
@@ -80,7 +80,7 @@ class LoanOfferServiceImplTest {
                 false
         );
 
-        salaryOffer = TestDataGenerator.createLoanOffer(
+        salaryOffer = StubGenerator.createLoanOffer(
                 baseAmount,
                 baseTerm,
                 expectedMonthlyPayment,
@@ -89,7 +89,7 @@ class LoanOfferServiceImplTest {
                 true
         );
 
-        noneOffer = TestDataGenerator.createLoanOffer(
+        noneOffer = StubGenerator.createLoanOffer(
                 baseAmount,
                 baseTerm,
                 expectedMonthlyPayment,
@@ -190,16 +190,16 @@ class LoanOfferServiceImplTest {
             BigDecimal expectedRateWithSalary,
             BigDecimal expectedRateNone) {
 
-        LoanOfferDto salaryAndInsuranceOffer = TestDataGenerator.createLoanOffer(
+        LoanOfferDto salaryAndInsuranceOffer = StubGenerator.createLoanOffer(
                 amount, term, new BigDecimal("50000.00"), expectedRateWithInsuranceAndSalary, true, true
         );
-        LoanOfferDto insuranceOffer = TestDataGenerator.createLoanOffer(
+        LoanOfferDto insuranceOffer = StubGenerator.createLoanOffer(
                 amount, term, new BigDecimal("50000.00"), expectedRateWithInsurance, true, false
         );
-        LoanOfferDto salaryOffer = TestDataGenerator.createLoanOffer(
+        LoanOfferDto salaryOffer = StubGenerator.createLoanOffer(
                 amount, term, new BigDecimal("50000.00"), expectedRateWithSalary, false, true
         );
-        LoanOfferDto noneOffer = TestDataGenerator.createLoanOffer(
+        LoanOfferDto noneOffer = StubGenerator.createLoanOffer(
                 amount, term, new BigDecimal("50000.00"), expectedRateNone, false, false
         );
 
@@ -262,7 +262,7 @@ class LoanOfferServiceImplTest {
                 .multiply(insuranceRate.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP));
         BigDecimal totalWithInsurance = baseAmount.add(insuranceAmount);
 
-        LoanOfferDto insuranceOfferWithTotal = TestDataGenerator.createLoanOfferWithTotal(
+        LoanOfferDto insuranceOfferWithTotal = StubGenerator.createLoanOfferWithTotal(
                 baseAmount,
                 totalWithInsurance,
                 baseTerm,
@@ -316,7 +316,7 @@ class LoanOfferServiceImplTest {
     void createLoanOffers_WithZeroAmount() {
         BigDecimal zeroAmount = BigDecimal.ZERO;
 
-        LoanOfferDto zeroOffer = TestDataGenerator.createLoanOffer(
+        LoanOfferDto zeroOffer = StubGenerator.createLoanOffer(
                 zeroAmount, baseTerm, BigDecimal.ZERO, baseRate, false, false
         );
 

@@ -1,6 +1,6 @@
 package app.gozenko.calculator.service;
 
-import app.gozenko.calculator.utils.TestDataGenerator;
+import app.gozenko.calculator.utils.StubGenerator;
 import app.gozenko.dto.CreditDto;
 import app.gozenko.dto.EmploymentDto;
 import app.gozenko.dto.LoanOfferDto;
@@ -59,9 +59,9 @@ class ScoringServiceImplTest {
         ReflectionTestUtils.setField(scoringService, "rateWithAge", new BigDecimal("3"));
         ReflectionTestUtils.setField(scoringService, "rateWithDependent", new BigDecimal("1"));
 
-        baseScoringData = TestDataGenerator.createValidScoringRequest();
+        baseScoringData = StubGenerator.createValidScoringRequest();
 
-        baseLoanOffer = TestDataGenerator.createLoanOffer(
+        baseLoanOffer = StubGenerator.createLoanOffer(
                 new BigDecimal("1000000"),
                 12,
                 expectedMonthlyPayment,
@@ -70,7 +70,7 @@ class ScoringServiceImplTest {
                 true
         );
 
-        expectedCreditDto = TestDataGenerator.createExpectedCreditDto(
+        expectedCreditDto = StubGenerator.createExpectedCreditDto(
                 new BigDecimal("1000000"),
                 12,
                 expectedMonthlyPayment,
@@ -114,7 +114,7 @@ class ScoringServiceImplTest {
             int currentExp,
             String expectedMessage) {
 
-        EmploymentDto employment = TestDataGenerator.createEmploymentWithParams(
+        EmploymentDto employment = StubGenerator.createEmploymentWithParams(
                 employmentStatus,
                 salary,
                 Position.WORKER,
@@ -122,7 +122,7 @@ class ScoringServiceImplTest {
                 currentExp
         );
 
-        ScoringDataDto request = TestDataGenerator.createScoringRequestWithParams(
+        ScoringDataDto request = StubGenerator.createScoringRequestWithParams(
                 amount,
                 12,
                 age,
@@ -202,7 +202,7 @@ class ScoringServiceImplTest {
             boolean isSalaryClient,
             BigDecimal expectedRate) {
 
-        EmploymentDto employment = TestDataGenerator.createEmploymentWithParams(
+        EmploymentDto employment = StubGenerator.createEmploymentWithParams(
                 EmploymentStatus.EMPLOYED,
                 new BigDecimal("100000"),
                 position,
@@ -210,7 +210,7 @@ class ScoringServiceImplTest {
                 24
         );
 
-        ScoringDataDto request = TestDataGenerator.createScoringRequestWithParams(
+        ScoringDataDto request = StubGenerator.createScoringRequestWithParams(
                 new BigDecimal("1000000"),
                 12,
                 age,
@@ -222,7 +222,7 @@ class ScoringServiceImplTest {
                 isSalaryClient
         );
 
-        LoanOfferDto loanOffer = TestDataGenerator.createLoanOffer(
+        LoanOfferDto loanOffer = StubGenerator.createLoanOffer(
                 new BigDecimal("1000000"),
                 12,
                 expectedMonthlyPayment,
@@ -231,7 +231,7 @@ class ScoringServiceImplTest {
                 isSalaryClient
         );
 
-        CreditDto expectedCredit = TestDataGenerator.createExpectedCreditDto(
+        CreditDto expectedCredit = StubGenerator.createExpectedCreditDto(
                 new BigDecimal("1000000"),
                 12,
                 expectedMonthlyPayment,

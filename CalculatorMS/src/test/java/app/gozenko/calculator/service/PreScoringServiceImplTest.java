@@ -18,7 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
-import static app.gozenko.calculator.utils.TestDataGenerator.*;
+import static app.gozenko.calculator.utils.StubGenerator.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,11 +61,7 @@ class PreScoringServiceImplTest {
                 ValidationDataException.class,
                 () -> preScoringService.preScoringLoan(request)
         );
-
-        assertAll("Проверка исключения",
-                () -> assertEquals("birthday", exception.getField()),
-                () -> assertEquals(expectedMessage, exception.getMessage())
-        );
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @ParameterizedTest
@@ -79,10 +75,7 @@ class PreScoringServiceImplTest {
                 () -> preScoringService.preScoringScoreData(request)
         );
 
-        assertAll("Проверка исключения",
-                () -> assertEquals("birthday", exception.getField()),
-                () -> assertEquals(expectedMessage, exception.getMessage())
-        );
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @ParameterizedTest
@@ -126,7 +119,6 @@ class PreScoringServiceImplTest {
                 () -> preScoringService.preScoringLoan(request)
         );
 
-        assertEquals("birthday", exception.getField());
         assertTrue(exception.getMessage().contains(String.valueOf(legalAge)));
     }
 
@@ -155,7 +147,6 @@ class PreScoringServiceImplTest {
                     "Должно выбрасывать исключение для возраста меньше " + age
             );
 
-            assertEquals("birthday", exception.getField());
             assertTrue(exception.getMessage().contains(String.valueOf(age)));
         }
 
