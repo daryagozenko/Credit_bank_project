@@ -4,7 +4,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 !target/site/
-!target/allure-results
 
 ### STS ###
 .apt_generated
