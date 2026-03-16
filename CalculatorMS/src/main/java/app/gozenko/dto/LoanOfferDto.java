@@ -18,9 +18,4 @@ public class LoanOfferDto {
     private BigDecimal rate;
     private Boolean isInsuranceEnabled;
     private Boolean isSalaryClient;
-
-    public static LoanOfferDtoBuilder builderWithNewId() {
-        return builder()
-                .statementId(UUID.randomUUID());
-    }
 }

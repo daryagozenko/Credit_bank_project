@@ -1,5 +1,6 @@
 package app.gozenko.controller;
 
+import app.gozenko.dto.CreditDto;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
@@ -10,6 +11,7 @@ import app.gozenko.service.interfaces.ScoringService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/calculator")
 @RequiredArgsConstructor
@@ -35,7 +37,9 @@ public class CalculatorControllerImpl implements CalculatorController {
     @Operation(summary = "создание кредитной заявки")
     @Override
     public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState){
+        log.info("Sending a LoanStatementRequest to preScoringService");
         preScoringService.preScoringLoan(loanState);
+        log.info("Successful create list of loanOffers");
         return ResponseEntity.ok(loanOfferService.createLoanOffers(
                 loanState.getAmount(),
                 loanState.getTerm()));
@@ -44,8 +48,10 @@ public class CalculatorControllerImpl implements CalculatorController {
     @PostMapping("/calc")
     @Operation(summary = "расчет полной стоимости кредита и графика платежей")
     @Override
-    public ResponseEntity<?> validateAndCalc(@RequestBody ScoringDataDto scoringData){
+    public ResponseEntity<CreditDto> validateAndCalc(@RequestBody ScoringDataDto scoringData){
+        log.info("Sending a ScoringData to preScoringService");
         preScoringService.preScoringScoreData(scoringData);
+        log.info("Successful create credit offer");
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(scoringService.createScoringData(scoringData));
     }

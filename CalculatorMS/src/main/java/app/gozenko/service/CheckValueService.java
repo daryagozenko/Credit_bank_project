@@ -1,110 +1,113 @@
 package app.gozenko.service;
 
 import app.gozenko.dto.LoanOfferDto;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CheckValueService {
 
+    private final CalcCreditValueService calcCreditValueService;
+
     @Value("${app.gozenko.base-rate}")
-    private BigDecimal propertyRate;
+    private BigDecimal baseRate;
     @Value("${app.gozenko.insurance}")
     private BigDecimal insuranceRate;
     @Value("${app.gozenko.rate-salary-client}")
     private BigDecimal rateSalaryClient;
 
-    private final CalcCreditValueService calcCreditValueService;
+    @PostConstruct
+    public void init(){
+        log.info("Values from properties: baseRate-{}, insuranсeRate{}, rateSalaryClient-{}",
+                baseRate, insuranceRate, rateSalaryClient);
+    }
 
-    public LoanOfferDto isSalaryAndInsurance(BigDecimal amount, Integer term){
-        //Текущая ставка по кредиту
-        BigDecimal totalRate = propertyRate
+    public LoanOfferDto salaryAndInsuranceClient(BigDecimal amount, Integer term) {
+        BigDecimal currentCreditRate = baseRate
                 .subtract(insuranceRate)
                 .subtract(rateSalaryClient);
+        log.debug("salaryAndInsuranceClient: currentCreditRate-{}",currentCreditRate);
 
-        // Расчет страховки
-        BigDecimal priceInsurance = amount.multiply(
+        BigDecimal priceOfInsurance = amount.multiply(
                 insuranceRate.divide(BigDecimal.valueOf(100)));
+        log.debug("salaryAndInsuranceClient: priceOfInsurance-{}",priceOfInsurance);
 
-        BigDecimal totalAmount = amount.add(priceInsurance);
+        BigDecimal totalAmount = amount.add(priceOfInsurance);
+        log.debug("salaryAndInsuranceClient: totalAmount-{}",totalAmount);
 
-        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(totalRate, totalAmount, term);
+        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(currentCreditRate, totalAmount, term);
+        log.info("Result in salaryAndInsuranceClient: monthlyPayment-{}",monthlyPayment);
 
-        return LoanOfferDto.builderWithNewId()
-                .requestedAmount(amount)
-                .totalAmount(totalAmount)
-                .term(term)
-                .monthlyPayment(monthlyPayment)
-                .rate(totalRate)
-                .isInsuranceEnabled(true)
-                .isSalaryClient(true)
-                .build();
-
+        return buildNewLoanOfferDto(amount, totalAmount, term, monthlyPayment,
+                currentCreditRate, true, true);
     }
 
-    public LoanOfferDto isSalary(BigDecimal amount, Integer term){
-        //Текущая ставка по кредиту
-        BigDecimal totalRate = propertyRate
+    public LoanOfferDto salaryClient(BigDecimal amount, Integer term) {
+        BigDecimal currentCreditRate = baseRate
                 .subtract(rateSalaryClient);
+        log.debug("salaryClient: currentCreditRate-{}",currentCreditRate);
 
-        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(totalRate, amount, term);
+        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(currentCreditRate, amount, term);
+        log.info("Result in salaryClient: monthlyPayment-{}",monthlyPayment);
 
-        return LoanOfferDto.builderWithNewId()
-                .requestedAmount(amount)
-                .totalAmount(amount)
-                .term(term)
-                .monthlyPayment(monthlyPayment)
-                .rate(totalRate)
-                .isInsuranceEnabled(false)
-                .isSalaryClient(true)
-                .build();
+        return buildNewLoanOfferDto(amount, amount, term, monthlyPayment,
+                currentCreditRate, false, true);
     }
 
-    public LoanOfferDto isInsurance(BigDecimal amount, Integer term){
-        //Текущая ставка по кредиту
-        BigDecimal totalRate = propertyRate
+    public LoanOfferDto insuranceClient(BigDecimal amount, Integer term) {
+        BigDecimal currentCreditRate = baseRate
                 .subtract(insuranceRate);
+        log.debug("insuranceClient: currentCreditRate-{}",currentCreditRate);
 
-        // Расчет страховки
-        BigDecimal priceInsurance = amount.multiply(
+        BigDecimal priceOfInsurance = amount.multiply(
                 insuranceRate.divide(BigDecimal.valueOf(100), RoundingMode.FLOOR));
+        log.debug("insuranceClient: priceOfInsurance-{}",priceOfInsurance);
 
-        BigDecimal totalAmount = amount.add(priceInsurance);
+        BigDecimal totalAmount = amount.add(priceOfInsurance);
+        log.debug("insuranceClient: totalAmount-{}",totalAmount);
 
-        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(totalRate, totalAmount, term);
+        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(currentCreditRate, totalAmount, term);
+        log.info("Result in insuranceClient: monthlyPayment-{}",monthlyPayment);
 
-        return LoanOfferDto.builderWithNewId()
-                .requestedAmount(amount)
+        return buildNewLoanOfferDto(amount, totalAmount, term, monthlyPayment,
+                currentCreditRate, true, false);
+    }
+
+    public LoanOfferDto noneSalaryAndInsuranceClient(BigDecimal amount, Integer term) {
+
+        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(baseRate, amount, term);
+        log.info("Result in noneSalaryAndInsuranceClient: monthlyPayment-{}",monthlyPayment);
+
+        return buildNewLoanOfferDto(amount, amount, term, monthlyPayment,
+                baseRate, false, false);
+    }
+
+    private LoanOfferDto buildNewLoanOfferDto(BigDecimal requestedAmount,
+                                              BigDecimal totalAmount,
+                                              Integer term,
+                                              BigDecimal monthlyPayment,
+                                              BigDecimal rate,
+                                              Boolean isInsuranceEnabled,
+                                              Boolean isSalaryClient) {
+        log.info("Build new LoanOfferDto");
+        return LoanOfferDto.builder()
+                .statementId(UUID.randomUUID())
+                .requestedAmount(requestedAmount)
                 .totalAmount(totalAmount)
                 .term(term)
                 .monthlyPayment(monthlyPayment)
-                .rate(totalRate)
-                .isInsuranceEnabled(true)
-                .isSalaryClient(false)
+                .rate(rate)
+                .isInsuranceEnabled(isInsuranceEnabled)
+                .isSalaryClient(isSalaryClient)
                 .build();
-
     }
-
-    public LoanOfferDto noneSalaryAndInsurance(BigDecimal amount, Integer term){
-
-        BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(propertyRate, amount, term);
-
-        return LoanOfferDto.builderWithNewId()
-                .requestedAmount(amount)
-                .totalAmount(amount)
-                .term(term)
-                .monthlyPayment(monthlyPayment)
-                .rate(propertyRate)
-                .isInsuranceEnabled(false)
-                .isSalaryClient(false)
-                .build();
-
-    }
-
 }

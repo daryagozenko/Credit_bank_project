@@ -83,7 +83,7 @@ class ScoringServiceImplTest {
     @Test
     @DisplayName("Успешный расчет кредита для хорошего клиента")
     void createScoringData_Success() {
-        when(checkValueService.isSalaryAndInsurance(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(baseLoanOffer);
 
         when(calcCreditValueService.mainCounting(any(ScoringDataDto.class), any(BigDecimal.class)))
@@ -241,16 +241,16 @@ class ScoringServiceImplTest {
         );
 
         if (isInsuranceEnabled && isSalaryClient) {
-            when(checkValueService.isSalaryAndInsurance(any(BigDecimal.class), any(Integer.class)))
+            when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
                     .thenReturn(loanOffer);
         } else if (isInsuranceEnabled) {
-            when(checkValueService.isInsurance(any(BigDecimal.class), any(Integer.class)))
+            when(checkValueService.insuranceClient(any(BigDecimal.class), any(Integer.class)))
                     .thenReturn(loanOffer);
         } else if (isSalaryClient) {
-            when(checkValueService.isSalary(any(BigDecimal.class), any(Integer.class)))
+            when(checkValueService.salaryClient(any(BigDecimal.class), any(Integer.class)))
                     .thenReturn(loanOffer);
         } else {
-            when(checkValueService.noneSalaryAndInsurance(any(BigDecimal.class), any(Integer.class)))
+            when(checkValueService.noneSalaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
                     .thenReturn(loanOffer);
         }
 
@@ -261,7 +261,7 @@ class ScoringServiceImplTest {
 
         assertNotNull(result);
         assertEquals(expectedRate, result.getRate(),
-                String.format("Для параметров: position=%s, marital=%s, gender=%s, age=%d, dependents=%d, isInsurance=%s, isSalary=%s",
+                String.format("Для параметров: position=%s, marital=%s, gender=%s, age=%d, dependents=%d, insuranceClient=%s, salaryClient=%s",
                         position, maritalStatus, gender, age, dependentAmount, isInsuranceEnabled, isSalaryClient));
     }
 

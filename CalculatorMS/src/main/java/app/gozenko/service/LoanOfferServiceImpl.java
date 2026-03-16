@@ -4,7 +4,6 @@ import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.service.interfaces.LoanOfferService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,12 +14,6 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class LoanOfferServiceImpl implements LoanOfferService {
-    @Value("${app.gozenko.base-rate}")
-    private BigDecimal propertyRate;
-    @Value("${app.gozenko.insurance}")
-    private BigDecimal insuranceRate;
-    @Value("${app.gozenko.rate-salary-client}")
-    private BigDecimal rateSalaryClient;
 
     private final CheckValueService checkValueService;
 
@@ -28,12 +21,14 @@ public class LoanOfferServiceImpl implements LoanOfferService {
     public List<LoanOfferDto> createLoanOffers(BigDecimal amount, Integer term){
         List<LoanOfferDto> result = new ArrayList<>();
 
-        result.add(checkValueService.isSalaryAndInsurance(amount, term));
-        result.add(checkValueService.isInsurance(amount, term));
-        result.add(checkValueService.isSalary(amount, term));
-        result.add(checkValueService.noneSalaryAndInsurance(amount,term));
+        log.debug("Transferred: amount-{}, term-{}",amount,term);
 
-        log.info(result.toString());
+        result.add(checkValueService.salaryAndInsuranceClient(amount, term));
+        result.add(checkValueService.insuranceClient(amount, term));
+        result.add(checkValueService.salaryClient(amount, term));
+        result.add(checkValueService.noneSalaryAndInsuranceClient(amount,term));
+
+        log.info("List of loan offers: {}",result);
         return result;
     }
 }
