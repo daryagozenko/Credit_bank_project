@@ -41,15 +41,12 @@ class ScoringServiceImplTest {
     @InjectMocks
     private ScoringServiceImpl scoringService;
 
-    private ScoringDataDto baseScoringData;
-    private BigDecimal baseRate;
     private BigDecimal expectedMonthlyPayment;
     private LoanOfferDto baseLoanOffer;
     private CreditDto expectedCreditDto;
 
     @BeforeEach
     void setUp() {
-        baseRate = new BigDecimal("20.00");
         expectedMonthlyPayment = new BigDecimal("92635.22");
 
         ReflectionTestUtils.setField(scoringService, "rateToManager", new BigDecimal("2"));
@@ -59,13 +56,11 @@ class ScoringServiceImplTest {
         ReflectionTestUtils.setField(scoringService, "rateWithAge", new BigDecimal("3"));
         ReflectionTestUtils.setField(scoringService, "rateWithDependent", new BigDecimal("1"));
 
-        baseScoringData = StubGenerator.createValidScoringRequest();
-
         baseLoanOffer = StubGenerator.createLoanOffer(
                 new BigDecimal("1000000"),
                 12,
                 expectedMonthlyPayment,
-                baseRate,
+                new BigDecimal("20.00"),
                 true,
                 true
         );
@@ -74,7 +69,7 @@ class ScoringServiceImplTest {
                 new BigDecimal("1000000"),
                 12,
                 expectedMonthlyPayment,
-                baseRate,
+                new BigDecimal("20.00"),
                 true,
                 true
         );
@@ -89,7 +84,7 @@ class ScoringServiceImplTest {
         when(calcCreditValueService.mainCounting(any(ScoringDataDto.class), any(BigDecimal.class)))
                 .thenReturn(expectedCreditDto);
 
-        CreditDto result = scoringService.createScoringData(baseScoringData);
+        CreditDto result = scoringService.createScoringData(StubGenerator.createValidScoringRequest());
 
         assertAll("Проверка всех полей кредита",
                 () -> assertNotNull(result),

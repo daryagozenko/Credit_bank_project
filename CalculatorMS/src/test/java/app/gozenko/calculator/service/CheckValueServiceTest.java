@@ -48,7 +48,7 @@ class CheckValueServiceTest {
         term = 12;
         expectedMonthlyPayment = new BigDecimal("27790.57");
 
-        ReflectionTestUtils.setField(checkValueService, "propertyRate", baseRate);
+        ReflectionTestUtils.setField(checkValueService, "baseRate", baseRate);
         ReflectionTestUtils.setField(checkValueService, "insuranceRate", insuranceRate);
         ReflectionTestUtils.setField(checkValueService, "rateSalaryClient", salaryRate);
     }

@@ -2,7 +2,6 @@ package app.gozenko.calculator.service;
 
 import app.gozenko.calculator.utils.StubGenerator;
 import app.gozenko.dto.LoanOfferDto;
-import app.gozenko.service.CalcCreditValueService;
 import app.gozenko.service.CheckValueService;
 import app.gozenko.service.LoanOfferServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,9 +31,6 @@ class LoanOfferServiceImplTest {
     @Mock
     private CheckValueService checkValueService;
 
-    @Mock
-    private CalcCreditValueService calcCreditValueService;
-
     @InjectMocks
     private LoanOfferServiceImpl loanOfferService;
 
@@ -58,9 +54,9 @@ class LoanOfferServiceImplTest {
         salaryRate = new BigDecimal("1.00");
         expectedMonthlyPayment = new BigDecimal("27790.57");
 
-        ReflectionTestUtils.setField(loanOfferService, "propertyRate", baseRate);
-        ReflectionTestUtils.setField(loanOfferService, "insuranceRate", insuranceRate);
-        ReflectionTestUtils.setField(loanOfferService, "rateSalaryClient", salaryRate);
+        ReflectionTestUtils.setField(checkValueService, "baseRate", baseRate);
+        ReflectionTestUtils.setField(checkValueService, "insuranceRate", insuranceRate);
+        ReflectionTestUtils.setField(checkValueService, "rateSalaryClient", salaryRate);
 
         salaryAndInsuranceOffer = StubGenerator.createLoanOffer(
                 baseAmount,

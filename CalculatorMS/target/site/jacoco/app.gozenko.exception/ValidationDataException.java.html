@@ -4,13 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class ValidationDataException extends RuntimeException {
-    private final String field;
-    private final String message;
-
-    public ValidationDataException(String field, String message) {
-<span class="fc" id="L11">        super(message);</span>
-<span class="fc" id="L12">        this.field = field;</span>
-<span class="fc" id="L13">        this.message = message;</span>
-<span class="fc" id="L14">    }</span>
+    public ValidationDataException(String message) {
+<span class="fc" id="L8">        super(message);</span>
+<span class="fc" id="L9">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

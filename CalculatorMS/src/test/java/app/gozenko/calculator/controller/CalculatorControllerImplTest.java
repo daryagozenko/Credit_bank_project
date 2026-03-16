@@ -169,7 +169,7 @@ class CalculatorControllerImplTest {
 
         assertAll("Проверка успешного расчета кредита",
                 () -> assertNotNull(response),
-                () -> assertEquals(HttpStatus.ACCEPTED, response.getStatusCode()),
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
                 () -> assertNotNull(response.getBody()),
                 () -> assertTrue(response.getBody() instanceof CreditDto)
         );
@@ -266,7 +266,7 @@ class CalculatorControllerImplTest {
             ResponseEntity<?> response = calculatorController.validateAndCalc(request);
 
             assertNotNull(response);
-            assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+            assertEquals(HttpStatus.OK, response.getStatusCode());
 
             verify(preScoringService).preScoringScoreData(request);
             verify(scoringService).createScoringData(request);
@@ -285,6 +285,6 @@ class CalculatorControllerImplTest {
 
         ResponseEntity<?> response = calculatorController.validateAndCalc(validScoringData);
 
-        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }

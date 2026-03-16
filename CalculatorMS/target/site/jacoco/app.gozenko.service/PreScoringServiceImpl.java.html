@@ -4,8 +4,9 @@ import app.gozenko.dto.LoanStatementRequestDto;
 
 import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.exception.ValidationDataException;
-import app.gozenko.interfaces.PreScoringService;
+import app.gozenko.service.interfaces.PreScoringService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -13,9 +14,10 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+<span class="fc" id="L17">@Slf4j</span>
 @Service
 @Validated
-<span class="fc" id="L18">public class PreScoringServiceImpl implements PreScoringService {</span>
+<span class="fc" id="L20">public class PreScoringServiceImpl implements PreScoringService {</span>
 
     @Value(&quot;${app.gozenko.legal-age}&quot;)
     private Integer legalAge;
@@ -23,25 +25,29 @@ import java.time.format.DateTimeParseException;
 
     @Override
     public void preScoringLoan(@Valid LoanStatementRequestDto request){
-<span class="fc bfc" id="L26" title="All 2 branches covered.">        if(!(checkLegalAge(request.getBirthday())))</span>
-<span class="fc" id="L27">            throw new ValidationDataException(&quot;birthday&quot;, &quot;Возраст должен быть больше &quot;+legalAge);</span>
-<span class="fc" id="L28">    }</span>
+<span class="fc" id="L28">        log.debug(&quot;LoanStatement request: {}&quot;,request);</span>
+
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        if(!(checkLegalAge(request.getBirthday())))</span>
+<span class="fc" id="L31">            throw new ValidationDataException(&quot;Возраст должен быть больше &quot;+legalAge);</span>
+<span class="fc" id="L32">    }</span>
 
     @Override
-    public void preScoringScoreData(@Valid ScoringDataDto request){
-<span class="fc bfc" id="L32" title="All 2 branches covered.">        if(!(checkLegalAge(request.getBirthday())))</span>
-<span class="fc" id="L33">            throw new ValidationDataException(&quot;birthday&quot;, &quot;Возраст должен быть больше &quot;+legalAge);</span>
+    public void preScoringScoreData(ScoringDataDto request){
+<span class="fc" id="L36">        log.debug(&quot;ScoringData request: {}&quot;,request);</span>
 
-<span class="fc" id="L35">    }</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if(!(checkLegalAge(request.getBirthday())))</span>
+<span class="fc" id="L39">            throw new ValidationDataException(&quot;Возраст должен быть больше &quot;+legalAge);</span>
+
+<span class="fc" id="L41">    }</span>
 
     private boolean checkLegalAge(LocalDate birthday){
         try{
-<span class="fc" id="L39">            LocalDate today = LocalDate.now();</span>
-
-<span class="fc" id="L41">            LocalDate yearsAgo = today.minusYears(legalAge);</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">            return !birthday.isAfter(yearsAgo);</span>
-<span class="nc" id="L43">        } catch (DateTimeParseException e) {</span>
-<span class="nc" id="L44">            throw new RuntimeException(e+&quot; Некорректная дата&quot;);</span>
+<span class="fc" id="L45">            LocalDate today = LocalDate.now();</span>
+<span class="fc" id="L46">            log.debug(&quot;legalAge = {}&quot;,legalAge);</span>
+<span class="fc" id="L47">            LocalDate yearsAgo = today.minusYears(legalAge);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">            return !birthday.isAfter(yearsAgo);</span>
+<span class="nc" id="L49">        } catch (DateTimeParseException e) {</span>
+<span class="nc" id="L50">            throw new RuntimeException(e+&quot; Некорректная дата&quot;);</span>
         }
     }
 }

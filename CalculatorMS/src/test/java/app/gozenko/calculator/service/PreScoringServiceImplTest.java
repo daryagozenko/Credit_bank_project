@@ -122,35 +122,24 @@ class PreScoringServiceImplTest {
         assertTrue(exception.getMessage().contains(String.valueOf(legalAge)));
     }
 
-    @Test
-    @DisplayName("Проверка с разными значениями legalAge через рефлексию")
-    void preScoringLoan_DifferentLegalAges() {
-        int[] legalAges = {16, 18, 21, 25};
+    @ParameterizedTest
+    @MethodSource("provideLegalAgeScenarios")
+    @DisplayName("Проверка валидации возраста с разными значениями legalAge")
+    void preScoringLoan_DifferentLegalAges(int legalAgeValue, int yearsToSubtract, boolean shouldThrow) {
+        ReflectionTestUtils.setField(preScoringService, "legalAge", legalAgeValue);
 
-        for (int age : legalAges) {
-            ReflectionTestUtils.setField(preScoringService, "legalAge", age);
+        LocalDate birthday = LocalDate.now().minusYears(yearsToSubtract);
+        LoanStatementRequestDto request = createLoanStatementRequestWithBirthday(birthday);
 
-            LocalDate birthday = LocalDate.now().minusYears(age);
-            LoanStatementRequestDto request = createLoanStatementRequestWithBirthday(birthday);
-
-            LoanStatementRequestDto finalRequest1 = request;
-            assertDoesNotThrow(() -> preScoringService.preScoringLoan(finalRequest1),
-                    "Должно проходить для возраста " + age);
-
-            birthday = LocalDate.now().minusYears(age).plusDays(1);
-            request = createLoanStatementRequestWithBirthday(birthday);
-
-            LoanStatementRequestDto finalRequest = request;
+        if (shouldThrow) {
             ValidationDataException exception = assertThrows(
                     ValidationDataException.class,
-                    () -> preScoringService.preScoringLoan(finalRequest),
-                    "Должно выбрасывать исключение для возраста меньше " + age
+                    () -> preScoringService.preScoringLoan(request)
             );
-
-            assertTrue(exception.getMessage().contains(String.valueOf(age)));
+            assertTrue(exception.getMessage().contains(String.valueOf(legalAgeValue)));
+        } else {
+            assertDoesNotThrow(() -> preScoringService.preScoringLoan(request));
         }
-
-        ReflectionTestUtils.setField(preScoringService, "legalAge", legalAge);
     }
 
     @Test
@@ -187,6 +176,16 @@ class PreScoringServiceImplTest {
                 .build();
 
         assertThrows(Exception.class, () -> preScoringService.preScoringScoreData(invalidRequest));
+    }
+
+    private static Stream<Arguments> provideLegalAgeScenarios() {
+        return Stream.of(
+                Arguments.of(18, 18, false),
+                Arguments.of(18, 17, true),
+                Arguments.of(18, 19, false),
+                Arguments.of(25, 25, false),
+                Arguments.of(16, 16, false)
+        );
     }
 
     private static Stream<Arguments> provideInvalidAgesForLoanStatement() {

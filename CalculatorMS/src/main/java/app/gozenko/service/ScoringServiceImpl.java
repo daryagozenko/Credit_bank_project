@@ -93,7 +93,7 @@ public class ScoringServiceImpl implements ScoringService {
                 String.format("Общий стаж работы менее %d месяцев", REQUIRED_COMMON_WORK_EXPERIENCE));
         int workExpCurr = request.getEmployment().getWorkExperienceCurrent();
         if (workExpCurr < REQUIRED_TOTAL_WORK_EXPERIENCE) return Optional.of(
-                String.format("Текцщий стаж работы менее %d месяцев", REQUIRED_TOTAL_WORK_EXPERIENCE));
+                String.format("Текущий стаж работы менее %d месяцев", REQUIRED_TOTAL_WORK_EXPERIENCE));
 
         return null;
     }
