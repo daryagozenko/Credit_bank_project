@@ -1,4 +1,4 @@
-package app.gozenko.interfaces;
+package app.gozenko.service.interfaces;
 
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;

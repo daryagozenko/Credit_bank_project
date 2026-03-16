@@ -8,7 +8,7 @@ import app.gozenko.enums.Gender;
 import app.gozenko.enums.MaritalStatus;
 import app.gozenko.enums.Position;
 import app.gozenko.exception.UnScoringDataException;
-import app.gozenko.interfaces.ScoringService;
+import app.gozenko.service.interfaces.ScoringService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

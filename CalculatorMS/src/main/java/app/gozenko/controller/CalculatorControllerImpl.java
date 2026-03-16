@@ -1,11 +1,12 @@
 package app.gozenko.controller;
 
+import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
-import app.gozenko.interfaces.CalculatorController;
-import app.gozenko.interfaces.LoanOfferService;
-import app.gozenko.interfaces.PreScoringService;
-import app.gozenko.interfaces.ScoringService;
+import app.gozenko.controller.interfaces.CalculatorController;
+import app.gozenko.service.interfaces.LoanOfferService;
+import app.gozenko.service.interfaces.PreScoringService;
+import app.gozenko.service.interfaces.ScoringService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class CalculatorControllerImpl implements CalculatorController {
     @PostMapping("/offers")
     @Operation(summary = "создание кредитной заявки")
     @Override
-    public ResponseEntity<List<?>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState){
+    public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState){
         preScoringService.preScoringLoan(loanState);
         return ResponseEntity.ok(loanOfferService.createLoanOffers(
                 loanState.getAmount(),

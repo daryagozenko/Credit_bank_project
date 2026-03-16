@@ -1,14 +1,13 @@
 package app.gozenko.service;
 
 import app.gozenko.dto.LoanOfferDto;
-import app.gozenko.interfaces.LoanOfferService;
+import app.gozenko.service.interfaces.LoanOfferService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,4 @@ public class LoanOfferServiceImpl implements LoanOfferService {
         log.info(result.toString());
         return result;
     }
-
-
-
 }

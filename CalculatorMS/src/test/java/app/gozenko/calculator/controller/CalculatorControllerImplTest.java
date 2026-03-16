@@ -7,9 +7,9 @@ import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.dto.CreditDto;
 import app.gozenko.exception.ValidationDataException;
-import app.gozenko.interfaces.LoanOfferService;
-import app.gozenko.interfaces.PreScoringService;
-import app.gozenko.interfaces.ScoringService;
+import app.gozenko.service.interfaces.LoanOfferService;
+import app.gozenko.service.interfaces.PreScoringService;
+import app.gozenko.service.interfaces.ScoringService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -91,14 +91,13 @@ class CalculatorControllerImplTest {
                 .when(loanOfferService)
                 .createLoanOffers(any(BigDecimal.class), any(Integer.class));
 
-        ResponseEntity<List<?>> response = calculatorController.calcConditionOfCredit(validLoanStatement);
+        ResponseEntity<List<LoanOfferDto>> response = calculatorController.calcConditionOfCredit(validLoanStatement);
 
         assertAll("Проверка успешного ответа",
                 () -> assertNotNull(response),
                 () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
                 () -> assertNotNull(response.getBody()),
-                () -> assertEquals(4, response.getBody().size()),
-                () -> assertTrue(response.getBody().get(0) instanceof LoanOfferDto)
+                () -> assertEquals(4, response.getBody().size())
         );
 
         verify(preScoringService).preScoringLoan(validLoanStatement);
@@ -127,7 +126,7 @@ class CalculatorControllerImplTest {
                 .when(loanOfferService)
                 .createLoanOffers(any(BigDecimal.class), any(Integer.class));
 
-        ResponseEntity<List<?>> response = calculatorController.calcConditionOfCredit(validLoanStatement);
+        ResponseEntity<List<LoanOfferDto>> response = calculatorController.calcConditionOfCredit(validLoanStatement);
 
         List<?> offers = response.getBody();
         assertNotNull(offers);
@@ -239,7 +238,7 @@ class CalculatorControllerImplTest {
                     .when(loanOfferService)
                     .createLoanOffers(any(BigDecimal.class), any(Integer.class));
 
-            ResponseEntity<List<?>> response = calculatorController.calcConditionOfCredit(request);
+            ResponseEntity<List<LoanOfferDto>> response = calculatorController.calcConditionOfCredit(request);
 
             assertNotNull(response);
             assertEquals(HttpStatus.OK, response.getStatusCode());

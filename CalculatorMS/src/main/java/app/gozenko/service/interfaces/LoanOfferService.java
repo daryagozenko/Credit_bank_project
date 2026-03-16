@@ -1,4 +1,4 @@
-package app.gozenko.interfaces;
+package app.gozenko.service.interfaces;
 
 import app.gozenko.dto.LoanOfferDto;
 
@@ -6,5 +6,5 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface LoanOfferService {
-    List<?> createLoanOffers(BigDecimal amount, Integer term);
+    List<LoanOfferDto> createLoanOffers(BigDecimal amount, Integer term);
 }

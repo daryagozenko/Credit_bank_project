@@ -4,7 +4,7 @@ import app.gozenko.dto.LoanStatementRequestDto;
 
 import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.exception.ValidationDataException;
-import app.gozenko.interfaces.PreScoringService;
+import app.gozenko.service.interfaces.PreScoringService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
