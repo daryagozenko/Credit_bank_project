@@ -50,10 +50,10 @@ public class ExceptionValidationHandler {
     }
 
     @ExceptionHandler(UnScoringDataException.class)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> scoringException(UnScoringDataException ex){
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 .body("Отказ: по причине "+ex.getMessage());
     }
 

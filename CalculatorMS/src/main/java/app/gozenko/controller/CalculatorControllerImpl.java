@@ -40,9 +40,10 @@ public class CalculatorControllerImpl implements CalculatorController {
         log.info("Sending a LoanStatementRequest to preScoringService");
         preScoringService.preScoringLoan(loanState);
         log.info("Successful create list of loanOffers");
-        return ResponseEntity.ok(loanOfferService.createLoanOffers(
-                loanState.getAmount(),
-                loanState.getTerm()));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(loanOfferService.createLoanOffers(
+                        loanState.getAmount(),
+                        loanState.getTerm()));
     }
 
     @PostMapping("/calc")
@@ -52,7 +53,7 @@ public class CalculatorControllerImpl implements CalculatorController {
         log.info("Sending a ScoringData to preScoringService");
         preScoringService.preScoringScoreData(scoringData);
         log.info("Successful create credit offer");
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(scoringService.createScoringData(scoringData));
     }
 }
