@@ -66,7 +66,7 @@ public class ScoringServiceImpl implements ScoringService {
 
 
     private String hasConstraint(ScoringDataDto request) {
-        if (request.getEmployment().getEmploymentStatus().equals(EmploymentStatus.NOT_WORK))
+        if (request.getEmployment().getEmploymentStatus().equals(EmploymentStatus.UNEMPLOYED))
             return "Безработный";
         if (request.getAmount().compareTo(request.getEmployment().getSalary().multiply(BigDecimal.valueOf(24))) > 0)
             return "Сумма займа больше, чем 24 зарплаты";

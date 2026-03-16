@@ -46,7 +46,7 @@ public class ExceptionValidationHandler {
     public ResponseEntity<String> legalAgeException(ValidationDataException ex){
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ex.getField()+": "+ex.getMessage());
+                .body("Ошибка: "+ex.getMessage());
     }
 
     @ExceptionHandler(UnScoringDataException.class)
@@ -54,7 +54,7 @@ public class ExceptionValidationHandler {
     public ResponseEntity<String> scoringException(UnScoringDataException ex){
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Отказ: по причине "+ex.getMessage());
+                .body("Отказ по причине: "+ex.getMessage());
     }
 
     private String extractFieldName(String propertyPath) {

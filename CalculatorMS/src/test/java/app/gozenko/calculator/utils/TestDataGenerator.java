@@ -11,7 +11,7 @@ public class TestDataGenerator {
 
     public static EmploymentDto createValidEmployment() {
         return EmploymentDto.builder()
-                .employmentStatus(EmploymentStatus.WORK)
+                .employmentStatus(EmploymentStatus.EMPLOYED)
                 .salary(new BigDecimal("100000"))
                 .position(Position.WORKER)
                 .workExperienceTotal(60)

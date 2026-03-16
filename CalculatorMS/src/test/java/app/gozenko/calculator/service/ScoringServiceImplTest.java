@@ -145,42 +145,42 @@ class ScoringServiceImplTest {
     private static Stream<Arguments> provideValidationScenarios() {
         return Stream.of(
                 Arguments.of(
-                        EmploymentStatus.NOT_WORK,
+                        EmploymentStatus.UNEMPLOYED,
                         new BigDecimal("1000000"),
                         new BigDecimal("100000"),
                         30, 60, 24,
                         "Безработный"
                 ),
                 Arguments.of(
-                        EmploymentStatus.WORK,
+                        EmploymentStatus.EMPLOYED,
                         new BigDecimal("2500000"),
                         new BigDecimal("100000"),
                         30, 60, 24,
                         "Сумма займа больше, чем 24 зарплаты"
                 ),
                 Arguments.of(
-                        EmploymentStatus.WORK,
+                        EmploymentStatus.EMPLOYED,
                         new BigDecimal("1000000"),
                         new BigDecimal("100000"),
                         19, 60, 24,
                         "Моложе 20"
                 ),
                 Arguments.of(
-                        EmploymentStatus.WORK,
+                        EmploymentStatus.EMPLOYED,
                         new BigDecimal("1000000"),
                         new BigDecimal("100000"),
                         66, 60, 24,
                         "Старше 65"
                 ),
                 Arguments.of(
-                        EmploymentStatus.WORK,
+                        EmploymentStatus.EMPLOYED,
                         new BigDecimal("1000000"),
                         new BigDecimal("100000"),
                         30, 6, 24,
                         "Общий стаж работы менее 12 месяцев"
                 ),
                 Arguments.of(
-                        EmploymentStatus.WORK,
+                        EmploymentStatus.EMPLOYED,
                         new BigDecimal("1000000"),
                         new BigDecimal("100000"),
                         30, 60, 2,
@@ -203,7 +203,7 @@ class ScoringServiceImplTest {
             BigDecimal expectedRate) {
 
         EmploymentDto employment = TestDataGenerator.createEmploymentWithParams(
-                EmploymentStatus.WORK,
+                EmploymentStatus.EMPLOYED,
                 new BigDecimal("100000"),
                 position,
                 60,

@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 public class EmploymentDto {
 
     @NotNull
-    @Schema(description = "Статус занятости", example = "WORK")
+    @Schema(description = "Статус занятости", example = "EMPLOYED")
     private EmploymentStatus employmentStatus;
 
     @NotNull
