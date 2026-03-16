@@ -6,6 +6,7 @@ import app.gozenko.enums.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class TestDataGenerator {
 
@@ -95,7 +96,8 @@ public class TestDataGenerator {
             BigDecimal rate,
             boolean isInsuranceEnabled,
             boolean isSalaryClient) {
-        return LoanOfferDto.builderWithNewId()
+        return LoanOfferDto.builder()
+                .statementId(UUID.randomUUID())
                 .requestedAmount(requestedAmount)
                 .totalAmount(totalAmount)
                 .term(term)
@@ -113,7 +115,8 @@ public class TestDataGenerator {
             BigDecimal rate,
             boolean isInsuranceEnabled,
             boolean isSalaryClient) {
-        return LoanOfferDto.builderWithNewId()
+        return LoanOfferDto.builder()
+                .statementId(UUID.randomUUID())
                 .requestedAmount(amount)
                 .totalAmount(amount)
                 .term(term)
