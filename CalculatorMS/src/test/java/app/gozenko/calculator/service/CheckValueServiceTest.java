@@ -54,7 +54,7 @@ class CheckValueServiceTest {
     }
 
     @Test
-    @DisplayName("Проверка salaryAndInsuranceClient - со страховкой и зарплатным клиентом")
+    @DisplayName("Проверка createSalaryAndInsuranceLoanOffer - со страховкой и зарплатным клиентом")
     void salaryAndInsuranceClient_Success() {
         BigDecimal expectedRate = baseRate.subtract(insuranceRate).subtract(salaryRate);
         BigDecimal insurancePrice = amount.multiply(insuranceRate.divide(BigDecimal.valueOf(100)));
@@ -63,7 +63,7 @@ class CheckValueServiceTest {
         when(calcCreditValueService.calcMonthlyPayment(expectedRate, expectedTotalAmount, term))
                 .thenReturn(expectedMonthlyPayment);
 
-        LoanOfferDto result = checkValueService.salaryAndInsuranceClient(amount, term);
+        LoanOfferDto result = checkValueService.createSalaryAndInsuranceLoanOffer(amount, term);
 
         LoanOfferDto expected = StubGenerator.createLoanOfferWithTotal(
                 amount,
@@ -75,7 +75,7 @@ class CheckValueServiceTest {
                 true
         );
 
-        assertAll("Проверка salaryAndInsuranceClient",
+        assertAll("Проверка createSalaryAndInsuranceLoanOffer",
                 () -> assertNotNull(result),
                 () -> assertNotNull(result.getStatementId()),
                 () -> assertEquals(expected.getRequestedAmount(), result.getRequestedAmount()),
@@ -89,14 +89,14 @@ class CheckValueServiceTest {
     }
 
     @Test
-    @DisplayName("Проверка salaryClient - только зарплатный клиент")
+    @DisplayName("Проверка createSalaryLoanOffer - только зарплатный клиент")
     void salaryClient_Success() {
         BigDecimal expectedRate = baseRate.subtract(salaryRate);
 
         when(calcCreditValueService.calcMonthlyPayment(expectedRate, amount, term))
                 .thenReturn(expectedMonthlyPayment);
 
-        LoanOfferDto result = checkValueService.salaryClient(amount, term);
+        LoanOfferDto result = checkValueService.createSalaryLoanOffer(amount, term);
 
         LoanOfferDto expected = StubGenerator.createLoanOffer(
                 amount,
@@ -107,7 +107,7 @@ class CheckValueServiceTest {
                 true
         );
 
-        assertAll("Проверка salaryClient",
+        assertAll("Проверка createSalaryLoanOffer",
                 () -> assertNotNull(result),
                 () -> assertNotNull(result.getStatementId()),
                 () -> assertEquals(expected.getRequestedAmount(), result.getRequestedAmount()),
@@ -121,7 +121,7 @@ class CheckValueServiceTest {
     }
 
     @Test
-    @DisplayName("Проверка insuranceClient - только со страховкой")
+    @DisplayName("Проверка createInsuranceLoanOffer - только со страховкой")
     void insuranceClient_Success() {
         BigDecimal expectedRate = baseRate.subtract(insuranceRate);
         BigDecimal insurancePrice = amount.multiply(
@@ -131,7 +131,7 @@ class CheckValueServiceTest {
         when(calcCreditValueService.calcMonthlyPayment(expectedRate, expectedTotalAmount, term))
                 .thenReturn(expectedMonthlyPayment);
 
-        LoanOfferDto result = checkValueService.insuranceClient(amount, term);
+        LoanOfferDto result = checkValueService.createInsuranceLoanOffer(amount, term);
 
         LoanOfferDto expected = StubGenerator.createLoanOfferWithTotal(
                 amount,
@@ -143,7 +143,7 @@ class CheckValueServiceTest {
                 false
         );
 
-        assertAll("Проверка insuranceClient",
+        assertAll("Проверка createInsuranceLoanOffer",
                 () -> assertNotNull(result),
                 () -> assertNotNull(result.getStatementId()),
                 () -> assertEquals(expected.getRequestedAmount(), result.getRequestedAmount()),
@@ -157,12 +157,12 @@ class CheckValueServiceTest {
     }
 
     @Test
-    @DisplayName("Проверка noneSalaryAndInsuranceClient - без страховки и без зарплаты")
+    @DisplayName("Проверка createDefaultLoanOffer - без страховки и без зарплаты")
     void noneSalaryAndInsuranceClient_Success() {
         when(calcCreditValueService.calcMonthlyPayment(baseRate, amount, term))
                 .thenReturn(expectedMonthlyPayment);
 
-        LoanOfferDto result = checkValueService.noneSalaryAndInsuranceClient(amount, term);
+        LoanOfferDto result = checkValueService.createDefaultLoanOffer(amount, term);
 
         LoanOfferDto expected = StubGenerator.createLoanOffer(
                 amount,
@@ -173,7 +173,7 @@ class CheckValueServiceTest {
                 false
         );
 
-        assertAll("Проверка noneSalaryAndInsuranceClient",
+        assertAll("Проверка createDefaultLoanOffer",
                 () -> assertNotNull(result),
                 () -> assertNotNull(result.getStatementId()),
                 () -> assertEquals(expected.getRequestedAmount(), result.getRequestedAmount()),
@@ -188,7 +188,7 @@ class CheckValueServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideAmountAndTermScenarios")
-    @DisplayName("Проверка salaryAndInsuranceClient с разными суммами и сроками")
+    @DisplayName("Проверка createSalaryAndInsuranceLoanOffer с разными суммами и сроками")
     void salaryAndInsuranceClient_DifferentAmountsAndTerms(
             BigDecimal amount,
             Integer term,
@@ -200,7 +200,7 @@ class CheckValueServiceTest {
         when(calcCreditValueService.calcMonthlyPayment(expectedRate, expectedTotalAmount, term))
                 .thenReturn(monthlyPayment);
 
-        LoanOfferDto result = checkValueService.salaryAndInsuranceClient(amount, term);
+        LoanOfferDto result = checkValueService.createSalaryAndInsuranceLoanOffer(amount, term);
 
         LoanOfferDto expected = StubGenerator.createLoanOfferWithTotal(
                 amount,
@@ -239,7 +239,7 @@ class CheckValueServiceTest {
     }
 
     @Test
-    @DisplayName("Проверка расчета страховки в insuranceClient с RoundingMode.FLOOR")
+    @DisplayName("Проверка расчета страховки в createInsuranceLoanOffer с RoundingMode.FLOOR")
     void insuranceClient_InsuranceCalculationWithFloor() {
         amount = new BigDecimal("100000.55");
         BigDecimal expectedInsurancePrice = amount.multiply(
@@ -250,7 +250,7 @@ class CheckValueServiceTest {
         when(calcCreditValueService.calcMonthlyPayment(expectedRate, expectedTotalAmount, term))
                 .thenReturn(expectedMonthlyPayment);
 
-        LoanOfferDto result = checkValueService.insuranceClient(amount, term);
+        LoanOfferDto result = checkValueService.createInsuranceLoanOffer(amount, term);
 
         LoanOfferDto expected = StubGenerator.createLoanOfferWithTotal(
                 amount,
@@ -273,7 +273,7 @@ class CheckValueServiceTest {
         when(calcCreditValueService.calcMonthlyPayment(baseRate, amount, term))
                 .thenReturn(BigDecimal.ZERO);
 
-        LoanOfferDto result = checkValueService.noneSalaryAndInsuranceClient(amount, term);
+        LoanOfferDto result = checkValueService.createDefaultLoanOffer(amount, term);
 
         LoanOfferDto expected = StubGenerator.createLoanOffer(
                 amount,

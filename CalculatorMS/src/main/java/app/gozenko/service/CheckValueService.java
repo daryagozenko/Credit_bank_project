@@ -27,61 +27,61 @@ public class CheckValueService {
     private BigDecimal rateSalaryClient;
 
 
-    public LoanOfferDto salaryAndInsuranceClient(BigDecimal amount, Integer term) {
+    public LoanOfferDto createSalaryAndInsuranceLoanOffer(BigDecimal amount, Integer term) {
         BigDecimal currentCreditRate = baseRate
                 .subtract(insuranceRate)
                 .subtract(rateSalaryClient);
-        log.debug("salaryAndInsuranceClient: currentCreditRate-{}", currentCreditRate);
+        log.debug("createSalaryAndInsuranceLoanOffer: currentCreditRate-{}", currentCreditRate);
 
         BigDecimal priceOfInsurance = amount.multiply(
-                insuranceRate.divide(BASE_PERCENT));
-        log.debug("salaryAndInsuranceClient: priceOfInsurance-{}", priceOfInsurance);
+                insuranceRate.divide(BASE_PERCENT, RoundingMode.FLOOR));
+        log.debug("createSalaryAndInsuranceLoanOffer: priceOfInsurance-{}", priceOfInsurance);
 
         BigDecimal totalAmount = amount.add(priceOfInsurance);
-        log.debug("salaryAndInsuranceClient: totalAmount-{}", totalAmount);
+        log.debug("createSalaryAndInsuranceLoanOffer: totalAmount-{}", totalAmount);
 
         BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(currentCreditRate, totalAmount, term);
-        log.info("Result in salaryAndInsuranceClient: monthlyPayment-{}", monthlyPayment);
+        log.info("Result in createSalaryAndInsuranceLoanOffer: monthlyPayment-{}", monthlyPayment);
 
         return buildNewLoanOfferDto(amount, totalAmount, term, monthlyPayment,
                 currentCreditRate, true, true);
     }
 
-    public LoanOfferDto salaryClient(BigDecimal amount, Integer term) {
+    public LoanOfferDto createSalaryLoanOffer(BigDecimal amount, Integer term) {
         BigDecimal currentCreditRate = baseRate
                 .subtract(rateSalaryClient);
-        log.debug("salaryClient: currentCreditRate-{}", currentCreditRate);
+        log.debug("createSalaryLoanOffer: currentCreditRate-{}", currentCreditRate);
 
         BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(currentCreditRate, amount, term);
-        log.info("Result in salaryClient: monthlyPayment-{}", monthlyPayment);
+        log.info("Result in createSalaryLoanOffer: monthlyPayment-{}", monthlyPayment);
 
         return buildNewLoanOfferDto(amount, amount, term, monthlyPayment,
                 currentCreditRate, false, true);
     }
 
-    public LoanOfferDto insuranceClient(BigDecimal amount, Integer term) {
+    public LoanOfferDto createInsuranceLoanOffer(BigDecimal amount, Integer term) {
         BigDecimal currentCreditRate = baseRate
                 .subtract(insuranceRate);
-        log.debug("insuranceClient: currentCreditRate-{}", currentCreditRate);
+        log.debug("createInsuranceLoanOffer: currentCreditRate-{}", currentCreditRate);
 
         BigDecimal priceOfInsurance = amount.multiply(
                 insuranceRate.divide(BASE_PERCENT, RoundingMode.FLOOR));
-        log.debug("insuranceClient: priceOfInsurance-{}", priceOfInsurance);
+        log.debug("createInsuranceLoanOffer: priceOfInsurance-{}", priceOfInsurance);
 
         BigDecimal totalAmount = amount.add(priceOfInsurance);
-        log.debug("insuranceClient: totalAmount-{}", totalAmount);
+        log.debug("createInsuranceLoanOffer: totalAmount-{}", totalAmount);
 
         BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(currentCreditRate, totalAmount, term);
-        log.info("Result in insuranceClient: monthlyPayment-{}", monthlyPayment);
+        log.info("Result in createInsuranceLoanOffer: monthlyPayment-{}", monthlyPayment);
 
         return buildNewLoanOfferDto(amount, totalAmount, term, monthlyPayment,
                 currentCreditRate, true, false);
     }
 
-    public LoanOfferDto noneSalaryAndInsuranceClient(BigDecimal amount, Integer term) {
+    public LoanOfferDto createDefaultLoanOffer(BigDecimal amount, Integer term) {
 
         BigDecimal monthlyPayment = calcCreditValueService.calcMonthlyPayment(baseRate, amount, term);
-        log.info("Result in noneSalaryAndInsuranceClient: monthlyPayment-{}", monthlyPayment);
+        log.info("Result in createDefaultLoanOffer: monthlyPayment-{}", monthlyPayment);
 
         return buildNewLoanOfferDto(amount, amount, term, monthlyPayment,
                 baseRate, false, false);

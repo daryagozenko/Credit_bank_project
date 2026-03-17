@@ -23,10 +23,10 @@ public class LoanOfferServiceImpl implements LoanOfferService {
 
         log.debug("Transferred: amount-{}, term-{}", amount, term);
 
-        result.add(checkValueService.salaryAndInsuranceClient(amount, term));
-        result.add(checkValueService.insuranceClient(amount, term));
-        result.add(checkValueService.salaryClient(amount, term));
-        result.add(checkValueService.noneSalaryAndInsuranceClient(amount, term));
+        result.add(checkValueService.createSalaryAndInsuranceLoanOffer(amount, term));
+        result.add(checkValueService.createInsuranceLoanOffer(amount, term));
+        result.add(checkValueService.createSalaryLoanOffer(amount, term));
+        result.add(checkValueService.createDefaultLoanOffer(amount, term));
 
         log.info("List of loan offers: {}", result);
         return result;

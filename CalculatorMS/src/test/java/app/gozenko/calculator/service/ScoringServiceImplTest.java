@@ -78,7 +78,7 @@ class ScoringServiceImplTest {
     @Test
     @DisplayName("Успешный расчет кредита для хорошего клиента")
     void createScoringData_Success() {
-        when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryAndInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(baseLoanOffer);
 
         when(calcCreditValueService.mainCounting(any(ScoringDataDto.class), any(BigDecimal.class)))
@@ -236,16 +236,16 @@ class ScoringServiceImplTest {
         );
 
         if (isInsuranceEnabled && isSalaryClient) {
-            when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+            when(checkValueService.createSalaryAndInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                     .thenReturn(loanOffer);
         } else if (isInsuranceEnabled) {
-            when(checkValueService.insuranceClient(any(BigDecimal.class), any(Integer.class)))
+            when(checkValueService.createInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                     .thenReturn(loanOffer);
         } else if (isSalaryClient) {
-            when(checkValueService.salaryClient(any(BigDecimal.class), any(Integer.class)))
+            when(checkValueService.createSalaryLoanOffer(any(BigDecimal.class), any(Integer.class)))
                     .thenReturn(loanOffer);
         } else {
-            when(checkValueService.noneSalaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+            when(checkValueService.createDefaultLoanOffer(any(BigDecimal.class), any(Integer.class)))
                     .thenReturn(loanOffer);
         }
 
@@ -256,7 +256,7 @@ class ScoringServiceImplTest {
 
         assertNotNull(result);
         assertEquals(expectedRate, result.getRate(),
-                String.format("Для параметров: position=%s, marital=%s, gender=%s, age=%d, dependents=%d, insuranceClient=%s, salaryClient=%s",
+                String.format("Для параметров: position=%s, marital=%s, gender=%s, age=%d, dependents=%d, createInsuranceLoanOffer=%s, createSalaryLoanOffer=%s",
                         position, maritalStatus, gender, age, dependentAmount, isInsuranceEnabled, isSalaryClient));
     }
 

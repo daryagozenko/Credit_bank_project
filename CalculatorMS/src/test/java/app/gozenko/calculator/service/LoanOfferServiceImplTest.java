@@ -98,13 +98,13 @@ class LoanOfferServiceImplTest {
     @Test
     @DisplayName("Успешное создание списка кредитных предложений")
     void createLoanOffers_Success() {
-        when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryAndInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryAndInsuranceOffer);
-        when(checkValueService.insuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(insuranceOffer);
-        when(checkValueService.salaryClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryOffer);
-        when(checkValueService.noneSalaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createDefaultLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(noneOffer);
 
         List<LoanOfferDto> result = loanOfferService.createLoanOffers(baseAmount, baseTerm);
@@ -158,13 +158,13 @@ class LoanOfferServiceImplTest {
     @Test
     @DisplayName("Проверка порядка предложений в списке")
     void createLoanOffers_OrderCheck() {
-        when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryAndInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryAndInsuranceOffer);
-        when(checkValueService.insuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(insuranceOffer);
-        when(checkValueService.salaryClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryOffer);
-        when(checkValueService.noneSalaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createDefaultLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(noneOffer);
 
         List<LoanOfferDto> result = loanOfferService.createLoanOffers(baseAmount, baseTerm);
@@ -199,13 +199,13 @@ class LoanOfferServiceImplTest {
                 amount, term, new BigDecimal("50000.00"), expectedRateNone, false, false
         );
 
-        when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryAndInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryAndInsuranceOffer);
-        when(checkValueService.insuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(insuranceOffer);
-        when(checkValueService.salaryClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryOffer);
-        when(checkValueService.noneSalaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createDefaultLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(noneOffer);
 
         List<LoanOfferDto> result = loanOfferService.createLoanOffers(amount, term);
@@ -268,13 +268,13 @@ class LoanOfferServiceImplTest {
                 false
         );
 
-        when(checkValueService.insuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(insuranceOfferWithTotal);
-        when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryAndInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryAndInsuranceOffer);
-        when(checkValueService.salaryClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryOffer);
-        when(checkValueService.noneSalaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createDefaultLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(noneOffer);
 
         List<LoanOfferDto> result = loanOfferService.createLoanOffers(baseAmount, baseTerm);
@@ -290,13 +290,13 @@ class LoanOfferServiceImplTest {
     @Test
     @DisplayName("Проверка уникальности statementId для каждого предложения")
     void createLoanOffers_AllOffersHaveUniqueStatementId() {
-        when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryAndInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryAndInsuranceOffer);
-        when(checkValueService.insuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(insuranceOffer);
-        when(checkValueService.salaryClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(salaryOffer);
-        when(checkValueService.noneSalaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createDefaultLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(noneOffer);
 
         List<LoanOfferDto> result = loanOfferService.createLoanOffers(baseAmount, baseTerm);
@@ -316,13 +316,13 @@ class LoanOfferServiceImplTest {
                 zeroAmount, baseTerm, BigDecimal.ZERO, baseRate, false, false
         );
 
-        when(checkValueService.noneSalaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createDefaultLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(zeroOffer);
-        when(checkValueService.salaryAndInsuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryAndInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(zeroOffer);
-        when(checkValueService.insuranceClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createInsuranceLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(zeroOffer);
-        when(checkValueService.salaryClient(any(BigDecimal.class), any(Integer.class)))
+        when(checkValueService.createSalaryLoanOffer(any(BigDecimal.class), any(Integer.class)))
                 .thenReturn(zeroOffer);
 
         List<LoanOfferDto> result = loanOfferService.createLoanOffers(zeroAmount, baseTerm);

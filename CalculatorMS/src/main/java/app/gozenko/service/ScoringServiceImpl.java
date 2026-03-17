@@ -57,7 +57,7 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public CreditDto createScoringData(ScoringDataDto request) {
         Optional<String> message = checkConstraint(request);
-        if (message != null && message.isPresent()) {
+        if (message.isPresent()) {
             throw new UnScoringDataException(message.get());
         }
         initialValues(request);
@@ -86,7 +86,7 @@ public class ScoringServiceImpl implements ScoringService {
         if (workExpCurr < REQUIRED_TOTAL_WORK_EXPERIENCE) return Optional.of(
                 String.format("Текущий стаж работы менее %d месяцев", REQUIRED_TOTAL_WORK_EXPERIENCE));
 
-        return null;
+        return Optional.empty();
     }
 
     //тут основная логика прескоринга
@@ -135,16 +135,16 @@ public class ScoringServiceImpl implements ScoringService {
         log.info("Beginning amount={} and term={}", amount, term);
 
         if (request.getIsSalaryClient() && request.getIsInsuranceEnabled()) {
-            rate = checkValueService.salaryAndInsuranceClient(amount, term).getRate();
+            rate = checkValueService.createSalaryAndInsuranceLoanOffer(amount, term).getRate();
             log.debug("rate with salary client and insurance={}", rate);
         } else if (request.getIsInsuranceEnabled()) {
-            rate = checkValueService.insuranceClient(amount, term).getRate();
+            rate = checkValueService.createInsuranceLoanOffer(amount, term).getRate();
             log.debug("rate with insurance={}", rate);
         } else if (request.getIsSalaryClient()) {
-            rate = checkValueService.salaryClient(amount, term).getRate();
+            rate = checkValueService.createSalaryLoanOffer(amount, term).getRate();
             log.debug("rate with salary client={}", rate);
         } else {
-            rate = checkValueService.noneSalaryAndInsuranceClient(amount, term).getRate();
+            rate = checkValueService.createDefaultLoanOffer(amount, term).getRate();
             log.debug("rate with none salary client and insurance={}", rate);
         }
     }
