@@ -16,6 +16,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CheckValueService {
 
+    private static final BigDecimal BASE_PERCENT = BigDecimal.valueOf(100);
+
     private final CalcCreditValueService calcCreditValueService;
 
     @Value("${app.gozenko.base-rate}")
@@ -38,7 +40,7 @@ public class CheckValueService {
         log.debug("salaryAndInsuranceClient: currentCreditRate-{}",currentCreditRate);
 
         BigDecimal priceOfInsurance = amount.multiply(
-                insuranceRate.divide(BigDecimal.valueOf(100)));
+                insuranceRate.divide(BASE_PERCENT));
         log.debug("salaryAndInsuranceClient: priceOfInsurance-{}",priceOfInsurance);
 
         BigDecimal totalAmount = amount.add(priceOfInsurance);
@@ -69,7 +71,7 @@ public class CheckValueService {
         log.debug("insuranceClient: currentCreditRate-{}",currentCreditRate);
 
         BigDecimal priceOfInsurance = amount.multiply(
-                insuranceRate.divide(BigDecimal.valueOf(100), RoundingMode.FLOOR));
+                insuranceRate.divide(BASE_PERCENT, RoundingMode.FLOOR));
         log.debug("insuranceClient: priceOfInsurance-{}",priceOfInsurance);
 
         BigDecimal totalAmount = amount.add(priceOfInsurance);

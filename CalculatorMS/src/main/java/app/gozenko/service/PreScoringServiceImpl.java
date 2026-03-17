@@ -1,11 +1,9 @@
 package app.gozenko.service;
 
 import app.gozenko.dto.LoanStatementRequestDto;
-
 import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.exception.ValidationDataException;
 import app.gozenko.service.interfaces.PreScoringService;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,7 @@ public class PreScoringServiceImpl implements PreScoringService {
 
 
     @Override
-    public void preScoringLoan(@Valid LoanStatementRequestDto request){
+    public void preScoringLoan(LoanStatementRequestDto request){
         log.debug("LoanStatement request: {}",request);
 
         if(!(checkLegalAge(request.getBirthday())))

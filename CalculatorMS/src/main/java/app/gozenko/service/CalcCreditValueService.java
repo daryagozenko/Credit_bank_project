@@ -16,13 +16,20 @@ import java.util.List;
 @Service
 public class CalcCreditValueService {
 
+    private static final BigDecimal BASE_PERCENT = BigDecimal.valueOf(100);
+    private static final Integer MIN_SCALE = 2;
+    private static final Integer BASE_SCALE = 10;
+    private static final Integer MONTHS = 12;
+    private static final Integer DAYS = 365;
+    private static final Integer AVERAGE = 2;
+
     public BigDecimal calcMonthlyPayment(BigDecimal totalRate, BigDecimal totalAmount, Integer term){
         log.info("Beginning calcMonthlyRate: totalRate={}, totalAmount={}, term={}",
                 totalRate, totalAmount, term);
         // Расчет месячной ставки
         BigDecimal monthlyRate = totalRate
-                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);
+                .divide(BASE_PERCENT, BASE_SCALE, RoundingMode.HALF_UP)
+                .divide(BigDecimal.valueOf(MONTHS), BASE_SCALE, RoundingMode.HALF_UP);
 
         // Расчет (1 + monthlyRate)^term
         BigDecimal one = BigDecimal.ONE;
@@ -33,13 +40,13 @@ public class CalcCreditValueService {
         BigDecimal tempMinusOne = temp.subtract(one);
         BigDecimal annuityCoefficient = monthlyRate
                 .multiply(temp)
-                .divide(tempMinusOne, 10, RoundingMode.HALF_UP);
+                .divide(tempMinusOne, BASE_SCALE, RoundingMode.HALF_UP);
         log.debug("annuityCoefficient={}",annuityCoefficient);
 
         // Расчет totalAmount * annuityCoefficient
         return totalAmount
                 .multiply(annuityCoefficient)
-                .setScale(2, RoundingMode.HALF_UP);
+                .setScale(MIN_SCALE, RoundingMode.HALF_UP);
     }
 
     //основная логика формирования кредитного предложения
@@ -90,17 +97,17 @@ public class CalcCreditValueService {
 
         // Средний срок кредита в днях
         BigDecimal avgTermDays = BigDecimal.valueOf(termMonths)
-                .multiply(BigDecimal.valueOf(365.0 / 12 / 2)); // term * (365/12/2)
+                .multiply(BigDecimal.valueOf(DAYS / MONTHS / AVERAGE)); // term * (365/12/2)
         log.debug("angTermsDays={}",avgTermDays);
 
         // ПСК = (переплата / сумма_выдачи) * (365 / средний_срок) * 100
         BigDecimal psk = overpayment
-                .divide(loanAmount, 10, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(365))
-                .divide(avgTermDays, 10, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
+                .divide(loanAmount, BASE_SCALE, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(DAYS))
+                .divide(avgTermDays, BASE_SCALE, RoundingMode.HALF_UP)
+                .multiply(BASE_PERCENT);
 
-        return psk.setScale(2, RoundingMode.HALF_UP);
+        return psk.setScale(MIN_SCALE, RoundingMode.HALF_UP);
     }
 
     public List<PaymentScheduleElementDto> createPaymentSchedule(
@@ -115,8 +122,8 @@ public class CalcCreditValueService {
 
         // Месячная ставка в долях
         BigDecimal monthlyRate = annualRate
-                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);
+                .divide(BASE_PERCENT, BASE_SCALE, RoundingMode.HALF_UP)
+                .divide(BigDecimal.valueOf(MONTHS), BASE_SCALE, RoundingMode.HALF_UP);
 
         LocalDate currentDate = LocalDate.now();
         BigDecimal remainingDebt = loanAmount;
@@ -126,13 +133,13 @@ public class CalcCreditValueService {
             // Расчет процентов за текущий месяц
             BigDecimal interestPayment = remainingDebt
                     .multiply(monthlyRate)
-                    .setScale(2, RoundingMode.HALF_UP);
+                    .setScale(MIN_SCALE, RoundingMode.HALF_UP);
             log.debug("interestPayment={}",interestPayment);
 
             // Расчет погашения основного долга
             BigDecimal debtPayment = monthlyPayment
                     .subtract(interestPayment)
-                    .setScale(2, RoundingMode.HALF_UP);
+                    .setScale(MIN_SCALE, RoundingMode.HALF_UP);
             log.debug("debtPayment={}",debtPayment);
 
             // Для последнего месяца корректируем, чтобы остаток сошелся
@@ -145,7 +152,7 @@ public class CalcCreditValueService {
             // Здесь уменьшаем остаток долга
             remainingDebt = remainingDebt
                     .subtract(debtPayment)
-                    .setScale(2, RoundingMode.HALF_UP);
+                    .setScale(MIN_SCALE, RoundingMode.HALF_UP);
             log.debug("remainingDebt={}",remainingDebt);
 
             PaymentScheduleElementDto element = PaymentScheduleElementDto.builder()
