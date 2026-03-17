@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 @Slf4j
 @Service
@@ -39,13 +38,9 @@ public class PreScoringServiceImpl implements PreScoringService {
     }
 
     private boolean checkLegalAge(LocalDate birthday) {
-        try {
-            LocalDate today = LocalDate.now();
-            log.debug("legalAge = {}", legalAge);
-            LocalDate yearsAgo = today.minusYears(legalAge);
-            return !birthday.isAfter(yearsAgo);
-        } catch (DateTimeParseException e) {
-            throw new RuntimeException(e + " Некорректная дата");
-        }
+        LocalDate today = LocalDate.now();
+        log.debug("legalAge = {}", legalAge);
+        LocalDate yearsAgo = today.minusYears(legalAge);
+        return !birthday.isAfter(yearsAgo);
     }
 }
