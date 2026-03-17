@@ -38,7 +38,6 @@ class LoanOfferServiceImplTest {
     private Integer baseTerm;
     private BigDecimal baseRate;
     private BigDecimal insuranceRate;
-    private BigDecimal salaryRate;
     private BigDecimal expectedMonthlyPayment;
     private LoanOfferDto salaryAndInsuranceOffer;
     private LoanOfferDto insuranceOffer;
@@ -47,11 +46,11 @@ class LoanOfferServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        BigDecimal salaryRate = new BigDecimal("1.00");
         baseAmount = new BigDecimal("300000");
         baseTerm = 12;
         baseRate = new BigDecimal("20.00");
         insuranceRate = new BigDecimal("2.00");
-        salaryRate = new BigDecimal("1.00");
         expectedMonthlyPayment = new BigDecimal("27790.57");
 
         ReflectionTestUtils.setField(checkValueService, "baseRate", baseRate);

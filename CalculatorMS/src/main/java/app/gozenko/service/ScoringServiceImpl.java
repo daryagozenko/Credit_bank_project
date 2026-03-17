@@ -61,7 +61,7 @@ public class ScoringServiceImpl implements ScoringService {
             throw new UnScoringDataException(message.get());
         }
         initialValues(request);
-        updateData(request);
+        updateTheLoanRate(request);
 
         log.info("Start to main counting");
         return calcCreditValueService.mainCounting(request, rate);
@@ -89,8 +89,11 @@ public class ScoringServiceImpl implements ScoringService {
         return Optional.empty();
     }
 
-    //тут основная логика прескоринга
-    private void updateData(ScoringDataDto request) {
+    /**
+     * Main logic to calculating rate
+     * @param request loan request
+     */
+    private void updateTheLoanRate(ScoringDataDto request) {
         EmploymentDto employmentDto = request.getEmployment();
         log.info("Beginning: rate={}", rate);
 

@@ -47,13 +47,11 @@ class CalculatorControllerImplTest {
     private ScoringDataDto validScoringData;
     private List<LoanOfferDto> expectedLoanOffers;
     private CreditDto expectedCreditDto;
-    private BigDecimal amount;
-    private Integer term;
 
     @BeforeEach
     void setUp() {
-        amount = new BigDecimal("300000");
-        term = 12;
+        BigDecimal amount = new BigDecimal("300000");
+        int term = 12;
 
         validLoanStatement = StubGenerator.createValidLoanStatementRequest();
         validScoringData = StubGenerator.createValidScoringRequest();
