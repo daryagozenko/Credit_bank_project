@@ -1,7 +1,6 @@
 package app.gozenko.service;
 
 import app.gozenko.dto.LoanOfferDto;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,11 +26,6 @@ public class CheckValueService {
     @Value("${app.gozenko.rate-salary-client}")
     private BigDecimal rateSalaryClient;
 
-    @PostConstruct
-    public void init() {
-        log.info("Values from properties: baseRate-{}, insuranсeRate{}, rateSalaryClient-{}",
-                baseRate, insuranceRate, rateSalaryClient);
-    }
 
     public LoanOfferDto salaryAndInsuranceClient(BigDecimal amount, Integer term) {
         BigDecimal currentCreditRate = baseRate

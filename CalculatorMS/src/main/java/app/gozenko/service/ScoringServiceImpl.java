@@ -9,7 +9,6 @@ import app.gozenko.enums.MaritalStatus;
 import app.gozenko.enums.Position;
 import app.gozenko.exception.UnScoringDataException;
 import app.gozenko.service.interfaces.ScoringService;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,14 +52,6 @@ public class ScoringServiceImpl implements ScoringService {
     private BigDecimal rateWithDependent;
 
     private BigDecimal rate;
-
-    @PostConstruct
-    public void init() {
-        log.info("Values from properties: rateToManager-{}, rateToTopManager{}, rateMarried-{}",
-                rateToManager, rateToTopManager, rateMarried);
-        log.info("Values from properties: rateDivorced-{}, rateWithAge{}, rateWithDependent-{}",
-                rateDivorced, rateWithAge, rateWithDependent);
-    }
 
 
     @Override
