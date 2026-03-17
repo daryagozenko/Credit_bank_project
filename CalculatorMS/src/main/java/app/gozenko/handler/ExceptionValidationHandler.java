@@ -17,6 +17,13 @@ public class ExceptionValidationHandler {
 
     private static final String SPLITTER = ".";
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> scoringException(Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error: ", ex.getMessage()));
+    }
+
     @ExceptionHandler({MethodArgumentTypeMismatchException.class,
             ConstraintViolationException.class,
             ValidationDataException.class})

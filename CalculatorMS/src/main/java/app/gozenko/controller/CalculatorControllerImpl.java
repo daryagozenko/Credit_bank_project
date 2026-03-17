@@ -29,7 +29,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/calculator/api/v1")
+@RequestMapping("/api/v1/calculator")
 @Tag(name = "CalculatorController")
 public class CalculatorControllerImpl implements CalculatorController {
 
@@ -51,6 +51,12 @@ public class CalculatorControllerImpl implements CalculatorController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Неверные параметры запроса",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Внутренняя ошибка сервера",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
@@ -78,6 +84,12 @@ public class CalculatorControllerImpl implements CalculatorController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Неверные параметры запроса",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Внутренняя ошибка сервера",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
