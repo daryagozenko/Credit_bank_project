@@ -1,6 +1,10 @@
 package app.gozenko.dto;
 
-import lombok.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -9,13 +13,22 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(name = "Предложение по кредиту")
 public class LoanOfferDto {
+    @Schema(description = "Идентификатор", example = "a1b2c3")
     private UUID statementId;
+    @Schema(description = "Запрашиваемая сумма", example = "50000")
     private BigDecimal requestedAmount;
+    @Schema(description = "Итоговая сумма", example = "55000")
     private BigDecimal totalAmount;
+    @Schema(description = "Срок", example = "6")
     private Integer term;
+    @Schema(description = "Ежемесячный платеж", example = "3000")
     private BigDecimal monthlyPayment;
+    @Schema(description = "Ставка по кредиту", example = "15")
     private BigDecimal rate;
+    @Schema(description = "Наличие страховки", example = "true")
     private Boolean isInsuranceEnabled;
+    @Schema(description = "Зарплатный клиент", example = "true")
     private Boolean isSalaryClient;
 }

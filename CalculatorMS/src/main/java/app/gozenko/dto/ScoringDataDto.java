@@ -20,6 +20,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(name = "Оформление итоговой заявки")
 public class ScoringDataDto {
 
     @Min(value = 20000, message = "Сумма должна быть больше 20000")
@@ -50,7 +51,7 @@ public class ScoringDataDto {
     @Schema(description = "Дата рождения", example = "2005-05-01")
     private LocalDate birthday;
 
-    @NotNull
+    @NotNull(message = "необходимо заполнить gender")
     @Schema(description = "Пол", example = "FEMALE")
     private Gender gender;
 
@@ -69,31 +70,31 @@ public class ScoringDataDto {
     @Schema(description = "Дата выдачи паспорта", example = "2025-07-01")
     private LocalDate passportIssueDate;
 
-    @NotNull
+    @NotNull(message = "необходимо заполнить passportIssueBranch")
     @Schema(description = "Кем выдан паспорт", example = "МВД России")
     private String passportIssueBranch;
 
-    @NotNull
+    @NotNull(message = "необходимо заполнить maritalStatus")
     @Schema(description = "Семейное положение", example = "NOT_MARRIED")
     private MaritalStatus maritalStatus;
 
-    @NotNull
+    @NotNull(message = "необходимо заполнить dependentAmount")
     @Schema(description = "Количество иждивенцев", example = "0")
     private Integer dependentAmount;
 
-    @NotNull
+    @NotNull(message = "необходимо заполнить employment")
     @Schema(description = "Информация о занятости")
     private EmploymentDto employment;
 
-    @NotNull
+    @NotNull(message = "необходимо заполнить accountNumber")
     @Schema(description = "Номер счета", example = "2000-563-78")
     private String accountNumber;
 
-    @NotNull
+    @NotNull(message = "необходимо заполнить isInsuranceEnabled")
     @Schema(description = "Наличие страховки", example = "true")
     private Boolean isInsuranceEnabled;
 
-    @NotNull
+    @NotNull(message = "необходимо заполнить isSalaryClient")
     @Schema(description = "Является зарплатным клиентом", example = "true")
     private Boolean isSalaryClient;
 }

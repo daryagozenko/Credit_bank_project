@@ -17,6 +17,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(name = "Оформление кредитной заявки")
 public class LoanStatementRequestDto {
 
     @Schema(description = "Сумма кредита", example = "1000000")
