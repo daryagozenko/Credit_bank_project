@@ -9,4 +9,5 @@ import io.swagger.v3.oas.annotations.info.Info;
                 description = "Микросервис по формированию кредитных предложений"
         )
 )
-public class OpenApiConfig {}
+public class OpenApiConfig {
+}

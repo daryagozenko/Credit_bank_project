@@ -55,7 +55,7 @@ public class ScoringServiceImpl implements ScoringService {
     private BigDecimal rate;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         log.info("Values from properties: rateToManager-{}, rateToTopManager{}, rateMarried-{}",
                 rateToManager, rateToTopManager, rateMarried);
         log.info("Values from properties: rateDivorced-{}, rateWithAge{}, rateWithDependent-{}",
@@ -85,8 +85,8 @@ public class ScoringServiceImpl implements ScoringService {
             return Optional.of(String.format("Сумма займа больше, чем %d зарплаты", MAX_AMOUNT_DIFF_SALARY));
 
         int age = calculateAge(request.getBirthday());
-        if (age < MIN_AGE) return Optional.of(String.format("Моложе %d",MIN_AGE));
-        if (age > MAX_AGE) return Optional.of(String.format("Старше %d",MAX_AGE));
+        if (age < MIN_AGE) return Optional.of(String.format("Моложе %d", MIN_AGE));
+        if (age > MAX_AGE) return Optional.of(String.format("Старше %d", MAX_AGE));
 
         int workExpTotal = request.getEmployment().getWorkExperienceTotal();
         if (workExpTotal < REQUIRED_COMMON_WORK_EXPERIENCE) return Optional.of(
@@ -101,39 +101,39 @@ public class ScoringServiceImpl implements ScoringService {
     //тут основная логика прескоринга
     private void updateData(ScoringDataDto request) {
         EmploymentDto employmentDto = request.getEmployment();
-        log.info("Beginning: rate={}",rate);
+        log.info("Beginning: rate={}", rate);
 
         if (employmentDto.getPosition().equals(Position.MANAGER)) {
             rate = rate.subtract(rateToManager);
-            log.debug("rate subtract rateToManager={}",rate);
+            log.debug("rate subtract rateToManager={}", rate);
         }
         if (employmentDto.getPosition().equals(Position.TOP_MANAGER)) {
             rate = rate.subtract(rateToTopManager);
-            log.debug("rate subtract rateToTopManager={}",rate);
+            log.debug("rate subtract rateToTopManager={}", rate);
         }
 
         if (request.getMaritalStatus().equals(MaritalStatus.MARRIED)) {
             rate = rate.subtract(rateMarried);
-            log.debug("rate subtract rateToMarried={}",rate);
+            log.debug("rate subtract rateToMarried={}", rate);
         }
         if (request.getMaritalStatus().equals(MaritalStatus.DIVORCED)) {
             rate = rate.add(rateDivorced);
-            log.debug("rate add rateDivorced={}",rate);
+            log.debug("rate add rateDivorced={}", rate);
         }
 
         int age = calculateAge(request.getBirthday());
         if (request.getGender().equals(Gender.FEMALE) && (age > MIN_AGE_FEMALE && age < MAX_AGE_FEMALE)) {
             rate = rate.subtract(rateWithAge);
-            log.debug("rate subtract rateWithAge to Female={}",rate);
+            log.debug("rate subtract rateWithAge to Female={}", rate);
         }
         if (request.getGender().equals(Gender.MALE) && (age > MIN_AGE_MALE && age < MAX_AGE_MALE)) {
             rate = rate.subtract(rateWithAge);
-            log.debug("rate subtract rateWithAge to Male={}",rate);
+            log.debug("rate subtract rateWithAge to Male={}", rate);
         }
 
         if (request.getDependentAmount() > TOTAL_DEPENDENT) {
             rate = rate.subtract(rateWithDependent);
-            log.debug("rate subtract rateWithDependent={}",rate);
+            log.debug("rate subtract rateWithDependent={}", rate);
         }
 
     }
@@ -141,26 +141,20 @@ public class ScoringServiceImpl implements ScoringService {
     private void initialValues(ScoringDataDto request) {
         Integer term = request.getTerm();
         BigDecimal amount = request.getAmount();
-        log.info("Beginning amount={} and term={}",amount,term);
+        log.info("Beginning amount={} and term={}", amount, term);
 
         if (request.getIsSalaryClient() && request.getIsInsuranceEnabled()) {
             rate = checkValueService.salaryAndInsuranceClient(amount, term).getRate();
-            log.debug("rate with salary client and insurance={}",rate);
-        }
-
-        else if (request.getIsInsuranceEnabled()) {
+            log.debug("rate with salary client and insurance={}", rate);
+        } else if (request.getIsInsuranceEnabled()) {
             rate = checkValueService.insuranceClient(amount, term).getRate();
-            log.debug("rate with insurance={}",rate);
-        }
-
-        else if (request.getIsSalaryClient()) {
+            log.debug("rate with insurance={}", rate);
+        } else if (request.getIsSalaryClient()) {
             rate = checkValueService.salaryClient(amount, term).getRate();
-            log.debug("rate with salary client={}",rate);
-        }
-
-        else {
+            log.debug("rate with salary client={}", rate);
+        } else {
             rate = checkValueService.noneSalaryAndInsuranceClient(amount, term).getRate();
-            log.debug("rate with none salary client and insurance={}",rate);
+            log.debug("rate with none salary client and insurance={}", rate);
         }
     }
 

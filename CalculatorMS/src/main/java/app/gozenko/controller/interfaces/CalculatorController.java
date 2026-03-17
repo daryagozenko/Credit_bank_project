@@ -8,7 +8,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public interface CalculatorController{
+public interface CalculatorController {
     ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(LoanStatementRequestDto loanState);
+
     ResponseEntity<CreditDto> validateAndCalc(ScoringDataDto scoringData);
 }

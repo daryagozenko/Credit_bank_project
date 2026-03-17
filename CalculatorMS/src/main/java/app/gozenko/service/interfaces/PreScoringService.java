@@ -6,5 +6,6 @@ import jakarta.validation.Valid;
 
 public interface PreScoringService {
     void preScoringLoan(@Valid LoanStatementRequestDto request);
+
     void preScoringScoreData(@Valid ScoringDataDto request);
 }

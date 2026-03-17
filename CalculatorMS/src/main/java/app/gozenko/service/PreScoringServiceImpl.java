@@ -22,30 +22,30 @@ public class PreScoringServiceImpl implements PreScoringService {
 
 
     @Override
-    public void preScoringLoan(LoanStatementRequestDto request){
-        log.debug("LoanStatement request: {}",request);
+    public void preScoringLoan(LoanStatementRequestDto request) {
+        log.debug("LoanStatement request: {}", request);
 
-        if(!(checkLegalAge(request.getBirthday())))
-            throw new ValidationDataException("Возраст должен быть больше "+legalAge);
+        if (!(checkLegalAge(request.getBirthday())))
+            throw new ValidationDataException("Возраст должен быть больше " + legalAge);
     }
 
     @Override
-    public void preScoringScoreData(ScoringDataDto request){
-        log.debug("ScoringData request: {}",request);
+    public void preScoringScoreData(ScoringDataDto request) {
+        log.debug("ScoringData request: {}", request);
 
-        if(!(checkLegalAge(request.getBirthday())))
-            throw new ValidationDataException("Возраст должен быть больше "+legalAge);
+        if (!(checkLegalAge(request.getBirthday())))
+            throw new ValidationDataException("Возраст должен быть больше " + legalAge);
 
     }
 
-    private boolean checkLegalAge(LocalDate birthday){
-        try{
+    private boolean checkLegalAge(LocalDate birthday) {
+        try {
             LocalDate today = LocalDate.now();
-            log.debug("legalAge = {}",legalAge);
+            log.debug("legalAge = {}", legalAge);
             LocalDate yearsAgo = today.minusYears(legalAge);
             return !birthday.isAfter(yearsAgo);
         } catch (DateTimeParseException e) {
-            throw new RuntimeException(e+" Некорректная дата");
+            throw new RuntimeException(e + " Некорректная дата");
         }
     }
 }

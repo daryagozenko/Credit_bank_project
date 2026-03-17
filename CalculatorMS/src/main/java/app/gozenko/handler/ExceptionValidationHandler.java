@@ -58,7 +58,7 @@ public class ExceptionValidationHandler {
     private ResponseEntity<Map<String, String>> createResponseEntity(String message) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("message: ",message));
+                .body(Map.of("message: ", message));
     }
 
 
