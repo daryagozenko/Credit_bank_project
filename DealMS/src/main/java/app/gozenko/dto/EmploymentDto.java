@@ -1,7 +1,7 @@
-package app.gozenko.DealMS.dto;
+package app.gozenko.dto;
 
-import app.gozenko.DealMS.enums.EmploymentStatus;
-import app.gozenko.DealMS.enums.Position;
+import app.gozenko.enums.EmploymentStatus;
+import app.gozenko.enums.Position;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

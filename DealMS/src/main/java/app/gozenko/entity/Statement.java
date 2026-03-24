@@ -1,8 +1,8 @@
-package app.gozenko.DealMS.entity;
+package app.gozenko.entity;
 
-import app.gozenko.DealMS.dto.LoanOfferDto;
-import app.gozenko.DealMS.dto.StatementStatusHistoryDto;
-import app.gozenko.DealMS.enums.StatementStatus;
+import app.gozenko.dto.LoanOfferDto;
+import app.gozenko.dto.StatementStatusHistoryDto;
+import app.gozenko.enums.StatementStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package app.gozenko.DealMS.dto;
+package app.gozenko.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

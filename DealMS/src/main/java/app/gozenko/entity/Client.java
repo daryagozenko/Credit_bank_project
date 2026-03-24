@@ -1,9 +1,9 @@
-package app.gozenko.DealMS.entity;
+package app.gozenko.entity;
 
-import app.gozenko.DealMS.dto.EmploymentDto;
-import app.gozenko.DealMS.dto.PassportDto;
-import app.gozenko.DealMS.enums.Gender;
-import app.gozenko.DealMS.enums.MaritalStatus;
+import app.gozenko.dto.EmploymentDto;
+import app.gozenko.dto.PassportDto;
+import app.gozenko.enums.Gender;
+import app.gozenko.enums.MaritalStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

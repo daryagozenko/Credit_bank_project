@@ -1,7 +1,7 @@
-package app.gozenko.DealMS.entity;
+package app.gozenko.entity;
 
-import app.gozenko.DealMS.dto.PaymentScheduleElementDto;
-import app.gozenko.DealMS.enums.CreditStatus;
+import app.gozenko.dto.PaymentScheduleElementDto;
+import app.gozenko.enums.CreditStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

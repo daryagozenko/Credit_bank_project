@@ -1,4 +1,4 @@
-package app.gozenko.DealMS;
+package app.gozenko;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package app.gozenko.DealMS.enums;
+package app.gozenko.enums;
 
 public enum Position {
     WORKER(),
