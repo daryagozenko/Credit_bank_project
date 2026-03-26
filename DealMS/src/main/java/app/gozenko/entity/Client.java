@@ -43,12 +43,14 @@ public class Client {
     private Integer dependentAmount;
     @Column(name = "account_number", columnDefinition = "varchar(30)")
     private String accountNumber;
-    //TODO: верные связи - ?
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "passport", columnDefinition = "jsonb")
     private PassportDto passport;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "employment", columnDefinition = "jsonb")
     private EmploymentDto employment;
+
+    @OneToOne(mappedBy = "client", fetch = FetchType.EAGER)
+    private Statement statement;
 
 }

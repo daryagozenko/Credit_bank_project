@@ -28,19 +28,18 @@ public class Statement {
     private StatementStatus status;
     @Column(name = "creation_date", columnDefinition = "timestamp")
     private LocalDateTime creationDate;
-    //TODO: applied_offer (jsonb) - правильно?
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "applied_offer", columnDefinition = "jsonb")
     private List<LoanOfferDto> appliedOffer;
     @Column(name = "sign_date", columnDefinition = "timestamp")
     private LocalDateTime signDate;
-    //TODO: ses_code - ?
+    @Column(name = "ses_code", columnDefinition = "int")
+    private Integer sesCode;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "status_history", columnDefinition = "jsonb")
     private List<StatementStatusHistoryDto> statusHistory;
 
-    //TODO: (FK) client_id/credit_id - верно?
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
     private Client client;
     @OneToOne(fetch = FetchType.EAGER)

@@ -3,7 +3,8 @@ package app.gozenko.enums;
 public enum StatementStatus {
     PREAPPROVAL,
     APPROVED,
-    //TODO: CC_DENIED И CC_APPROVED - ?
+    CC_DENIED,
+    CC_APPROVED,
     PREPARE_DOCUMENTS,
     DOCUMENT_CREATED,
     CLIENT_DENIED,
