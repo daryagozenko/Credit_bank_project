@@ -22,6 +22,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Credit {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
     @Column(name = "amount", columnDefinition = "decimal")

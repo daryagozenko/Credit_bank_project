@@ -6,6 +6,7 @@ import app.gozenko.enums.Gender;
 import app.gozenko.enums.MaritalStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -17,10 +18,12 @@ import java.util.UUID;
 @Entity
 @Table(name = "client")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Client {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
     @Column(name = "last_name", columnDefinition = "varchar(30)")

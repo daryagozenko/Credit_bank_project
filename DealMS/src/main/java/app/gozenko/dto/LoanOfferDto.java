@@ -12,7 +12,6 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class LoanOfferDto {
     private UUID statementId;
     private BigDecimal requestedAmount;

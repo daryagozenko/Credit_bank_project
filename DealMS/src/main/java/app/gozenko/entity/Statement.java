@@ -5,6 +5,7 @@ import app.gozenko.dto.StatementStatusHistoryDto;
 import app.gozenko.enums.StatementStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "statement")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Statement {

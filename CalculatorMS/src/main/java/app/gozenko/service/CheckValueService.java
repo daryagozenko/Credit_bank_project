@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -96,7 +95,6 @@ public class CheckValueService {
                                               Boolean isSalaryClient) {
         log.info("Build new LoanOfferDto");
         return LoanOfferDto.builder()
-                .statementId(UUID.randomUUID())
                 .requestedAmount(requestedAmount)
                 .totalAmount(totalAmount)
                 .term(term)
