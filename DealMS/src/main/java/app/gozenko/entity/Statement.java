@@ -23,6 +23,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Statement {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
     @Enumerated(EnumType.STRING)
@@ -32,7 +33,7 @@ public class Statement {
     private LocalDateTime creationDate;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "applied_offer", columnDefinition = "jsonb")
-    private List<LoanOfferDto> appliedOffer;
+    private LoanOfferDto appliedOffer;
     @Column(name = "sign_date", columnDefinition = "timestamp")
     private LocalDateTime signDate;
     @Column(name = "ses_code", columnDefinition = "int")

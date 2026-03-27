@@ -1,13 +1,19 @@
 package app.gozenko.service;
 
 import app.gozenko.dto.LoanOfferDto;
+import app.gozenko.dto.StatementStatusHistoryDto;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Statement;
 import app.gozenko.enums.StatementStatus;
+import app.gozenko.enums.StatusChangeType;
 import app.gozenko.repository.StatementRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,19 +22,53 @@ import java.util.UUID;
 public class StatementServiceImpl {
 
     private final StatementRepository statementRepository;
+    private List<StatementStatusHistoryDto> statusHistory;
 
-    public Statement createStatement(Client client, List<LoanOfferDto> loanOffers){
+    public Statement createStatement(Client client) {
+        statusHistory = createStatusHistory();
+
         Statement statement = Statement.builder()
-                .id(UUID.randomUUID())
-                .status(StatementStatus.PREAPPROVAL)
+                .status(statusHistory.getLast().getStatus())
                 .client(client)
+                .statusHistory(statusHistory)
                 .build();
-        List<LoanOfferDto> loanOffersBindStatement = loanOffers.stream()
-                .peek(offer -> offer.setStatementId(statement.getId()))
-                .toList();
 
-        statement.setAppliedOffer(loanOffersBindStatement);
         return statementRepository.save(statement);
     }
+
+    @Transactional
+    public Statement updateStatement(LoanOfferDto loanOffer) {
+        UUID statementId = loanOffer.getStatementId();
+
+        Statement statement = statementRepository.findById(statementId)
+                .orElseThrow(() -> new EntityNotFoundException("Не найдено заявление: " + statementId));
+
+        List<StatementStatusHistoryDto> history = statement.getStatusHistory();
+        history.add(addNewStatus(StatementStatus.APPROVED));
+        statement.setStatusHistory(history);
+        statement.setAppliedOffer(loanOffer);
+
+        return statementRepository.save(statement);
+    }
+
+    private List<StatementStatusHistoryDto> createStatusHistory() {
+        statusHistory = new ArrayList<>();
+        statusHistory.add(StatementStatusHistoryDto.builder()
+                .status(StatementStatus.PREAPPROVAL)
+                .time(LocalDateTime.now())
+                .changeType(StatusChangeType.AUTOMATIC)
+                .build());
+
+        return statusHistory;
+    }
+
+    private StatementStatusHistoryDto addNewStatus(StatementStatus status){
+        return StatementStatusHistoryDto.builder()
+                .status(status)
+                .time(LocalDateTime.now())
+                .changeType(StatusChangeType.AUTOMATIC)
+                .build();
+    }
+
 
 }

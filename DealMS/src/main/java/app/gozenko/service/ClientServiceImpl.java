@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class ClientServiceImpl {
     private final ClientRepository clientRepository;
 
-    public Client createClient(LoanStatementRequestDto request){
+    public Client createClient(LoanStatementRequestDto request) {
         Client client = Client.builder()
                 .lastName(request.getLastName())
                 .firstName(request.getFirstName())

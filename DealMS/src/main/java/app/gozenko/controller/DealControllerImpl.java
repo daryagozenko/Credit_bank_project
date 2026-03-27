@@ -4,6 +4,7 @@ import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Statement;
+import app.gozenko.exception.UnloadedDataException;
 import app.gozenko.service.ClientServiceImpl;
 import app.gozenko.service.StatementServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,24 +31,32 @@ public class DealControllerImpl {
     private final StatementServiceImpl statementService;
 
     @PostMapping("/statement")
-    public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState){
+    public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState) {
         Client client = clientService.createClient(loanState);
+        Statement statement = statementService.createStatement(client);
+
         List<LoanOfferDto> offers = restClient.post()
                 .uri("/offers")
                 .body(loanState)
                 .retrieve()
-                .toEntity(new ParameterizedTypeReference<List<LoanOfferDto>>() {})
+                .toEntity(new ParameterizedTypeReference<List<LoanOfferDto>>() {
+                })
                 .getBody();
 
-        Statement statement = statementService.createStatement(client, offers);
+        if (offers == null) throw new UnloadedDataException("Предложения не поступили");
+        List<LoanOfferDto> loanOffersBindStatement = offers.stream()
+                .peek(offer -> offer.setStatementId(statement.getId()))
+                .toList();
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(statement.getAppliedOffer());
+                .body(loanOffersBindStatement);
     }
 
     @PostMapping("/offer/select")
-    public ResponseEntity<String> selectLoanOffer(@RequestBody LoanOfferDto loanOffer){
-
-        return ResponseEntity.ok("LoanOffer выбран");
+    public ResponseEntity<String> selectLoanOffer(@RequestBody LoanOfferDto loanOffer) {
+        Statement statement = statementService.updateStatement(loanOffer);
+        return ResponseEntity.ok(statement.getId().toString());
     }
+
+
 }
