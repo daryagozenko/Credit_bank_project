@@ -3,10 +3,7 @@ package app.gozenko.entity;
 import app.gozenko.dto.PaymentScheduleElementDto;
 import app.gozenko.enums.CreditStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -17,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "credit")
 @Data
+@ToString(exclude = {"statement"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
