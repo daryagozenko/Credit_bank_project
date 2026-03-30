@@ -13,8 +13,8 @@ import java.util.UUID;
 
 public interface DealController {
     ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody @Valid LoanStatementRequestDto loanState);
-    ResponseEntity<String> selectLoanOffer(@RequestBody @Valid LoanOfferDto loanOffer);
-    ResponseEntity<String> calculateCredit(
+    ResponseEntity<Void> selectLoanOffer(@RequestBody @Valid LoanOfferDto loanOffer);
+    ResponseEntity<Void> calculateCredit(
             @PathVariable("statementId") UUID statementId,
             @RequestBody @Valid FinishRegistrationRequestDto finishRegistration);
 }

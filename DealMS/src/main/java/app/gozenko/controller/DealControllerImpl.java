@@ -77,10 +77,7 @@ public class DealControllerImpl implements DealController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Успешно",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = String.class))
+                    description = "Успешно"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -94,10 +91,9 @@ public class DealControllerImpl implements DealController {
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
-    public ResponseEntity<String> selectLoanOffer(@RequestBody LoanOfferDto loanOffer) {
+    public ResponseEntity<Void> selectLoanOffer(@RequestBody LoanOfferDto loanOffer) {
         statementService.updateStatement(loanOffer);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Select Loan Offer");
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/calculate/{statementId}")
@@ -105,10 +101,7 @@ public class DealControllerImpl implements DealController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Успешно",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = String.class))
+                    description = "Успешно"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -122,7 +115,7 @@ public class DealControllerImpl implements DealController {
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
-    public ResponseEntity<String> calculateCredit(
+    public ResponseEntity<Void> calculateCredit(
             @PathVariable("statementId") UUID statementId,
             @RequestBody FinishRegistrationRequestDto finishRegistration) {
         Statement statement = statementService.findById(statementId);
@@ -140,7 +133,6 @@ public class DealControllerImpl implements DealController {
         statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
         statementService.addCredit(statement, credit);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Done calculate credit: "+credit.getId());
+        return ResponseEntity.ok().build();
     }
 }
