@@ -1,5 +1,7 @@
 package app.gozenko.handler;
 
+import app.gozenko.exception.CalculatorClientException;
+import app.gozenko.exception.CalculatorServerException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,8 @@ public class GlobalExceptionHandler {
 
     private static final String SPLITTER = ".";
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({Exception.class,
+            CalculatorServerException.class})
     public ResponseEntity<Map<String, String>> scoringException(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -23,7 +26,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class,
-            ConstraintViolationException.class,})
+            ConstraintViolationException.class,
+            CalculatorClientException.class})
     public ResponseEntity<Map<String, String>> getException(Exception ex) {
         if (ex instanceof MethodArgumentTypeMismatchException) {
             return createResponseEntity(ex.getMessage());
@@ -38,6 +42,9 @@ public class GlobalExceptionHandler {
                 exceptions.put(field, message);
             });
             return createResponseEntity(exceptions.toString());
+        }
+        if(ex instanceof CalculatorClientException){
+            return createResponseEntity(ex.getMessage());
         }
 
         return createResponseEntity(ex.getMessage());

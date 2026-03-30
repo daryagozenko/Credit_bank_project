@@ -6,11 +6,7 @@ import app.gozenko.entity.Client;
 import app.gozenko.entity.Credit;
 import app.gozenko.entity.Statement;
 import app.gozenko.enums.StatementStatus;
-import app.gozenko.exception.UnloadedDataException;
-import app.gozenko.service.ClientServiceImpl;
-import app.gozenko.service.CreditServiceImpl;
-import app.gozenko.service.ScoringDataServiceImpl;
-import app.gozenko.service.StatementServiceImpl;
+import app.gozenko.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,7 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +38,7 @@ public class DealControllerImpl implements DealController {
     private final StatementServiceImpl statementService;
     private final ScoringDataServiceImpl scoringDataService;
     private final CreditServiceImpl creditService;
+    private final CalculatorCallingService calculatorCallingService;
 
     @PostMapping("/statement")
     @Operation(summary = "расчет вариантов предложений по кредиту")
@@ -70,21 +66,10 @@ public class DealControllerImpl implements DealController {
         Client client = clientService.createClient(loanState);
         Statement statement = statementService.createStatement(client);
 
-        List<LoanOfferDto> offers = restClient.post()
-                .uri("/offers")
-                .body(loanState)
-                .retrieve()
-                .toEntity(new ParameterizedTypeReference<List<LoanOfferDto>>() {
-                })
-                .getBody();
-
-        if (offers == null) throw new UnloadedDataException("Предложения не поступили");
-        List<LoanOfferDto> loanOffersBindStatement = offers.stream()
-                .peek(offer -> offer.setStatementId(statement.getId()))
-                .toList();
+        List<LoanOfferDto> offers = calculatorCallingService.getLoanOffers(loanState, statement.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(loanOffersBindStatement);
+                .body(offers);
     }
 
     @PostMapping("/offer/select")
@@ -145,16 +130,11 @@ public class DealControllerImpl implements DealController {
         ScoringDataDto scoringData = scoringDataService.createScoringData(finishRegistration, statement);
         log.info("Result in selectLoanOffer scoringData-{}", scoringData);
 
-        CreditDto creditDto = restClient.post()
-                .uri("/calc")
-                .body(scoringData)
-                .retrieve()
-                .body(CreditDto.class);
+        CreditDto creditDto = calculatorCallingService.calcCredit(scoringData);
         log.info("Result in selectLoanOffer creditDto-{}", creditDto);
 
         clientService.updateClient(statement, finishRegistration);
 
-        if (creditDto == null) throw new UnloadedDataException("Кредит не поступил");
         Credit credit = creditService.createCredit(creditDto);
         log.info("Result in selectLoanOffer credit-{}", credit);
         statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
