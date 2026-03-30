@@ -13,7 +13,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StatementStatusHistoryDto {
+
     private StatementStatus status;
+
     private LocalDateTime time;
+
     private StatusChangeType changeType;
 }

@@ -13,10 +13,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentScheduleElementDto {
+
     private Integer number;
+
     private LocalDate date;
+
     private BigDecimal totalPayment;
+
     private BigDecimal interestPayment;
+
     private BigDecimal debtPayment;
+
     private BigDecimal remainingDebt;
 }

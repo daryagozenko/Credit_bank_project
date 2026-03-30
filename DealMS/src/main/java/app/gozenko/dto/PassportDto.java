@@ -12,8 +12,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PassportDto {
+
     private String series;
+
     private String number;
+
     private String issueBranch;
+
     private LocalDate issueDate;
 }
