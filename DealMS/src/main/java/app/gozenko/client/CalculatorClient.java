@@ -7,6 +7,7 @@ import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.exception.CalculatorClientException;
 import app.gozenko.exception.CalculatorServerException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
@@ -20,6 +21,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CalculatorClient {
 
+    @Value("${app.gozenko.uri-offers}")
+    private static String URI_OFFERS;
+    @Value("${app.gozenko.uri-calc}")
+    private static String URI_CALC;
     private RestClient restClient;
 
     public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto loanState) {
