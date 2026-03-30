@@ -20,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +32,6 @@ import java.util.UUID;
 @Tag(name = "DealController")
 public class DealControllerImpl implements DealController {
 
-    private final RestClient restClient;
     private final ClientServiceImpl clientService;
     private final StatementServiceImpl statementService;
     private final ScoringDataServiceImpl scoringDataService;
@@ -64,9 +62,12 @@ public class DealControllerImpl implements DealController {
             )})
     public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState) {
         Client client = clientService.createClient(loanState);
+        log.info("Result in calcConditionOfCredit client-{}", client);
         Statement statement = statementService.createStatement(client);
+        log.info("Result in calcConditionOfCredit statement-{}", statement);
 
         List<LoanOfferDto> offers = calculatorCallingService.getLoanOffers(loanState, statement.getId());
+        log.info("Result in calcConditionOfCredit offers-{}", offers);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(offers);
@@ -93,6 +94,7 @@ public class DealControllerImpl implements DealController {
             )})
     public ResponseEntity<Void> selectLoanOffer(@RequestBody LoanOfferDto loanOffer) {
         statementService.updateStatement(loanOffer);
+        log.info("Statement in selectLoanOffer updated");
         return ResponseEntity.ok().build();
     }
 
@@ -119,17 +121,17 @@ public class DealControllerImpl implements DealController {
             @PathVariable("statementId") UUID statementId,
             @RequestBody FinishRegistrationRequestDto finishRegistration) {
         Statement statement = statementService.findById(statementId);
-        log.info("Result in selectLoanOffer statement-{}", statement);
+        log.info("Result in calculateCredit statement-{}", statement);
         ScoringDataDto scoringData = scoringDataService.createScoringData(finishRegistration, statement);
-        log.info("Result in selectLoanOffer scoringData-{}", scoringData);
+        log.info("Result in calculateCredit scoringData-{}", scoringData);
 
         CreditDto creditDto = calculatorCallingService.calcCredit(scoringData);
-        log.info("Result in selectLoanOffer creditDto-{}", creditDto);
+        log.info("Result in calculateCredit creditDto-{}", creditDto);
 
         clientService.updateClient(statement, finishRegistration);
 
         Credit credit = creditService.createCredit(creditDto);
-        log.info("Result in selectLoanOffer credit-{}", credit);
+        log.info("Result in calculateCredit credit-{}", credit);
         statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
         statementService.addCredit(statement, credit);
 
