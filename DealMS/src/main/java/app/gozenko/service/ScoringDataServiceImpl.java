@@ -13,7 +13,13 @@ public class ScoringDataServiceImpl implements ScoringDataService {
     @Override
     public ScoringDataDto createScoringData(FinishRegistrationRequestDto finishRegistration, Statement statement) {
         Client client = statement.getClient();
+        return fillScoringData(client, statement, finishRegistration);
 
+    }
+
+    private ScoringDataDto fillScoringData(Client client,
+                                           Statement statement,
+                                           FinishRegistrationRequestDto finishRegistration) {
         return ScoringDataDto.builder()
                 .amount(statement.getAppliedOffer().getRequestedAmount())
                 .term(statement.getAppliedOffer().getTerm())
@@ -33,6 +39,5 @@ public class ScoringDataServiceImpl implements ScoringDataService {
                 .isInsuranceEnabled(statement.getAppliedOffer().getIsInsuranceEnabled())
                 .isSalaryClient(statement.getAppliedOffer().getIsSalaryClient())
                 .build();
-
     }
 }

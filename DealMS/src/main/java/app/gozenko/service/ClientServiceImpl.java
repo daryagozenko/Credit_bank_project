@@ -17,25 +17,13 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
+
     private final ClientRepository clientRepository;
 
     @Override
     public Client createClient(LoanStatementRequestDto request) {
-        PassportDto passport = PassportDto.builder()
-                .series(request.getPassportSeries())
-                .number(request.getPassportNumber())
-                .build();
-
-        Client client = Client.builder()
-                .lastName(request.getLastName())
-                .firstName(request.getFirstName())
-                .middleName(request.getMiddleName())
-                .birthday(request.getBirthday())
-                .email(request.getEmail())
-                .passport(passport)
-                .build();
         //TODO: выброс исключения, если есть клиент с такими же паспортными данными
-        return clientRepository.save(client);
+        return clientRepository.save(fillClientInfo(request));
     }
 
     @Override
@@ -48,7 +36,10 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void updateClient(Statement statement, FinishRegistrationRequestDto finishRegistration) {
         Client client = findById(statement.getClient().getId());
+        clientRepository.save(updateClientInfo(client, finishRegistration));
+    }
 
+    private Client updateClientInfo(Client client, FinishRegistrationRequestDto finishRegistration) {
         client.setGender(finishRegistration.getGender());
         client.setMaritalStatus(finishRegistration.getMaritalStatus());
         client.setDependentAmount(finishRegistration.getDependentAmount());
@@ -57,6 +48,24 @@ public class ClientServiceImpl implements ClientService {
         client.setEmployment(finishRegistration.getEmployment());
         client.setAccountNumber(finishRegistration.getAccountNumber());
 
-        clientRepository.save(client);
+        return client;
+    }
+
+    private PassportDto fillPassportInfo(LoanStatementRequestDto request) {
+        return PassportDto.builder()
+                .series(request.getPassportSeries())
+                .number(request.getPassportNumber())
+                .build();
+    }
+
+    private Client fillClientInfo(LoanStatementRequestDto request) {
+        return Client.builder()
+                .lastName(request.getLastName())
+                .firstName(request.getFirstName())
+                .middleName(request.getMiddleName())
+                .birthday(request.getBirthday())
+                .email(request.getEmail())
+                .passport(fillPassportInfo(request))
+                .build();
     }
 }

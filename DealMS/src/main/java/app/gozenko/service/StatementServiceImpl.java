@@ -24,7 +24,9 @@ import java.util.UUID;
 public class StatementServiceImpl implements StatementService {
 
     private static final Integer MAX_SES_CODE = 101;
+
     private final StatementRepository statementRepository;
+
     private List<StatementStatusHistoryDto> statusHistory;
 
     @Override

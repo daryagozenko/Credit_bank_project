@@ -16,7 +16,11 @@ public class CreditServiceImpl implements CreditService {
 
     @Override
     public Credit createCredit(CreditDto creditDto) {
-        Credit credit = Credit.builder()
+        return creditRepository.save(fillCreditInfo(creditDto));
+    }
+
+    private Credit fillCreditInfo(CreditDto creditDto) {
+        return Credit.builder()
                 .amount(creditDto.getAmount())
                 .term(creditDto.getTerm())
                 .monthlyPayment(creditDto.getMonthlyPayment())
@@ -27,8 +31,6 @@ public class CreditServiceImpl implements CreditService {
                 .isSalaryClient(creditDto.getIsSalaryClient())
                 .creditStatus(CreditStatus.CALCULATED)
                 .build();
-
-        return creditRepository.save(credit);
     }
 
 }
