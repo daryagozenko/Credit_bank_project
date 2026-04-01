@@ -60,6 +60,7 @@ public class StatementServiceImpl implements StatementService {
         List<StatementStatusHistoryDto> history = statement.getStatusHistory();
         history.add(addNewStatus(StatementStatus.APPROVED));
         statement.setStatusHistory(history);
+        statement.setStatus(StatementStatus.APPROVED);
         statement.setAppliedOffer(loanOffer);
 
         statementRepository.save(statement);

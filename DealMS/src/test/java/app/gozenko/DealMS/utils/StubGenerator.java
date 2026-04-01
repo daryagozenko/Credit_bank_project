@@ -297,6 +297,13 @@ public class StubGenerator {
     }
 
     public static Statement createStatement(UUID statementId, Client client) {
+        List<StatementStatusHistoryDto> statusHistory = new ArrayList<>();
+        statusHistory.add(StatementStatusHistoryDto.builder()
+                .status(StatementStatus.PREAPPROVAL)
+                .time(LocalDateTime.now())
+                .changeType(StatusChangeType.AUTOMATIC)
+                .build());
+
         return Statement.builder()
                 .id(statementId)
                 .client(client)
@@ -306,16 +313,26 @@ public class StubGenerator {
                         new BigDecimal("92635.22"), new BigDecimal("20.00"), false, false))
                 .credit(createCredit())
                 .signDate(null)
-                .sesCode(null)
+                .statusHistory(statusHistory)
+                .sesCode(45)
                 .build();
     }
 
     public static Statement createStatementWithClient(Client client) {
+        List<StatementStatusHistoryDto> statusHistory = new ArrayList<>();
+        statusHistory.add(StatementStatusHistoryDto.builder()
+                .status(StatementStatus.PREAPPROVAL)
+                .time(LocalDateTime.now())
+                .changeType(StatusChangeType.AUTOMATIC)
+                .build());
+
         return Statement.builder()
                 .id(UUID.randomUUID())
                 .client(client)
                 .status(StatementStatus.PREAPPROVAL)
                 .creationDate(LocalDateTime.now())
+                .sesCode(45)
+                .statusHistory(statusHistory)
                 .build();
     }
 

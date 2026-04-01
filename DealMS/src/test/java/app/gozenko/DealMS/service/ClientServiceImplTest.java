@@ -11,6 +11,7 @@ import app.gozenko.enums.EmploymentStatus;
 import app.gozenko.enums.Gender;
 import app.gozenko.enums.MaritalStatus;
 import app.gozenko.enums.Position;
+import app.gozenko.exception.ClientExistsException;
 import app.gozenko.repository.ClientRepository;
 import app.gozenko.service.ClientServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -65,8 +66,10 @@ class ClientServiceImplTest {
     }
 
     @Test
-    @DisplayName("Успешное создание клиента из заявки на кредит")
-    void createClient_Success() {
+    @DisplayName("Успешное создание клиента из заявки на кредит - клиент с данной серией паспорта не существует")
+    void createClientWithSeries_Success() {
+        when(clientRepository.existsByPassportSeries(validLoanRequest.getPassportSeries()))
+                .thenReturn(false);
         when(clientRepository.save(any(Client.class))).thenReturn(savedClient);
 
         Client result = clientService.createClient(validLoanRequest);
@@ -74,7 +77,46 @@ class ClientServiceImplTest {
         assertNotNull(result);
         assertEquals(savedClient.getId(), result.getId());
 
+        verify(clientRepository).existsByPassportSeries(validLoanRequest.getPassportSeries());
+        verify(clientRepository, never()).existsByPassportNumber(anyString());
         verify(clientRepository).save(any(Client.class));
+    }
+
+    @Test
+    @DisplayName("Успешное создание клиента из заявки на кредит - клиент с данным номером паспорта не существует")
+    void createClientWithNumber_Success() {
+        when(clientRepository.existsByPassportSeries(validLoanRequest.getPassportSeries()))
+                .thenReturn(true);
+        when(clientRepository.existsByPassportNumber(validLoanRequest.getPassportNumber()))
+                .thenReturn(false);
+        when(clientRepository.save(any(Client.class))).thenReturn(savedClient);
+
+        Client result = clientService.createClient(validLoanRequest);
+
+        assertNotNull(result);
+        assertEquals(savedClient.getId(), result.getId());
+
+        verify(clientRepository).existsByPassportSeries(validLoanRequest.getPassportSeries());
+        verify(clientRepository).existsByPassportNumber(validLoanRequest.getPassportNumber());
+        verify(clientRepository).save(any(Client.class));
+    }
+
+    @Test
+    @DisplayName("Создание клиента - клиент уже существует, выбрасывается исключение")
+    void createClient_ClientAlreadyExists_ThrowsClientExistsException() {
+        when(clientRepository.existsByPassportSeries(validLoanRequest.getPassportSeries()))
+                .thenReturn(true);
+        when(clientRepository.existsByPassportNumber(validLoanRequest.getPassportNumber()))
+                .thenReturn(true);
+
+        ClientExistsException exception = assertThrows(
+                ClientExistsException.class,
+                () -> clientService.createClient(validLoanRequest)
+        );
+
+        assertTrue(exception.getMessage().contains("Клиент с такими паспортными данными существует"));
+
+        verify(clientRepository, never()).save(any(Client.class));
     }
 
     @Test
