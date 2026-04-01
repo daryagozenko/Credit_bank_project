@@ -35,12 +35,12 @@ public class LoanStatementRequestDto {
 
     @Schema(description = "Фамилия", example = "gozenko")
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Отчество должно быть от 2 до 30 символов")
+            message = "Фамилия должна быть от 2 до 30 символов")
     private String lastName;
 
     @Schema(description = "Отчество", example = "sergeevna")
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Фамилия должна быть от 2 до 30 символов")
+            message = "Отчество должно быть от 2 до 30 символов")
     private String middleName;
 
     @Schema(description = "Email", example = "email@bk.ru")

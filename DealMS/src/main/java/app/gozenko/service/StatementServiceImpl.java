@@ -71,6 +71,9 @@ public class StatementServiceImpl implements StatementService {
         history.add(addNewStatus(status));
         statement.setStatusHistory(history);
 
+        if(status.equals(StatementStatus.CC_APPROVED)){
+            statement.setSignDate(LocalDateTime.now());
+        }
         statement.setStatus(status);
     }
 

@@ -51,7 +51,7 @@ public class ExceptionValidationHandler {
     @ExceptionHandler(UnScoringDataException.class)
     public ResponseEntity<Map<String, String>> scoringException(UnScoringDataException ex) {
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("Отказ по причине: ", ex.getMessage()));
     }
 
