@@ -5,6 +5,7 @@ import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.PassportDto;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Statement;
+import app.gozenko.exception.ClientExistsException;
 import app.gozenko.repository.ClientRepository;
 import app.gozenko.service.interfaces.ClientService;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,7 +23,9 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client createClient(LoanStatementRequestDto request) {
-        //TODO: выброс исключения, если есть клиент с такими же паспортными данными
+        if(checkClientExist(request)){
+            throw new ClientExistsException("Клиент с такими паспортными данными существует");
+        }
         return clientRepository.save(fillClientInfo(request));
     }
 
@@ -37,6 +40,13 @@ public class ClientServiceImpl implements ClientService {
     public void updateClient(Statement statement, FinishRegistrationRequestDto finishRegistration) {
         Client client = findById(statement.getClient().getId());
         clientRepository.save(updateClientInfo(client, finishRegistration));
+    }
+
+    private boolean checkClientExist(LoanStatementRequestDto request) {
+        String passportNum = request.getPassportNumber();
+        String passportSer = request.getPassportSeries();
+        return clientRepository.existsByPassportSeries(passportSer) &&
+                clientRepository.existsByPassportNumber(passportNum);
     }
 
     private Client updateClientInfo(Client client, FinishRegistrationRequestDto finishRegistration) {

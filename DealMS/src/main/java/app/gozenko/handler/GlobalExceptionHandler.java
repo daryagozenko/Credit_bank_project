@@ -2,6 +2,8 @@ package app.gozenko.handler;
 
 import app.gozenko.exception.CalculatorClientException;
 import app.gozenko.exception.CalculatorServerException;
+import app.gozenko.exception.ClientExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error: ", ex.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, String>> entityException(EntityNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error: ", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ClientExistsException.class)
+    public ResponseEntity<Map<String, String>> clientExistsException(ClientExistsException ex) {
+        return createResponseEntity(ex.getMessage());
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class,
