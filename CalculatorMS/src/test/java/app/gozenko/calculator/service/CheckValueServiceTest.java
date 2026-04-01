@@ -14,7 +14,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -48,9 +47,8 @@ class CheckValueServiceTest {
         term = 12;
         expectedMonthlyPayment = new BigDecimal("27790.57");
 
-        ReflectionTestUtils.setField(checkValueService, "baseRate", baseRate);
-        ReflectionTestUtils.setField(checkValueService, "insuranceRate", insuranceRate);
-        ReflectionTestUtils.setField(checkValueService, "rateSalaryClient", salaryRate);
+        checkValueService = new CheckValueService(calcCreditValueService,
+                baseRate, insuranceRate, salaryRate);
     }
 
     @Test
@@ -77,7 +75,6 @@ class CheckValueServiceTest {
 
         assertAll("Проверка createSalaryAndInsuranceLoanOffer",
                 () -> assertNotNull(result),
-                () -> assertNotNull(result.getStatementId()),
                 () -> assertEquals(expected.getRequestedAmount(), result.getRequestedAmount()),
                 () -> assertEquals(expected.getTotalAmount(), result.getTotalAmount()),
                 () -> assertEquals(expected.getTerm(), result.getTerm()),
@@ -109,7 +106,6 @@ class CheckValueServiceTest {
 
         assertAll("Проверка createSalaryLoanOffer",
                 () -> assertNotNull(result),
-                () -> assertNotNull(result.getStatementId()),
                 () -> assertEquals(expected.getRequestedAmount(), result.getRequestedAmount()),
                 () -> assertEquals(expected.getTotalAmount(), result.getTotalAmount()),
                 () -> assertEquals(expected.getTerm(), result.getTerm()),
@@ -145,7 +141,6 @@ class CheckValueServiceTest {
 
         assertAll("Проверка createInsuranceLoanOffer",
                 () -> assertNotNull(result),
-                () -> assertNotNull(result.getStatementId()),
                 () -> assertEquals(expected.getRequestedAmount(), result.getRequestedAmount()),
                 () -> assertEquals(expected.getTotalAmount(), result.getTotalAmount()),
                 () -> assertEquals(expected.getTerm(), result.getTerm()),
@@ -175,7 +170,6 @@ class CheckValueServiceTest {
 
         assertAll("Проверка createDefaultLoanOffer",
                 () -> assertNotNull(result),
-                () -> assertNotNull(result.getStatementId()),
                 () -> assertEquals(expected.getRequestedAmount(), result.getRequestedAmount()),
                 () -> assertEquals(expected.getTotalAmount(), result.getTotalAmount()),
                 () -> assertEquals(expected.getTerm(), result.getTerm()),

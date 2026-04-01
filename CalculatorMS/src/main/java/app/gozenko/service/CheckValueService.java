@@ -18,12 +18,19 @@ public class CheckValueService {
 
     private final CalcCreditValueService calcCreditValueService;
 
-    @Value("${app.gozenko.base-rate}")
     private BigDecimal baseRate;
-    @Value("${app.gozenko.insurance}")
     private BigDecimal insuranceRate;
-    @Value("${app.gozenko.rate-salary-client}")
     private BigDecimal rateSalaryClient;
+
+    public CheckValueService(CalcCreditValueService calcCreditValueService,
+                             @Value("${app.gozenko.base-rate}") BigDecimal baseRate,
+                             @Value("${app.gozenko.insurance}") BigDecimal insuranceRate,
+                             @Value("${app.gozenko.rate-salary-client}") BigDecimal rateSalaryClient) {
+        this.calcCreditValueService = calcCreditValueService;
+        this.baseRate = baseRate;
+        this.insuranceRate = insuranceRate;
+        this.rateSalaryClient = rateSalaryClient;
+    }
 
 
     public LoanOfferDto createSalaryAndInsuranceLoanOffer(BigDecimal amount, Integer term) {
