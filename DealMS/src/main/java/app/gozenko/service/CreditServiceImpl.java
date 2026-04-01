@@ -6,8 +6,10 @@ import app.gozenko.enums.CreditStatus;
 import app.gozenko.repository.CreditRepository;
 import app.gozenko.service.interfaces.CreditService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CreditServiceImpl implements CreditService {
@@ -16,10 +18,12 @@ public class CreditServiceImpl implements CreditService {
 
     @Override
     public Credit createCredit(CreditDto creditDto) {
+        log.info("Credit saved");
         return creditRepository.save(fillCreditInfo(creditDto));
     }
 
     private Credit fillCreditInfo(CreditDto creditDto) {
+        log.debug("input: creditDto-${}", creditDto);
         return Credit.builder()
                 .amount(creditDto.getAmount())
                 .term(creditDto.getTerm())

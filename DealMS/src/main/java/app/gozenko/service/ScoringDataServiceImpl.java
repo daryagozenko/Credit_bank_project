@@ -5,14 +5,17 @@ import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Statement;
 import app.gozenko.service.interfaces.ScoringDataService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ScoringDataServiceImpl implements ScoringDataService {
 
     @Override
     public ScoringDataDto createScoringData(FinishRegistrationRequestDto finishRegistration, Statement statement) {
         Client client = statement.getClient();
+        log.debug("createScoringData: client-{}", client);
         return fillScoringData(client, statement, finishRegistration);
 
     }
@@ -20,6 +23,7 @@ public class ScoringDataServiceImpl implements ScoringDataService {
     private ScoringDataDto fillScoringData(Client client,
                                            Statement statement,
                                            FinishRegistrationRequestDto finishRegistration) {
+        log.info("Build new ScoringData");
         return ScoringDataDto.builder()
                 .amount(statement.getAppliedOffer().getRequestedAmount())
                 .term(statement.getAppliedOffer().getTerm())

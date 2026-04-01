@@ -7,11 +7,13 @@ import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.exception.UnloadedDataException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CalculatorCallingService {
@@ -20,6 +22,7 @@ public class CalculatorCallingService {
 
     public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto loanState, UUID statementId) {
         List<LoanOfferDto> offers = calculatorClient.getLoanOffers(loanState);
+        log.debug("getLoanOffers: offers-{}", offers);
 
         if (offers == null) throw new UnloadedDataException("Предложения не поступили");
         return offers.stream()
@@ -29,6 +32,7 @@ public class CalculatorCallingService {
 
     public CreditDto calcCredit(ScoringDataDto scoringData) {
         CreditDto creditDto = calculatorClient.getCredit(scoringData);
+        log.debug("calcCredit: creditDto-{}", creditDto);
         if (creditDto == null) throw new UnloadedDataException("Кредит не поступил");
         return creditDto;
     }
