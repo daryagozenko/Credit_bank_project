@@ -1,8 +1,8 @@
 package app.gozenko.service;
 
 import app.gozenko.dto.LoanOfferDto;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,17 +11,17 @@ import java.math.RoundingMode;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class CheckValueService {
 
     private static final BigDecimal BASE_PERCENT = BigDecimal.valueOf(100);
 
     private final CalcCreditValueService calcCreditValueService;
 
-    private BigDecimal baseRate;
-    private BigDecimal insuranceRate;
-    private BigDecimal rateSalaryClient;
+    private final BigDecimal baseRate;
+    private final BigDecimal insuranceRate;
+    private final BigDecimal rateSalaryClient;
 
+    @Autowired
     public CheckValueService(CalcCreditValueService calcCreditValueService,
                              @Value("${app.gozenko.base-rate}") BigDecimal baseRate,
                              @Value("${app.gozenko.insurance}") BigDecimal insuranceRate,

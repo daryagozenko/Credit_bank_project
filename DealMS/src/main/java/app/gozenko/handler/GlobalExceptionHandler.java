@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
             });
             return createResponseEntity(exceptions.toString());
         }
-        if(ex instanceof CalculatorClientException){
+        if (ex instanceof CalculatorClientException) {
             return createResponseEntity(ex.getMessage());
         }
 
