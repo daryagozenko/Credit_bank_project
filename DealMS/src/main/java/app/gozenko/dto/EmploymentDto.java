@@ -33,7 +33,7 @@ public class EmploymentDto {
     private BigDecimal salary;
 
     @NotNull(message = "необходимо заполнить position")
-    @Schema(description = "Должность", example = "MIDDLE_MANAGER")
+    @Schema(description = "Должность", example = "TOP_MANAGER")
     private Position position;
 
     @NotNull(message = "необходимо заполнить workExperienceTotal")
