@@ -8,11 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.UUID;
 
 public interface ClientRepository extends JpaRepository<Client, UUID> {
-    @Query(value = "SELECT EXISTS(SELECT 1 FROM client WHERE passport->>'series' = :series)",
+    @Query(value = "SELECT EXISTS(SELECT 1 FROM client WHERE passport->>'series' = :series AND passport->>'number' = :number)",
             nativeQuery = true)
-    boolean existsByPassportSeries(@Param("series") String passportSeries);
-
-    @Query(value = "SELECT EXISTS(SELECT 1 FROM client WHERE passport->>'number' = :number)",
-            nativeQuery = true)
-    boolean existsByPassportNumber(@Param("number") String passportNumber);
+    boolean existsByPassportSeriesAndNumber(@Param("series") String passportSeries,
+                                            @Param("number") String passportNumber);
 }

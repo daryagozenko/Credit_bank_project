@@ -53,8 +53,7 @@ public class ClientServiceImpl implements ClientService {
         String passportSer = request.getPassportSeries();
         log.debug("checkClientExist: passportNumber-{}", passportNum);
         log.debug("checkClientExist: passportSeries-{}", passportSer);
-        return clientRepository.existsByPassportSeries(passportSer) &&
-                clientRepository.existsByPassportNumber(passportNum);
+        return clientRepository.existsByPassportSeriesAndNumber(passportSer, passportNum);
     }
 
     private Client updateClientInfo(Client client, FinishRegistrationRequestDto finishRegistration) {

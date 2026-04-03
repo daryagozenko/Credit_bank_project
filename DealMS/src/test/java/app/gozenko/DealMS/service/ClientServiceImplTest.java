@@ -36,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,9 +69,11 @@ class ClientServiceImplTest {
     }
 
     @Test
-    @DisplayName("Успешное создание клиента из заявки на кредит - клиент с данной серией паспорта не существует")
-    void createClientWithSeries_Success() {
-        when(clientRepository.existsByPassportSeries(validLoanRequest.getPassportSeries()))
+    @DisplayName("Успешное создание клиента из заявки на кредит - клиент с данными паспортными не существует")
+    void createClientSuccess() {
+        when(clientRepository.existsByPassportSeriesAndNumber(
+                validLoanRequest.getPassportSeries(),
+                validLoanRequest.getPassportNumber()))
                 .thenReturn(false);
         when(clientRepository.save(any(Client.class))).thenReturn(savedClient);
 
@@ -81,36 +82,18 @@ class ClientServiceImplTest {
         assertNotNull(result);
         assertEquals(savedClient.getId(), result.getId());
 
-        verify(clientRepository).existsByPassportSeries(validLoanRequest.getPassportSeries());
-        verify(clientRepository, never()).existsByPassportNumber(anyString());
-        verify(clientRepository).save(any(Client.class));
-    }
-
-    @Test
-    @DisplayName("Успешное создание клиента из заявки на кредит - клиент с данным номером паспорта не существует")
-    void createClientWithNumber_Success() {
-        when(clientRepository.existsByPassportSeries(validLoanRequest.getPassportSeries()))
-                .thenReturn(true);
-        when(clientRepository.existsByPassportNumber(validLoanRequest.getPassportNumber()))
-                .thenReturn(false);
-        when(clientRepository.save(any(Client.class))).thenReturn(savedClient);
-
-        Client result = clientService.createClient(validLoanRequest);
-
-        assertNotNull(result);
-        assertEquals(savedClient.getId(), result.getId());
-
-        verify(clientRepository).existsByPassportSeries(validLoanRequest.getPassportSeries());
-        verify(clientRepository).existsByPassportNumber(validLoanRequest.getPassportNumber());
+        verify(clientRepository).existsByPassportSeriesAndNumber(
+                validLoanRequest.getPassportSeries(),
+                validLoanRequest.getPassportNumber());
         verify(clientRepository).save(any(Client.class));
     }
 
     @Test
     @DisplayName("Создание клиента - клиент уже существует, выбрасывается исключение")
     void createClient_ClientAlreadyExists_ThrowsClientExistsException() {
-        when(clientRepository.existsByPassportSeries(validLoanRequest.getPassportSeries()))
-                .thenReturn(true);
-        when(clientRepository.existsByPassportNumber(validLoanRequest.getPassportNumber()))
+        when(clientRepository.existsByPassportSeriesAndNumber(
+                validLoanRequest.getPassportSeries(),
+                validLoanRequest.getPassportNumber()))
                 .thenReturn(true);
 
         ClientExistsException exception = assertThrows(
