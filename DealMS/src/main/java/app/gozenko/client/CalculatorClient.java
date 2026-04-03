@@ -23,12 +23,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CalculatorClient {
 
+    private final RestClient restClient;
+    private final ObjectMapper objectMapper;
     @Value("${app.gozenko.uri-offers}")
     private String URI_OFFERS;
     @Value("${app.gozenko.uri-calc}")
     private String URI_CALC;
-    private final RestClient restClient;
-    private final ObjectMapper objectMapper;
 
     public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto loanState) {
         return restClient.post()
