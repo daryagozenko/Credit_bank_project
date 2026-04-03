@@ -62,6 +62,7 @@ public class CalculatorControllerImpl implements CalculatorController {
             )})
     @Override
     public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState) {
+        log.info("Input data in calcConditionOfCredit loanState-{}", loanState);
         log.info("Sending a LoanStatementRequest to preScoringService");
         preScoringService.preScoringLoan(loanState);
         log.info("Successful create list of loanOffers");
@@ -95,6 +96,7 @@ public class CalculatorControllerImpl implements CalculatorController {
             )})
     @Override
     public ResponseEntity<CreditDto> validateAndCalc(@RequestBody ScoringDataDto scoringData) {
+        log.info("Input data in validateAndCalc scoringData-{}", scoringData);
         log.info("Sending a ScoringData to preScoringService");
         preScoringService.preScoringScoreData(scoringData);
         log.info("Successful create credit offer");

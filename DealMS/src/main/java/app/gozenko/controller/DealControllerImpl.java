@@ -61,10 +61,12 @@ public class DealControllerImpl implements DealController {
                             mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
     public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState) {
+        log.info("Input data in calcConditionOfCredit loanState-{}", loanState);
+
         Client client = clientService.createClient(loanState);
-        log.info("Result in calcConditionOfCredit client-{}", client);
+        log.debug("Result in calcConditionOfCredit client-{}", client);
         Statement statement = statementService.createStatement(client);
-        log.info("Result in calcConditionOfCredit statement-{}", statement);
+        log.debug("Result in calcConditionOfCredit statement-{}", statement);
 
         List<LoanOfferDto> offers = calculatorCallingService.getLoanOffers(loanState, statement.getId());
         log.info("Result in calcConditionOfCredit offers-{}", offers);
@@ -93,6 +95,8 @@ public class DealControllerImpl implements DealController {
                             mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
     public ResponseEntity<Void> selectLoanOffer(@RequestBody LoanOfferDto loanOffer) {
+        log.info("Input data in selectLoanOffer loanOffer-{}", loanOffer);
+
         statementService.updateStatement(loanOffer);
         log.info("Statement in selectLoanOffer updated");
         return ResponseEntity.ok().build();
@@ -120,21 +124,25 @@ public class DealControllerImpl implements DealController {
     public ResponseEntity<Void> calculateCredit(
             @PathVariable("statementId") UUID statementId,
             @RequestBody FinishRegistrationRequestDto finishRegistration) {
+        log.info("Input data in calculateCredit finishRegistration-{}, statementId-{}",
+                finishRegistration, statementId);
+
         Statement statement = statementService.findById(statementId);
-        log.info("Result in calculateCredit statement-{}", statement);
+        log.debug("Result in calculateCredit statement-{}", statement);
         ScoringDataDto scoringData = scoringDataService.createScoringData(finishRegistration, statement);
-        log.info("Result in calculateCredit scoringData-{}", scoringData);
+        log.debug("Result in calculateCredit scoringData-{}", scoringData);
 
         CreditDto creditDto = calculatorCallingService.calcCredit(scoringData);
-        log.info("Result in calculateCredit creditDto-{}", creditDto);
+        log.debug("Result in calculateCredit creditDto-{}", creditDto);
 
         clientService.updateClient(statement, finishRegistration);
 
         Credit credit = creditService.createCredit(creditDto);
-        log.info("Result in calculateCredit credit-{}", credit);
+        log.debug("Result in calculateCredit credit-{}", credit);
         statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
         statementService.addCredit(statement, credit);
 
+        log.info("Credit in calculateCredit created");
         return ResponseEntity.ok().build();
     }
 }
