@@ -6,6 +6,7 @@ import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.exception.CalculatorClientException;
 import app.gozenko.exception.CalculatorServerException;
+import app.gozenko.exception.JsonException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -89,27 +90,11 @@ public class CalculatorClient {
                 }
             }
 
-            return extractFromText(errorBody);
+            return errorBody;
 
         } catch (Exception e) {
-            return extractFromText(errorBody);
+            throw new JsonException(e.getMessage());
         }
-    }
-
-    private String extractFromText(String errorBody) {
-        if (errorBody.contains("default message [")) {
-            int start = errorBody.indexOf("default message [");
-            int end = errorBody.indexOf("]", start);
-            if (start != -1 && end != -1) {
-                return errorBody.substring(start + 17, end);
-            }
-        }
-
-        if (errorBody.length() > 200) {
-            return "Ошибка валидации: " + errorBody.substring(0, 197) + "...";
-        }
-
-        return errorBody;
     }
 
 }

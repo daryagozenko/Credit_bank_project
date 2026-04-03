@@ -5,16 +5,18 @@ import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface DealController {
-    ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@Valid LoanStatementRequestDto loanState);
+    ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody @Valid LoanStatementRequestDto loanState);
 
-    ResponseEntity<Void> selectLoanOffer(@Valid LoanOfferDto loanOffer);
+    ResponseEntity<Void> selectLoanOffer(@RequestBody @Valid LoanOfferDto loanOffer);
 
     ResponseEntity<Void> calculateCredit(
-            UUID statementId,
-            @Valid FinishRegistrationRequestDto finishRegistration);
+            @PathVariable("statementId") UUID statementId,
+            @RequestBody @Valid FinishRegistrationRequestDto finishRegistration);
 }

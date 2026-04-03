@@ -3,11 +3,13 @@ package app.gozenko.handler;
 import app.gozenko.exception.CalculatorClientException;
 import app.gozenko.exception.CalculatorServerException;
 import app.gozenko.exception.ClientExistsException;
+import app.gozenko.exception.JsonException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -21,7 +23,8 @@ public class GlobalExceptionHandler {
 
     private static final String SPLITTER = ".";
 
-    @ExceptionHandler(CalculatorServerException.class)
+    @ExceptionHandler({CalculatorServerException.class,
+            JsonException.class})
     public ResponseEntity<Map<String, String>> scoringException(CalculatorServerException ex) {
         log.warn("Scoring error given in the calculator");
         return ResponseEntity
@@ -62,6 +65,17 @@ public class GlobalExceptionHandler {
         }
 
         return createResponseEntity(ex.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> getValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            errors.put(error.getField(), error.getDefaultMessage());
+        });
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errors);
     }
 
     private ResponseEntity<Map<String, String>> createResponseEntity(String message) {
