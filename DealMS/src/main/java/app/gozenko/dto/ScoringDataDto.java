@@ -24,7 +24,7 @@ import java.time.LocalDate;
 public class ScoringDataDto {
 
     @Min(value = 20000, message = "Сумма должна быть больше 20000")
-    @Schema(description = "Сумма кредита", example = "1030000")
+    @Schema(description = "Сумма кредита", example = "1030000.23", format = "decimal")
     private BigDecimal amount;
 
     @Min(value = 6, message = "Срок должен быть не меньше 6")

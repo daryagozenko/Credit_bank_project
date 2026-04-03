@@ -21,12 +21,13 @@ public class LoanOfferDto {
     @NotNull(message = "Идентификатор заявки не может быть null")
     private UUID statementId;
 
-    @Schema(description = "Запрошенная сумма кредита", example = "1000000")
+    @Schema(description = "Запрошенная сумма кредита", example = "1000000", format = "decimal")
     @NotNull(message = "Запрошенная сумма не может быть null")
     @Min(value = 20000, message = "Сумма должна быть больше 20000")
     private BigDecimal requestedAmount;
 
-    @Schema(description = "Общая сумма кредита с учетом страховки и зарплатного клиента", example = "1050000")
+    @Schema(description = "Общая сумма кредита с учетом страховки и зарплатного клиента", example = "1050000.68",
+            format = "decimal")
     @NotNull(message = "Общая сумма не может быть null")
     @Min(value = 20000, message = "Сумма должна быть больше 20000")
     private BigDecimal totalAmount;
@@ -36,12 +37,12 @@ public class LoanOfferDto {
     @Min(value = 6, message = "Срок должен быть не меньше 6")
     private Integer term;
 
-    @Schema(description = "Ежемесячный платеж", example = "87500.00")
+    @Schema(description = "Ежемесячный платеж", example = "87500.00", format = "decimal")
     @NotNull(message = "Ежемесячный платеж не может быть null")
     @Positive(message = "Ежемесячный платеж должен быть положительным")
     private BigDecimal monthlyPayment;
 
-    @Schema(description = "Процентная ставка", example = "15.5")
+    @Schema(description = "Процентная ставка", example = "15.5", format = "decimal")
     @NotNull(message = "Ставка не может быть null")
     @DecimalMin(value = "0.0", inclusive = false, message = "Ставка должна быть больше 0")
     private BigDecimal rate;

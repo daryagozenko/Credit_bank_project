@@ -15,15 +15,15 @@ import java.util.List;
 @AllArgsConstructor
 @Schema(name = "Кредитное предложение")
 public class CreditDto {
-    @Schema(description = "Сумма", example = "1000000")
+    @Schema(description = "Сумма", example = "1000000.83", format = "decimal")
     private BigDecimal amount;
     @Schema(description = "Срок", example = "6")
     private Integer term;
-    @Schema(description = "Ежемесячный платеж", example = "93000")
+    @Schema(description = "Ежемесячный платеж", example = "93000.23", format = "decimal")
     private BigDecimal monthlyPayment;
-    @Schema(description = "Ставка по кредиту", example = "15")
+    @Schema(description = "Ставка по кредиту", example = "15", format = "decimal")
     private BigDecimal rate;
-    @Schema(description = "Полная стоимсоть кредита", example = "17")
+    @Schema(description = "Полная стоимсоть кредита", example = "17", format = "decimal")
     private BigDecimal psk;
     @Schema(description = "Наличие страховки", example = "true")
     private Boolean isInsuranceEnabled;
