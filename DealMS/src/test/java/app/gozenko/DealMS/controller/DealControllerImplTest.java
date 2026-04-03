@@ -2,12 +2,20 @@ package app.gozenko.DealMS.controller;
 
 import app.gozenko.DealMS.utils.StubGenerator;
 import app.gozenko.controller.DealControllerImpl;
-import app.gozenko.dto.*;
+import app.gozenko.dto.CreditDto;
+import app.gozenko.dto.FinishRegistrationRequestDto;
+import app.gozenko.dto.LoanOfferDto;
+import app.gozenko.dto.LoanStatementRequestDto;
+import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Credit;
 import app.gozenko.entity.Statement;
 import app.gozenko.enums.StatementStatus;
-import app.gozenko.service.*;
+import app.gozenko.service.CalculatorCallingService;
+import app.gozenko.service.ClientServiceImpl;
+import app.gozenko.service.CreditServiceImpl;
+import app.gozenko.service.ScoringDataServiceImpl;
+import app.gozenko.service.StatementServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,9 +29,17 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DealControllerImplTest {
@@ -359,7 +375,6 @@ class DealControllerImplTest {
             assertEquals(HttpStatus.OK, response.getStatusCode());
 
             verify(statementService).findById(testStatementId);
-            reset(statementService, scoringDataService, calculatorCallingService, clientService, creditService);
         }
     }
 }

@@ -26,9 +26,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StatementServiceImplTest {
@@ -50,21 +57,15 @@ class StatementServiceImplTest {
         statementId = UUID.randomUUID();
         client = StubGenerator.createClient();
         savedStatement = StubGenerator.createStatement(statementId, client);
-        loanOffer = StubGenerator.createLoanOffer(new BigDecimal("1000000"), 12,
-                new BigDecimal("92635.22"), new BigDecimal("20.00"), false, false);
+        loanOffer = StubGenerator.createLoanOffer(
+                new BigDecimal("1000000"),
+                12,
+                new BigDecimal("92635.22"),
+                new BigDecimal("20.00"),
+                false,
+                false);
+        loanOffer.setStatementId(statementId);
         credit = StubGenerator.createCredit();
-
-        // Устанавливаем statementId в loanOffer
-        loanOffer = LoanOfferDto.builder()
-                .statementId(statementId)
-                .requestedAmount(loanOffer.getRequestedAmount())
-                .totalAmount(loanOffer.getTotalAmount())
-                .term(loanOffer.getTerm())
-                .monthlyPayment(loanOffer.getMonthlyPayment())
-                .rate(loanOffer.getRate())
-                .isInsuranceEnabled(loanOffer.getIsInsuranceEnabled())
-                .isSalaryClient(loanOffer.getIsSalaryClient())
-                .build();
     }
 
     @Test
@@ -81,8 +82,8 @@ class StatementServiceImplTest {
                 () -> assertNotNull(result.getCreationDate()),
                 () -> assertNotNull(result.getStatusHistory()),
                 () -> assertFalse(result.getStatusHistory().isEmpty()),
-                () -> assertEquals(StatementStatus.PREAPPROVAL, result.getStatusHistory().get(0).getStatus()),
-                () -> assertEquals(StatusChangeType.AUTOMATIC, result.getStatusHistory().get(0).getChangeType()),
+                () -> assertEquals(StatementStatus.PREAPPROVAL, result.getStatusHistory().getFirst().getStatus()),
+                () -> assertEquals(StatusChangeType.AUTOMATIC, result.getStatusHistory().getFirst().getChangeType()),
                 () -> assertNotNull(result.getSesCode()),
                 () -> assertTrue(result.getSesCode() >= 0 && result.getSesCode() <= 101)
         );
@@ -232,8 +233,8 @@ class StatementServiceImplTest {
 
         assertNotNull(history);
         assertTrue(history.size() >= 2);
-        assertEquals(StatementStatus.PREAPPROVAL, history.get(0).getStatus());
-        assertEquals(StatementStatus.APPROVED, history.get(history.size() - 1).getStatus());
+        assertEquals(StatementStatus.PREAPPROVAL, history.getFirst().getStatus());
+        assertEquals(StatementStatus.APPROVED, history.getLast().getStatus());
     }
 
     @Test

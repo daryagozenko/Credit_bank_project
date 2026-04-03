@@ -7,7 +7,6 @@ import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.PassportDto;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Statement;
-import app.gozenko.enums.EmploymentStatus;
 import app.gozenko.enums.Gender;
 import app.gozenko.enums.MaritalStatus;
 import app.gozenko.enums.Position;
@@ -27,15 +26,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ClientServiceImplTest {
@@ -217,28 +221,27 @@ class ClientServiceImplTest {
             String passportSeries,
             String passportNumber) {
 
-        LoanStatementRequestDto request = LoanStatementRequestDto.builder()
-                .lastName(lastName)
-                .firstName(firstName)
-                .middleName(middleName)
-                .birthday(birthday)
-                .email(email)
-                .passportSeries(passportSeries)
-                .passportNumber(passportNumber)
-                .build();
+        LoanStatementRequestDto request = StubGenerator.createLoanStatementRequestWithParams(
+                firstName,
+                lastName,
+                middleName,
+                birthday,
+                email,
+                passportSeries,
+                passportNumber
+        );
 
-        Client expectedClient = Client.builder()
-                .id(UUID.randomUUID())
-                .lastName(lastName)
-                .firstName(firstName)
-                .middleName(middleName)
-                .birthday(birthday)
-                .email(email)
-                .passport(PassportDto.builder()
-                        .series(passportSeries)
-                        .number(passportNumber)
-                        .build())
-                .build();
+        PassportDto passportDto = StubGenerator.createPassportDtoWithSeriesAndNumber();
+
+        Client expectedClient = StubGenerator.createPartOfClientWithParams(
+                UUID.randomUUID(),
+                lastName,
+                firstName,
+                middleName,
+                birthday,
+                email,
+                passportDto
+        );
 
         when(clientRepository.save(any(Client.class))).thenReturn(expectedClient);
 
@@ -266,13 +269,13 @@ class ClientServiceImplTest {
                         "Smith", "John", null,
                         LocalDate.of(1985, 5, 20),
                         "john@example.com",
-                        "9876", "543210"
+                        "1234", "567890"
                 ),
                 Arguments.of(
                         "Петрова", "Анна", "Сергеевна",
                         LocalDate.of(1995, 12, 10),
                         "anna@example.com",
-                        "5555", "123456"
+                        "1234", "567890"
                 )
         );
     }
@@ -286,15 +289,12 @@ class ClientServiceImplTest {
             MaritalStatus maritalStatus,
             int dependentAmount) {
 
-        FinishRegistrationRequestDto finishRequest = FinishRegistrationRequestDto.builder()
-                .gender(gender)
-                .maritalStatus(maritalStatus)
-                .dependentAmount(dependentAmount)
-                .employment(employment)
-                .passportIssueDate(LocalDate.of(2020, 1, 1))
-                .passportIssueBranch("Branch")
-                .accountNumber("1234567890")
-                .build();
+        FinishRegistrationRequestDto finishRequest = StubGenerator.createFinishRegistrationRequestWithParams(
+                gender,
+                maritalStatus,
+                employment,
+                dependentAmount
+        );
 
         when(clientRepository.findById(savedClient.getId())).thenReturn(Optional.of(savedClient));
         when(clientRepository.save(any(Client.class))).thenReturn(savedClient);
@@ -313,23 +313,9 @@ class ClientServiceImplTest {
     }
 
     private static Stream<Arguments> provideEmploymentUpdateScenarios() {
-        EmploymentDto workerEmployment = EmploymentDto.builder()
-                .employmentStatus(EmploymentStatus.EMPLOYED)
-                .employerINN("1234567890")
-                .salary(new BigDecimal("100000"))
-                .position(Position.WORKER)
-                .workExperienceTotal(60)
-                .workExperienceCurrent(24)
-                .build();
+        EmploymentDto workerEmployment = StubGenerator.createValidEmploymentDtoWithPosition(Position.WORKER);
 
-        EmploymentDto managerEmployment = EmploymentDto.builder()
-                .employmentStatus(EmploymentStatus.EMPLOYED)
-                .employerINN("0987654321")
-                .salary(new BigDecimal("200000"))
-                .position(Position.MANAGER)
-                .workExperienceTotal(120)
-                .workExperienceCurrent(48)
-                .build();
+        EmploymentDto managerEmployment = StubGenerator.createValidEmploymentDtoWithPosition(Position.MANAGER);
 
         return Stream.of(
                 Arguments.of(workerEmployment, Gender.MALE, MaritalStatus.MARRIED, 1),

@@ -15,11 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreditServiceImplTest {
@@ -100,29 +103,9 @@ class CreditServiceImplTest {
     @Test
     @DisplayName("Создание кредита - проверка с разными значениями")
     void createCredit_WithDifferentValues_Success() {
-        CreditDto customCreditDto = CreditDto.builder()
-                .amount(new BigDecimal("500000"))
-                .term(24)
-                .monthlyPayment(new BigDecimal("25000.00"))
-                .rate(new BigDecimal("15.00"))
-                .psk(new BigDecimal("600000"))
-                .paymentSchedule(null)
-                .isInsuranceEnabled(true)
-                .isSalaryClient(false)
-                .build();
+        CreditDto customCreditDto = StubGenerator.createCreditDto();
 
-        Credit customSavedCredit = Credit.builder()
-                .id(savedCredit.getId())
-                .amount(customCreditDto.getAmount())
-                .term(customCreditDto.getTerm())
-                .monthlyPayment(customCreditDto.getMonthlyPayment())
-                .rate(customCreditDto.getRate())
-                .psk(customCreditDto.getPsk())
-                .paymentSchedule(customCreditDto.getPaymentSchedule())
-                .isInsuranceEnabled(customCreditDto.getIsInsuranceEnabled())
-                .isSalaryClient(customCreditDto.getIsSalaryClient())
-                .creditStatus(CreditStatus.CALCULATED)
-                .build();
+        Credit customSavedCredit = StubGenerator.createCredit(savedCredit.getId());
 
         when(creditRepository.save(any(Credit.class))).thenReturn(customSavedCredit);
 
@@ -135,7 +118,7 @@ class CreditServiceImplTest {
                 () -> assertEquals(customCreditDto.getMonthlyPayment(), result.getMonthlyPayment()),
                 () -> assertEquals(customCreditDto.getRate(), result.getRate()),
                 () -> assertEquals(customCreditDto.getPsk(), result.getPsk()),
-                () -> assertTrue(result.getIsInsuranceEnabled()),
+                () -> assertFalse(result.getIsInsuranceEnabled()),
                 () -> assertFalse(result.getIsSalaryClient())
         );
     }

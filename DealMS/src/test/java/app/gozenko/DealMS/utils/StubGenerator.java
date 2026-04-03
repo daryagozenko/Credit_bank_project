@@ -30,8 +30,6 @@ public class StubGenerator {
     }
 
     public static LoanStatementRequestDto createLoanStatementRequestWithParams(
-            BigDecimal amount,
-            int term,
             String firstName,
             String lastName,
             String middleName,
@@ -40,8 +38,6 @@ public class StubGenerator {
             String passportSeries,
             String passportNumber) {
         return LoanStatementRequestDto.builder()
-                .amount(amount)
-                .term(term)
                 .firstName(firstName)
                 .lastName(lastName)
                 .middleName(middleName)
@@ -59,7 +55,6 @@ public class StubGenerator {
                 .dependentAmount(1)
                 .passportIssueDate(LocalDate.now().minusYears(5))
                 .passportIssueBranch("Branch")
-                .employment(createValidEmploymentDto())
                 .accountNumber("1234567890")
                 .build();
     }
@@ -67,46 +62,28 @@ public class StubGenerator {
     public static FinishRegistrationRequestDto createFinishRegistrationRequestWithParams(
             Gender gender,
             MaritalStatus maritalStatus,
-            int dependentAmount,
-            LocalDate passportIssueDate,
-            String passportIssueBranch,
-            EmploymentDto employment,
-            String accountNumber) {
+            EmploymentDto employmentDto,
+            int dependentAmount
+    ) {
         return FinishRegistrationRequestDto.builder()
                 .gender(gender)
                 .maritalStatus(maritalStatus)
                 .dependentAmount(dependentAmount)
-                .passportIssueDate(passportIssueDate)
-                .passportIssueBranch(passportIssueBranch)
-                .employment(employment)
-                .accountNumber(accountNumber)
+                .passportIssueDate(LocalDate.of(2020, 1, 1))
+                .passportIssueBranch("Branch")
+                .accountNumber("1234567890")
+                .employment(employmentDto)
                 .build();
     }
 
-    public static EmploymentDto createValidEmploymentDto() {
+    public static EmploymentDto createValidEmploymentDtoWithPosition(Position position) {
         return EmploymentDto.builder()
                 .employmentStatus(EmploymentStatus.EMPLOYED)
                 .employerINN("123456789012")
                 .salary(new BigDecimal("100000"))
-                .position(Position.WORKER)
+                .position(position)
                 .workExperienceTotal(60)
                 .workExperienceCurrent(24)
-                .build();
-    }
-
-    public static EmploymentDto createEmploymentWithParams(
-            EmploymentStatus status,
-            BigDecimal salary,
-            Position position,
-            int totalExp,
-            int currentExp) {
-        return EmploymentDto.builder()
-                .employmentStatus(status)
-                .employerINN("123456789012")
-                .salary(salary)
-                .position(position)
-                .workExperienceTotal(totalExp)
-                .workExperienceCurrent(currentExp)
                 .build();
     }
 
@@ -142,26 +119,6 @@ public class StubGenerator {
                 .build();
     }
 
-    public static LoanOfferDto createLoanOfferWithTotal(
-            BigDecimal requestedAmount,
-            BigDecimal totalAmount,
-            int term,
-            BigDecimal monthlyPayment,
-            BigDecimal rate,
-            boolean isInsuranceEnabled,
-            boolean isSalaryClient) {
-        return LoanOfferDto.builder()
-                .statementId(UUID.randomUUID())
-                .requestedAmount(requestedAmount)
-                .totalAmount(totalAmount)
-                .term(term)
-                .monthlyPayment(monthlyPayment)
-                .rate(rate)
-                .isInsuranceEnabled(isInsuranceEnabled)
-                .isSalaryClient(isSalaryClient)
-                .build();
-    }
-
     public static ScoringDataDto createValidScoringData() {
         return ScoringDataDto.builder()
                 .amount(new BigDecimal("1000000"))
@@ -177,7 +134,6 @@ public class StubGenerator {
                 .passportIssueBranch("Branch")
                 .maritalStatus(MaritalStatus.MARRIED)
                 .dependentAmount(1)
-                .employment(createValidEmploymentDto())
                 .accountNumber("1234567890")
                 .isInsuranceEnabled(true)
                 .isSalaryClient(true)
@@ -193,25 +149,6 @@ public class StubGenerator {
                 .psk(new BigDecimal("1200000"))
                 .isInsuranceEnabled(false)
                 .isSalaryClient(false)
-                .paymentSchedule(new ArrayList<>())
-                .build();
-    }
-
-    public static CreditDto createExpectedCreditDto(
-            BigDecimal amount,
-            int term,
-            BigDecimal monthlyPayment,
-            BigDecimal rate,
-            boolean isInsuranceEnabled,
-            boolean isSalaryClient) {
-        return CreditDto.builder()
-                .amount(amount)
-                .term(term)
-                .monthlyPayment(monthlyPayment)
-                .rate(rate)
-                .psk(rate)
-                .isInsuranceEnabled(isInsuranceEnabled)
-                .isSalaryClient(isSalaryClient)
                 .paymentSchedule(new ArrayList<>())
                 .build();
     }
@@ -239,24 +176,19 @@ public class StubGenerator {
                 .gender(Gender.MALE)
                 .maritalStatus(MaritalStatus.MARRIED)
                 .dependentAmount(1)
-                .employment(createValidEmploymentDto())
                 .accountNumber("1234567890")
                 .build();
     }
 
-    public static Client createClientWithParams(
+    public static Client createPartOfClientWithParams(
             UUID id,
             String lastName,
             String firstName,
             String middleName,
             LocalDate birthday,
             String email,
-            PassportDto passport,
-            Gender gender,
-            MaritalStatus maritalStatus,
-            int dependentAmount,
-            EmploymentDto employment,
-            String accountNumber) {
+            PassportDto passport
+    ) {
         return Client.builder()
                 .id(id)
                 .lastName(lastName)
@@ -265,11 +197,6 @@ public class StubGenerator {
                 .birthday(birthday)
                 .email(email)
                 .passport(passport)
-                .gender(gender)
-                .maritalStatus(maritalStatus)
-                .dependentAmount(dependentAmount)
-                .employment(employment)
-                .accountNumber(accountNumber)
                 .build();
     }
 
@@ -290,10 +217,6 @@ public class StubGenerator {
                 .isSalaryClient(false)
                 .creditStatus(CreditStatus.CALCULATED)
                 .build();
-    }
-
-    public static Statement createStatement() {
-        return createStatement(UUID.randomUUID(), createClient());
     }
 
     public static Statement createStatement(UUID statementId, Client client) {
@@ -336,12 +259,10 @@ public class StubGenerator {
                 .build();
     }
 
-    public static PassportDto createValidPassportDto() {
+    public static PassportDto createPassportDtoWithSeriesAndNumber() {
         return PassportDto.builder()
                 .series("1234")
                 .number("567890")
-                .issueDate(LocalDate.now().minusYears(5))
-                .issueBranch("Branch")
                 .build();
     }
 
