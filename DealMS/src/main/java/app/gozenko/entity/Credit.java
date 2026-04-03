@@ -44,6 +44,6 @@ public class Credit {
     @Column(name = "credit_status", columnDefinition = "varchar(30)")
     private CreditStatus creditStatus;
 
-    @OneToOne(mappedBy = "credit",fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "credit", fetch = FetchType.EAGER)
     private Statement statement;
 }

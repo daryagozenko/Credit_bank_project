@@ -5,6 +5,7 @@ import app.gozenko.exception.CalculatorServerException;
 import app.gozenko.exception.ClientExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,14 +15,15 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final String SPLITTER = ".";
 
-    @ExceptionHandler({Exception.class,
-            CalculatorServerException.class})
-    public ResponseEntity<Map<String, String>> scoringException(Exception ex) {
+    @ExceptionHandler(CalculatorServerException.class)
+    public ResponseEntity<Map<String, String>> scoringException(CalculatorServerException ex) {
+        log.warn("Scoring error given in the calculator");
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error: ", ex.getMessage()));
@@ -29,6 +31,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String, String>> entityException(EntityNotFoundException ex) {
+        log.warn("Entity is not exist");
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("error: ", ex.getMessage()));
@@ -57,14 +60,12 @@ public class GlobalExceptionHandler {
             });
             return createResponseEntity(exceptions.toString());
         }
-        if (ex instanceof CalculatorClientException) {
-            return createResponseEntity(ex.getMessage());
-        }
 
         return createResponseEntity(ex.getMessage());
     }
 
     private ResponseEntity<Map<String, String>> createResponseEntity(String message) {
+        log.warn("The entered data on the client side is not valid");
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("message: ", message));
