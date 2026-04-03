@@ -55,7 +55,7 @@ class CheckValueServiceTest {
     @DisplayName("Проверка createSalaryAndInsuranceLoanOffer - со страховкой и зарплатным клиентом")
     void salaryAndInsuranceClient_Success() {
         BigDecimal expectedRate = baseRate.subtract(insuranceRate).subtract(salaryRate);
-        BigDecimal insurancePrice = amount.multiply(insuranceRate.divide(BigDecimal.valueOf(100)));
+        BigDecimal insurancePrice = amount.multiply(insuranceRate.divide(BigDecimal.valueOf(100), RoundingMode.FLOOR));
         BigDecimal expectedTotalAmount = amount.add(insurancePrice);
 
         when(calcCreditValueService.calcMonthlyPayment(expectedRate, expectedTotalAmount, term))

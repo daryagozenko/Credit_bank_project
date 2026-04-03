@@ -11,10 +11,6 @@
 		<version>1.0.0</version>
 	</parent>
 
-	<properties>
-		<argLine></argLine>
-	</properties>
-
 	<dependencies>
 		<!-- Spring Boot Web -->
 		<dependency>
