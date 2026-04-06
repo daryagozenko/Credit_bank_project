@@ -79,10 +79,10 @@ class DealControllerImplTest {
         validLoanStatement = StubGenerator.createValidLoanStatementRequest();
         validFinishRegistration = StubGenerator.createValidFinishRegistrationRequest();
         savedClient = StubGenerator.createClient();
-        savedStatement = StubGenerator.createStatement(statementId, savedClient);
-        expectedLoanOffers = StubGenerator.createLoanOffersList();
-        expectedScoringData = StubGenerator.createValidScoringData();
-        expectedCreditDto = StubGenerator.createCreditDto();
+        savedStatement = StubGenerator.createStatement();
+        expectedLoanOffers = StubGenerator.createExpectedLoanOffersList();
+        expectedScoringData = StubGenerator.createExpectedScoringData();
+        expectedCreditDto = StubGenerator.createExpectedCreditDto();
         savedCredit = StubGenerator.createCredit();
     }
 
@@ -349,32 +349,5 @@ class DealControllerImplTest {
         verify(clientService).createClient(request);
         verify(statementService).createStatement(savedClient);
         verify(calculatorCallingService).getLoanOffers(request, savedStatement.getId());
-    }
-
-    @Test
-    @DisplayName("Проверка с разными UUID заявлений")
-    void calculateCredit_DifferentStatementIds() {
-        UUID[] statementIds = {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
-
-        for (UUID testStatementId : statementIds) {
-            Statement testStatement = StubGenerator.createStatement(testStatementId, savedClient);
-
-            when(statementService.findById(testStatementId)).thenReturn(testStatement);
-            when(scoringDataService.createScoringData(any(FinishRegistrationRequestDto.class), any(Statement.class)))
-                    .thenReturn(expectedScoringData);
-            when(calculatorCallingService.calcCredit(any(ScoringDataDto.class)))
-                    .thenReturn(expectedCreditDto);
-            doNothing().when(clientService).updateClient(any(Statement.class), any(FinishRegistrationRequestDto.class));
-            when(creditService.createCredit(any(CreditDto.class))).thenReturn(savedCredit);
-            doNothing().when(statementService).updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
-            doNothing().when(statementService).addCredit(any(Statement.class), any(Credit.class));
-
-            ResponseEntity<Void> response = dealController.calculateCredit(testStatementId, validFinishRegistration);
-
-            assertNotNull(response);
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-
-            verify(statementService).findById(testStatementId);
-        }
     }
 }

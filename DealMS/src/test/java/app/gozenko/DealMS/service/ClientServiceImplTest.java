@@ -53,17 +53,15 @@ class ClientServiceImplTest {
     private FinishRegistrationRequestDto validFinishRequest;
     private Client savedClient;
     private Statement statement;
-    private UUID clientId;
 
     @BeforeEach
     void setUp() {
-        clientId = UUID.randomUUID();
 
         validLoanRequest = StubGenerator.createValidLoanStatementRequest();
 
         validFinishRequest = StubGenerator.createValidFinishRegistrationRequest();
 
-        savedClient = StubGenerator.createClient(clientId);
+        savedClient = StubGenerator.createClient();
 
         statement = StubGenerator.createStatementWithClient(savedClient);
     }
@@ -128,6 +126,7 @@ class ClientServiceImplTest {
     @Test
     @DisplayName("Поиск клиента по ID - успешно")
     void findById_Success() {
+        UUID clientId = UUID.randomUUID();
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(savedClient));
 
         Client result = clientService.findById(clientId);
@@ -177,11 +176,10 @@ class ClientServiceImplTest {
     @Test
     @DisplayName("Обновление клиента - клиент не найден, выбрасывается исключение")
     void updateClient_ClientNotFound_ThrowsEntityNotFoundException() {
-        UUID nonExistentId = UUID.randomUUID();
-        Client nonExistentClient = StubGenerator.createClient(nonExistentId);
+        Client nonExistentClient = StubGenerator.createClient();
         Statement statementWithNonExistentClient = StubGenerator.createStatementWithClient(nonExistentClient);
 
-        when(clientRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+        when(clientRepository.findById(nonExistentClient.getId())).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,

@@ -87,7 +87,7 @@ public class StubGenerator {
                 .build();
     }
 
-    public static List<LoanOfferDto> createLoanOffersList() {
+    public static List<LoanOfferDto> createExpectedLoanOffersList() {
         return List.of(
                 createLoanOffer(new BigDecimal("1000000"), 12, new BigDecimal("92635.22"),
                         new BigDecimal("20.00"), false, false),
@@ -119,7 +119,7 @@ public class StubGenerator {
                 .build();
     }
 
-    public static ScoringDataDto createValidScoringData() {
+    public static ScoringDataDto createExpectedScoringData() {
         return ScoringDataDto.builder()
                 .amount(new BigDecimal("1000000"))
                 .term(12)
@@ -140,7 +140,7 @@ public class StubGenerator {
                 .build();
     }
 
-    public static CreditDto createCreditDto() {
+    public static CreditDto createExpectedCreditDto() {
         return CreditDto.builder()
                 .amount(new BigDecimal("1000000"))
                 .term(12)
@@ -154,10 +154,6 @@ public class StubGenerator {
     }
 
     public static Client createClient() {
-        return createClient(UUID.randomUUID());
-    }
-
-    public static Client createClient(UUID id) {
         PassportDto passport = PassportDto.builder()
                 .series("1234")
                 .number("567890")
@@ -166,7 +162,7 @@ public class StubGenerator {
                 .build();
 
         return Client.builder()
-                .id(id)
+                .id(UUID.randomUUID())
                 .lastName("Ivanov")
                 .firstName("Ivan")
                 .middleName("Ivanovich")
@@ -201,12 +197,8 @@ public class StubGenerator {
     }
 
     public static Credit createCredit() {
-        return createCredit(UUID.randomUUID());
-    }
-
-    public static Credit createCredit(UUID id) {
         return Credit.builder()
-                .id(id)
+                .id(UUID.randomUUID())
                 .amount(new BigDecimal("1000000"))
                 .term(12)
                 .monthlyPayment(new BigDecimal("92635.22"))
@@ -219,7 +211,7 @@ public class StubGenerator {
                 .build();
     }
 
-    public static Statement createStatement(UUID statementId, Client client) {
+    public static Statement createStatement() {
         List<StatementStatusHistoryDto> statusHistory = new ArrayList<>();
         statusHistory.add(StatementStatusHistoryDto.builder()
                 .status(StatementStatus.PREAPPROVAL)
@@ -228,8 +220,8 @@ public class StubGenerator {
                 .build());
 
         return Statement.builder()
-                .id(statementId)
-                .client(client)
+                .id(UUID.randomUUID())
+                .client(createClient())
                 .status(StatementStatus.PREAPPROVAL)
                 .creationDate(LocalDateTime.now())
                 .appliedOffer(createLoanOffer(new BigDecimal("1000000"), 12,

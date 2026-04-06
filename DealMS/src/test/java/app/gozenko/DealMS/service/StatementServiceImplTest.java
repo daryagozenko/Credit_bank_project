@@ -3,7 +3,6 @@ package app.gozenko.DealMS.service;
 import app.gozenko.DealMS.utils.StubGenerator;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.StatementStatusHistoryDto;
-import app.gozenko.entity.Client;
 import app.gozenko.entity.Credit;
 import app.gozenko.entity.Statement;
 import app.gozenko.enums.StatementStatus;
@@ -46,17 +45,14 @@ class StatementServiceImplTest {
     @InjectMocks
     private StatementServiceImpl statementService;
 
-    private Client client;
     private Statement savedStatement;
     private LoanOfferDto loanOffer;
     private Credit credit;
-    private UUID statementId;
 
     @BeforeEach
     void setUp() {
-        statementId = UUID.randomUUID();
-        client = StubGenerator.createClient();
-        savedStatement = StubGenerator.createStatement(statementId, client);
+
+        savedStatement = StubGenerator.createStatement();
         loanOffer = StubGenerator.createLoanOffer(
                 new BigDecimal("1000000"),
                 12,
@@ -64,7 +60,7 @@ class StatementServiceImplTest {
                 new BigDecimal("20.00"),
                 false,
                 false);
-        loanOffer.setStatementId(statementId);
+        loanOffer.setStatementId(savedStatement.getId());
         credit = StubGenerator.createCredit();
     }
 
@@ -73,7 +69,7 @@ class StatementServiceImplTest {
     void createStatement_Success() {
         when(statementRepository.save(any(Statement.class))).thenReturn(savedStatement);
 
-        Statement result = statementService.createStatement(client);
+        Statement result = statementService.createStatement(StubGenerator.createClient());
 
         assertAll("Проверка созданного заявления",
                 () -> assertNotNull(result),
@@ -94,6 +90,7 @@ class StatementServiceImplTest {
     @Test
     @DisplayName("Поиск заявления по ID - успешно")
     void findById_Success() {
+        UUID statementId = UUID.randomUUID();
         when(statementRepository.findById(statementId)).thenReturn(Optional.of(savedStatement));
 
         Statement result = statementService.findById(statementId);
@@ -123,7 +120,7 @@ class StatementServiceImplTest {
     @Test
     @DisplayName("Обновление заявления при выборе предложения - успешно")
     void updateStatement_Success() {
-        when(statementRepository.findById(statementId)).thenReturn(Optional.of(savedStatement));
+        when(statementRepository.findById(loanOffer.getStatementId())).thenReturn(Optional.of(savedStatement));
         when(statementRepository.save(any(Statement.class))).thenReturn(savedStatement);
 
         statementService.updateStatement(loanOffer);
@@ -164,7 +161,7 @@ class StatementServiceImplTest {
     @Test
     @DisplayName("Обновление статуса истории заявления - успешно")
     void updateStatementStatusHistory_Success() {
-        Statement statement = StubGenerator.createStatement(statementId, client);
+        Statement statement = StubGenerator.createStatement();
         int initialHistorySize = statement.getStatusHistory().size();
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
@@ -183,7 +180,7 @@ class StatementServiceImplTest {
     @Test
     @DisplayName("Обновление статуса истории заявления - статус не CC_APPROVED, signDate не устанавливается")
     void updateStatementStatusHistory_NotCcApproved_SignDateNotSet() {
-        Statement statement = StubGenerator.createStatement(statementId, client);
+        Statement statement = StubGenerator.createStatement();
         LocalDateTime oldSignDate = statement.getSignDate();
         int initialHistorySize = statement.getStatusHistory().size();
 
@@ -201,7 +198,7 @@ class StatementServiceImplTest {
     @Test
     @DisplayName("Добавление кредита к заявлению - успешно")
     void addCredit_Success() {
-        Statement statement = StubGenerator.createStatement(statementId, client);
+        Statement statement = StubGenerator.createStatement();
         when(statementRepository.save(any(Statement.class))).thenReturn(statement);
 
         statementService.addCredit(statement, credit);
@@ -220,7 +217,7 @@ class StatementServiceImplTest {
     @Test
     @DisplayName("Обновление заявления - проверка сохранения истории статусов")
     void updateStatement_StatusHistoryUpdated() {
-        when(statementRepository.findById(statementId)).thenReturn(Optional.of(savedStatement));
+        when(statementRepository.findById(loanOffer.getStatementId())).thenReturn(Optional.of(savedStatement));
         when(statementRepository.save(any(Statement.class))).thenReturn(savedStatement);
 
         statementService.updateStatement(loanOffer);
@@ -242,7 +239,7 @@ class StatementServiceImplTest {
     void createStatement_SesCodeGeneration() {
         when(statementRepository.save(any(Statement.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Statement result = statementService.createStatement(client);
+        Statement result = statementService.createStatement(StubGenerator.createClient());
 
         assertNotNull(result.getSesCode());
         assertTrue(result.getSesCode() >= 0 && result.getSesCode() <= 101);
@@ -252,7 +249,7 @@ class StatementServiceImplTest {
     @Test
     @DisplayName("Обновление статуса истории заявления - несколько обновлений")
     void updateStatementStatusHistory_MultipleUpdates() {
-        Statement statement = StubGenerator.createStatement(statementId, client);
+        Statement statement = StubGenerator.createStatement();
         int initialHistorySize = statement.getStatusHistory().size();
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.APPROVED);

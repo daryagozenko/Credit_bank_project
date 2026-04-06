@@ -6,7 +6,7 @@
 выполнить
 - psql -h localhost -p 5432 -U <имя_пользователя> -d deal_db -f init.sql
 
-Таблицы создадутся автоматически блягодаря "spring.jpa.hibernate.ddl-auto=update"
+Таблицы обновятся автоматически благодаря "spring.jpa.hibernate.ddl-auto=update"
 
 ### 2. Установить переменные окружения для подключения к БД
 - set DB_USERNAME=имя_пользователя

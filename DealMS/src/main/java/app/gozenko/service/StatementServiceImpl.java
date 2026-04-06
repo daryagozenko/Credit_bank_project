@@ -29,11 +29,9 @@ public class StatementServiceImpl implements StatementService {
 
     private final StatementRepository statementRepository;
 
-    private List<StatementStatusHistoryDto> statusHistory;
-
     @Override
     public Statement createStatement(Client client) {
-        statusHistory = createStatusHistory();
+        List<StatementStatusHistoryDto> statusHistory = createStatusHistory();
         log.debug("statusHistory-{}", statusHistory);
 
         Statement statement = Statement.builder()
@@ -64,7 +62,7 @@ public class StatementServiceImpl implements StatementService {
         log.debug("updateStatement: statement-{}", statement);
 
         List<StatementStatusHistoryDto> history = statement.getStatusHistory();
-        log.debug("updateStatement: statusHistory-{}", statusHistory);
+        log.debug("updateStatement: statusHistory-{}", history);
         history.add(addNewStatus(StatementStatus.APPROVED));
         statement.setStatusHistory(history);
         statement.setStatus(StatementStatus.APPROVED);
@@ -97,13 +95,13 @@ public class StatementServiceImpl implements StatementService {
     }
 
     private List<StatementStatusHistoryDto> createStatusHistory() {
-        statusHistory = new ArrayList<>();
+        List<StatementStatusHistoryDto> statusHistory = new ArrayList<>();
         statusHistory.add(StatementStatusHistoryDto.builder()
                 .status(StatementStatus.PREAPPROVAL)
                 .time(LocalDateTime.now())
                 .changeType(StatusChangeType.AUTOMATIC)
                 .build());
-        log.debug(" createStatusHistory: atestatementHistory-{}", statusHistory);
+        log.debug(" createStatusHistory: statementHistory-{}", statusHistory);
         return statusHistory;
     }
 

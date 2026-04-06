@@ -38,7 +38,7 @@ class CreditServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        creditDto = StubGenerator.createCreditDto();
+        creditDto = StubGenerator.createExpectedCreditDto();
         savedCredit = StubGenerator.createCredit();
     }
 
@@ -103,9 +103,9 @@ class CreditServiceImplTest {
     @Test
     @DisplayName("Создание кредита - проверка с разными значениями")
     void createCredit_WithDifferentValues_Success() {
-        CreditDto customCreditDto = StubGenerator.createCreditDto();
+        CreditDto customCreditDto = StubGenerator.createExpectedCreditDto();
 
-        Credit customSavedCredit = StubGenerator.createCredit(savedCredit.getId());
+        Credit customSavedCredit = StubGenerator.createCredit();
 
         when(creditRepository.save(any(Credit.class))).thenReturn(customSavedCredit);
 

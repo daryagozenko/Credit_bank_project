@@ -23,7 +23,7 @@ public class ScoringDataServiceImpl implements ScoringDataService {
     private ScoringDataDto fillScoringData(Client client,
                                            Statement statement,
                                            FinishRegistrationRequestDto finishRegistration) {
-        log.info("Build new ScoringData");
+        log.debug("Build new ScoringData");
         return ScoringDataDto.builder()
                 .amount(statement.getAppliedOffer().getRequestedAmount())
                 .term(statement.getAppliedOffer().getTerm())
