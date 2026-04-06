@@ -9,7 +9,7 @@
     <artifactId>credit-bank-project</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>Credit_Bank_Project</name>
+    <name>credit_bank_project</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
