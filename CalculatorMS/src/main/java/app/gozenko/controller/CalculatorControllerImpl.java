@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,10 +60,11 @@ public class CalculatorControllerImpl implements CalculatorController {
                             mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
     @Override
-    public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(@RequestBody LoanStatementRequestDto loanState) {
+    public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(LoanStatementRequestDto loanState) {
         log.info("Input data in calcConditionOfCredit loanState-{}", loanState);
-        log.info("Sending a LoanStatementRequest to preScoringService");
+        log.debug("Sending a LoanStatementRequest to preScoringService");
         preScoringService.preScoringLoan(loanState);
+
         log.info("Successful create list of loanOffers");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(loanOfferService.createLoanOffers(
@@ -95,10 +95,11 @@ public class CalculatorControllerImpl implements CalculatorController {
                             mediaType = MediaType.APPLICATION_JSON_VALUE)
             )})
     @Override
-    public ResponseEntity<CreditDto> validateAndCalc(@RequestBody ScoringDataDto scoringData) {
+    public ResponseEntity<CreditDto> validateAndCalc(ScoringDataDto scoringData) {
         log.info("Input data in validateAndCalc scoringData-{}", scoringData);
         log.info("Sending a ScoringData to preScoringService");
         preScoringService.preScoringScoreData(scoringData);
+
         log.info("Successful create credit offer");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(scoringService.createScoringData(scoringData));
