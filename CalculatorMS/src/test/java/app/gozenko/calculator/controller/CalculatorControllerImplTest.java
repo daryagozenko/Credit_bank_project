@@ -2,10 +2,10 @@ package app.gozenko.calculator.controller;
 
 import app.gozenko.calculator.utils.StubGenerator;
 import app.gozenko.controller.CalculatorControllerImpl;
+import app.gozenko.dto.CreditDto;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
-import app.gozenko.dto.CreditDto;
 import app.gozenko.exception.ValidationDataException;
 import app.gozenko.service.interfaces.LoanOfferService;
 import app.gozenko.service.interfaces.PreScoringService;
@@ -24,9 +24,19 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CalculatorControllerImplTest {

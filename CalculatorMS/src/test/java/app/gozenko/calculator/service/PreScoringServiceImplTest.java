@@ -18,8 +18,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
-import static app.gozenko.calculator.utils.StubGenerator.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static app.gozenko.calculator.utils.StubGenerator.createLoanStatementRequestWithAge;
+import static app.gozenko.calculator.utils.StubGenerator.createLoanStatementRequestWithBirthday;
+import static app.gozenko.calculator.utils.StubGenerator.createScoringRequestWithAge;
+import static app.gozenko.calculator.utils.StubGenerator.createValidScoringRequest;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class PreScoringServiceImplTest {

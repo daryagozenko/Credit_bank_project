@@ -5,7 +5,10 @@ import app.gozenko.dto.CreditDto;
 import app.gozenko.dto.EmploymentDto;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.ScoringDataDto;
-import app.gozenko.enums.*;
+import app.gozenko.enums.EmploymentStatus;
+import app.gozenko.enums.Gender;
+import app.gozenko.enums.MaritalStatus;
+import app.gozenko.enums.Position;
 import app.gozenko.exception.UnScoringDataException;
 import app.gozenko.service.CalcCreditValueService;
 import app.gozenko.service.CheckValueService;
@@ -25,7 +28,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
