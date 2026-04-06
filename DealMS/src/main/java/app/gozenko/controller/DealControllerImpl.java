@@ -116,6 +116,12 @@ public class DealControllerImpl implements DealController {
                             mediaType = MediaType.APPLICATION_JSON_VALUE)
             ),
             @ApiResponse(
+                    responseCode = "404",
+                    description = "Сущность не найдена в бд",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "Внутренняя ошибка сервера",
                     content = @Content(

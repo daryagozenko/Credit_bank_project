@@ -4,6 +4,7 @@ import app.gozenko.exception.CalculatorClientException;
 import app.gozenko.exception.CalculatorServerException;
 import app.gozenko.exception.ClientExistsException;
 import app.gozenko.exception.JsonException;
+import app.gozenko.exception.UnloadedDataException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -23,35 +24,50 @@ public class GlobalExceptionHandler {
 
     private static final String SPLITTER = ".";
 
-    @ExceptionHandler({CalculatorServerException.class,
-            JsonException.class})
-    public ResponseEntity<Map<String, String>> scoringException(CalculatorServerException ex) {
-        log.warn("Scoring error given in the calculator");
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error: ", ex.getMessage()));
+    @ExceptionHandler(UnloadedDataException.class)
+    public ResponseEntity<Map<String, String>> handleUnloadedDataException(UnloadedDataException ex) {
+        log.warn("Unloaded data from calculator");
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(CalculatorServerException.class)
+    public ResponseEntity<Map<String, String>> handleCalculatorServerException(CalculatorServerException ex) {
+        log.warn("Calculator server error");
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(JsonException.class)
+    public ResponseEntity<Map<String, String>> handleJsonException(JsonException ex) {
+        log.warn("Json error given in the calculator");
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Map<String, String>> entityException(EntityNotFoundException ex) {
-        log.warn("Entity is not exist");
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error: ", ex.getMessage()));
+    public ResponseEntity<Map<String, String>> handleEntityException(EntityNotFoundException ex) {
+        log.warn("Entity is not exists");
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ClientExistsException.class)
-    public ResponseEntity<Map<String, String>> clientExistsException(ClientExistsException ex) {
-        return createResponseEntity(ex.getMessage());
+    public ResponseEntity<Map<String, String>> handleClientExistsException(ClientExistsException ex) {
+        log.warn("Client is not exists");
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class,
             ConstraintViolationException.class,
-            CalculatorClientException.class})
-    public ResponseEntity<Map<String, String>> getException(Exception ex) {
-        if (ex instanceof MethodArgumentTypeMismatchException) {
-            return createResponseEntity(ex.getMessage());
+            MethodArgumentNotValidException.class})
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(Exception ex) {
+        log.warn("Validation error");
+        if (ex instanceof MethodArgumentNotValidException) {
+            Map<String, String> errors = new HashMap<>();
+            MethodArgumentNotValidException e = (MethodArgumentNotValidException) ex;
+            e.getBindingResult().getFieldErrors().forEach(error -> {
+                errors.put(error.getField(), error.getDefaultMessage());
+            });
+            return createResponseEntity(errors, HttpStatus.BAD_REQUEST);
         }
+
         if (ex instanceof ConstraintViolationException) {
             Map<String, String> exceptions = new HashMap<>();
             ConstraintViolationException exception = (ConstraintViolationException) ex;
@@ -61,28 +77,22 @@ public class GlobalExceptionHandler {
                 String message = violation.getMessage();
                 exceptions.put(field, message);
             });
-            return createResponseEntity(exceptions.toString());
+            return createResponseEntity(Map.of("message: ", exceptions.toString()), HttpStatus.BAD_REQUEST);
         }
 
-        return createResponseEntity(ex.getMessage());
+        return createResponseEntity(Map.of("message: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> getValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), error.getDefaultMessage());
-        });
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(errors);
+    @ExceptionHandler(CalculatorClientException.class)
+    public ResponseEntity<Map<String, String>> handleCalculatorClientValidationExceptions(
+            CalculatorClientException ex) {
+        log.warn("Calculator client error");
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    private ResponseEntity<Map<String, String>> createResponseEntity(String message) {
-        log.warn("The entered data on the client side is not valid");
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("message: ", message));
+    private ResponseEntity<Map<String, String>> createResponseEntity(Map<String, String> message,
+                                                                     HttpStatus status) {
+        return ResponseEntity.status(status).body(message);
     }
 
     private String extractFieldName(String propertyPath) {

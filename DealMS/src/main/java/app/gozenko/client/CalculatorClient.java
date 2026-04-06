@@ -63,7 +63,7 @@ public class CalculatorClient {
             String errorMessage = parseErrorMessage(errorBody);
             throw new CalculatorServerException(errorMessage);
         } catch (IOException ex) {
-            throw new RuntimeException("Ошибка в микросервисе калькулятора", ex);
+            throw new JsonException("Ошибка в микросервисе калькулятора "+ex);
         }
     }
 
@@ -73,7 +73,7 @@ public class CalculatorClient {
             String errorMessage = parseErrorMessage(errorBody);
             throw new CalculatorClientException(errorMessage);
         } catch (IOException ex) {
-            throw new RuntimeException("Ошибка чтения ответа из калькулятора", ex);
+            throw new JsonException("Ошибка чтения ответа из калькулятора "+ex);
         }
     }
 
