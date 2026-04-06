@@ -32,17 +32,19 @@ public class ScoringDataDto {
     private Integer term;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Имя должно быть от 2 до 30 символов")
+            message = "Имя должно быть от 2 до 30 символов, символы латинские")
+    @NotNull
     @Schema(description = "Имя", example = "dasha")
     private String firstName;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Фамилия должна быть от 2 до 30 символов")
+            message = "Фамилия должна быть от 2 до 30 символов, символы латинские")
+    @NotNull
     @Schema(description = "Фамилия", example = "gozenko")
     private String lastName;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Отчество должно быть от 2 до 30 символов")
+            message = "Отчество должно быть от 2 до 30 символов, символы латинские")
     @Schema(description = "Отчество", example = "sergeevna")
     private String middleName;
 

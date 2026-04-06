@@ -26,7 +26,10 @@ public class CalculatorCallingService {
 
         if (offers == null) throw new UnloadedDataException("Предложения не поступили");
         return offers.stream()
-                .peek(offer -> offer.setStatementId(statementId))
+                .map(offer -> {
+                    offer.setStatementId(statementId);
+                    return offer;
+                })
                 .toList();
     }
 

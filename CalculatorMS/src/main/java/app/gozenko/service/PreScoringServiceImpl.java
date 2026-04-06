@@ -2,6 +2,7 @@ package app.gozenko.service;
 
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
+import app.gozenko.exception.DateParseException;
 import app.gozenko.exception.ValidationDataException;
 import app.gozenko.service.interfaces.PreScoringService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,10 @@ public class PreScoringServiceImpl implements PreScoringService {
     public void preScoringLoan(LoanStatementRequestDto request) {
         log.debug("LoanStatement request: {}", request);
 
+        if (!request.getBirthday().toString().matches("yyyy-MM-dd")){
+            throw new DateParseException("Дата должна соответствовать формату yyyy-mm-dd");
+        }
+
         if (!(checkLegalAge(request.getBirthday())))
             throw new ValidationDataException("Возраст должен быть больше " + legalAge);
     }
@@ -31,6 +36,10 @@ public class PreScoringServiceImpl implements PreScoringService {
     @Override
     public void preScoringScoreData(ScoringDataDto request) {
         log.debug("ScoringData request: {}", request);
+
+        if (!request.getBirthday().toString().matches("yyyy-MM-dd")){
+            throw new DateParseException("Дата должна соответствовать формату yyyy-mm-dd");
+        }
 
         if (!(checkLegalAge(request.getBirthday())))
             throw new ValidationDataException("Возраст должен быть больше " + legalAge);

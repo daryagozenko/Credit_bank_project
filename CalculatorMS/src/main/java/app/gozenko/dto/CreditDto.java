@@ -23,7 +23,7 @@ public class CreditDto {
     private BigDecimal monthlyPayment;
     @Schema(description = "Ставка по кредиту", example = "15", format = "decimal")
     private BigDecimal rate;
-    @Schema(description = "Полная стоимсоть кредита", example = "17", format = "decimal")
+    @Schema(description = "Полная стоимость кредита", example = "17", format = "decimal")
     private BigDecimal psk;
     @Schema(description = "Наличие страховки", example = "true")
     private Boolean isInsuranceEnabled;

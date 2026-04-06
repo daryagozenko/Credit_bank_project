@@ -4,6 +4,7 @@ import app.gozenko.enums.Gender;
 import app.gozenko.enums.MaritalStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
@@ -32,17 +33,19 @@ public class ScoringDataDto {
     private Integer term;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Имя должно быть от 2 до 30 символов")
+            message = "Имя должно быть от 2 до 30 символов, символы латинские")
+    @NotBlank
     @Schema(description = "Имя", example = "dasha")
     private String firstName;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Фамилия должна быть от 2 до 30 символов")
+            message = "Фамилия должна быть от 2 до 30 символов, символы латинские")
+    @NotBlank
     @Schema(description = "Фамилия", example = "gozenko")
     private String lastName;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Отчество должно быть от 2 до 30 символов")
+            message = "Отчество должно быть от 2 до 30 символов, символы латинские")
     @Schema(description = "Отчество", example = "sergeevna")
     private String middleName;
 
@@ -57,20 +60,23 @@ public class ScoringDataDto {
 
     @Pattern(regexp = "^\\d{4}$",
             message = "Серия паспорта должна быть 4 символа")
+    @NotBlank
     @Schema(description = "Серия паспорта", example = "1111")
     private String passportSeries;
 
     @Pattern(regexp = "^\\d{6}$",
             message = "Номер паспорта должен быть 6 символов")
+    @NotBlank
     @Schema(description = "Номер паспорта", example = "121212")
     private String passportNumber;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotBlank
     @Past(message = "Дата получения паспорта должна быть в прошлом")
     @Schema(description = "Дата выдачи паспорта", example = "2025-07-01")
     private LocalDate passportIssueDate;
 
-    @NotNull(message = "необходимо заполнить passportIssueBranch")
+    @NotBlank(message = "необходимо заполнить passportIssueBranch")
     @Schema(description = "Кем выдан паспорт", example = "МВД России")
     private String passportIssueBranch;
 
@@ -78,15 +84,14 @@ public class ScoringDataDto {
     @Schema(description = "Семейное положение", example = "NOT_MARRIED")
     private MaritalStatus maritalStatus;
 
-    @NotNull(message = "необходимо заполнить dependentAmount")
+    @NotBlank(message = "необходимо заполнить dependentAmount")
     @Schema(description = "Количество иждивенцев", example = "0")
     private Integer dependentAmount;
 
     @NotNull(message = "необходимо заполнить employment")
-    @Schema(description = "Информация о занятости")
     private EmploymentDto employment;
 
-    @NotNull(message = "необходимо заполнить accountNumber")
+    @NotBlank(message = "необходимо заполнить accountNumber")
     @Schema(description = "Номер счета", example = "2000-563-78")
     private String accountNumber;
 

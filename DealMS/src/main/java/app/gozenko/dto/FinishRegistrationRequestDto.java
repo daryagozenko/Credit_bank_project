@@ -39,14 +39,15 @@ public class FinishRegistrationRequestDto {
     private LocalDate passportIssueDate;
 
     @Size(min = 5, max = 200, message = "Место выдачи паспорта должно быть от 5 до 200 символов")
+    @NotBlank
     @Schema(description = "Кем выдан паспорт", example = "ОУФМС РОССИИ ПО ГОРОДУ МОСКВЕ")
     private String passportIssueBranch;
 
     @NotNull(message = "необходимо заполнить employment")
-    @Schema(description = "Информация о трудоустройстве")
     private EmploymentDto employment;
 
     @Pattern(regexp = "^[0-9]{20}$", message = "Номер счета должен состоять из 20 цифр")
+    @NotBlank
     @Schema(description = "Номер счета", example = "40817810099910004312")
     private String accountNumber;
 }

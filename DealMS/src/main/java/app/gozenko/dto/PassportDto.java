@@ -26,6 +26,6 @@ public class PassportDto {
     @Schema(description = "Название подразделения", example = "МВД России")
     private String issueBranch;
 
-    @Schema(description = "Название подразделения", example = "МВД России")
+    @Schema(description = "Дата выдачи", example = "2024-07-01")
     private LocalDate issueDate;
 }

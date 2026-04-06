@@ -1,5 +1,6 @@
 package app.gozenko.handler;
 
+import app.gozenko.exception.DateParseException;
 import app.gozenko.exception.UnScoringDataException;
 import app.gozenko.exception.ValidationDataException;
 import jakarta.validation.ConstraintViolationException;
@@ -48,6 +49,11 @@ public class ExceptionValidationHandler {
     @ExceptionHandler(UnScoringDataException.class)
     public ResponseEntity<Map<String, String>> handleUnScoringDataException(UnScoringDataException ex) {
         return createResponseEntity(Map.of("Отказ по причине: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DateParseException.class)
+    public ResponseEntity<Map<String, String>> handleDataParseException(DateParseException ex) {
+        return createResponseEntity(Map.of("message: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<Map<String, String>> createResponseEntity(Map<String, String> message,
