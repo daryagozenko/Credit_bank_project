@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StatementServiceImpl implements StatementService {
 
-    private static final Integer MAX_SES_CODE = 101;
+    private static final Integer MAX_SES_CODE = 9999;
 
     private final StatementRepository statementRepository;
 

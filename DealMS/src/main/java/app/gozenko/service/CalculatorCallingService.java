@@ -24,7 +24,6 @@ public class CalculatorCallingService {
         List<LoanOfferDto> offers = calculatorClient.getLoanOffers(loanState);
         log.debug("getLoanOffers: offers-{}", offers);
 
-        if (offers == null) throw new UnloadedDataException("Предложения не поступили");
         return offers.stream()
                 .map(offer -> {
                     offer.setStatementId(statementId);

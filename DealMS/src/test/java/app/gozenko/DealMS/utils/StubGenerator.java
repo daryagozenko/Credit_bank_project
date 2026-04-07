@@ -1,10 +1,23 @@
 package app.gozenko.DealMS.utils;
 
-import app.gozenko.dto.*;
-import app.gozenko.entity.Statement;
+import app.gozenko.dto.CreditDto;
+import app.gozenko.dto.EmploymentDto;
+import app.gozenko.dto.FinishRegistrationRequestDto;
+import app.gozenko.dto.LoanOfferDto;
+import app.gozenko.dto.LoanStatementRequestDto;
+import app.gozenko.dto.PassportDto;
+import app.gozenko.dto.ScoringDataDto;
+import app.gozenko.dto.StatementStatusHistoryDto;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Credit;
-import app.gozenko.enums.*;
+import app.gozenko.entity.Statement;
+import app.gozenko.enums.CreditStatus;
+import app.gozenko.enums.EmploymentStatus;
+import app.gozenko.enums.Gender;
+import app.gozenko.enums.MaritalStatus;
+import app.gozenko.enums.Position;
+import app.gozenko.enums.StatementStatus;
+import app.gozenko.enums.StatusChangeType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
