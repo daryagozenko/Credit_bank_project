@@ -1,9 +1,12 @@
 package app.gozenko.handler;
 
-import app.gozenko.exception.UnScoringDataException;
+import app.gozenko.exception.DateParseException;
+import app.gozenko.exception.ValidationDataException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -11,19 +14,26 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
-public class ExceptionValidationHandler {
+public class GlobalExceptionHandler {
 
     private static final String SPLITTER = ".";
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGlobalException(Exception ex) {
-        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler({MethodArgumentTypeMismatchException.class,
-            ConstraintViolationException.class})
-    public ResponseEntity<Map<String, String>> handleValidationException(Exception ex) {
+            ConstraintViolationException.class,
+            MethodArgumentNotValidException.class})
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(Exception ex) {
+        log.warn("Validation error");
+        if (ex instanceof MethodArgumentNotValidException) {
+            Map<String, String> errors = new HashMap<>();
+            MethodArgumentNotValidException e = (MethodArgumentNotValidException) ex;
+            e.getBindingResult().getFieldErrors().forEach(error -> {
+                errors.put(error.getField(), error.getDefaultMessage());
+            });
+            return createResponseEntity(errors, HttpStatus.BAD_REQUEST);
+        }
+
         if (ex instanceof ConstraintViolationException) {
             Map<String, String> exceptions = new HashMap<>();
             ConstraintViolationException exception = (ConstraintViolationException) ex;
@@ -39,16 +49,20 @@ public class ExceptionValidationHandler {
         return createResponseEntity(Map.of("message: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UnScoringDataException.class)
-    public ResponseEntity<Map<String, String>> handleUnScoringDataException(UnScoringDataException ex) {
-        return createResponseEntity(Map.of("Отказ по причине: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(DateParseException.class)
+    public ResponseEntity<Map<String, String>> handleDataParseException(DateParseException ex) {
+        return createResponseEntity(Map.of("message: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ValidationDataException.class)
+    public ResponseEntity<Map<String, String>> handleValidationDataException(ValidationDataException ex) {
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<Map<String, String>> createResponseEntity(Map<String, String> message,
                                                                      HttpStatus status) {
         return ResponseEntity.status(status).body(message);
     }
-
 
     private String extractFieldName(String propertyPath) {
         int lastDotIndex = propertyPath.lastIndexOf(SPLITTER);

@@ -6,7 +6,7 @@ import app.gozenko.dto.CreditDto;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
-import app.gozenko.exception.ValidationDataException;
+import app.gozenko.exception.UnScoringDataException;
 import app.gozenko.service.interfaces.LoanOfferService;
 import app.gozenko.service.interfaces.ScoringService;
 import org.junit.jupiter.api.BeforeEach;
@@ -178,10 +178,10 @@ class CalculatorControllerImplTest {
     @DisplayName("Ошибка скоринга при расчете кредита")
     void validateAndCalc_ScoringFailed() {
         String errorMessage = "Безработный";
-        doThrow(new ValidationDataException(errorMessage))
+        doThrow(new UnScoringDataException(errorMessage))
                 .when(scoringService).createScoringData(any(ScoringDataDto.class));
 
-        assertThrows(ValidationDataException.class,
+        assertThrows(UnScoringDataException.class,
                 () -> calculatorController.validateAndCalc(validScoringData));
 
         verify(scoringService).createScoringData(validScoringData);
