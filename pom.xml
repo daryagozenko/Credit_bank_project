@@ -37,6 +37,7 @@
     <modules>
         <module>DealMS</module>
         <module>CalculatorMS</module>
+        <module>StatementMS</module>
     </modules>
 
     <dependencyManagement>
