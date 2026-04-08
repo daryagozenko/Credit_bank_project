@@ -24,7 +24,7 @@ import java.time.LocalDate;
 public class ScoringDataDto {
 
     @Min(value = 20000, message = "Сумма должна быть больше 20000")
-    @Schema(description = "Сумма кредита", example = "1030000")
+    @Schema(description = "Сумма кредита", example = "1030000.12", format = "decimal")
     private BigDecimal amount;
 
     @Min(value = 6, message = "Срок должен быть не меньше 6")
@@ -32,17 +32,19 @@ public class ScoringDataDto {
     private Integer term;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Имя должно быть от 2 до 30 символов")
+            message = "Имя должно быть от 2 до 30 символов, символы латинские")
+    @NotNull
     @Schema(description = "Имя", example = "dasha")
     private String firstName;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Фамилия должна быть от 2 до 30 символов")
+            message = "Фамилия должна быть от 2 до 30 символов, символы латинские")
+    @NotNull
     @Schema(description = "Фамилия", example = "gozenko")
     private String lastName;
 
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Отчество должно быть от 2 до 30 символов")
+            message = "Отчество должно быть от 2 до 30 символов, символы латинские")
     @Schema(description = "Отчество", example = "sergeevna")
     private String middleName;
 

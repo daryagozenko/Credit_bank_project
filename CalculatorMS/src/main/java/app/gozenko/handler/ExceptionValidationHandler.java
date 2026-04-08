@@ -1,5 +1,6 @@
 package app.gozenko.handler;
 
+import app.gozenko.exception.DateParseException;
 import app.gozenko.exception.UnScoringDataException;
 import app.gozenko.exception.ValidationDataException;
 import jakarta.validation.ConstraintViolationException;
@@ -18,19 +19,14 @@ public class ExceptionValidationHandler {
     private static final String SPLITTER = ".";
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> scoringException(Exception ex) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error: ", ex.getMessage()));
+    public ResponseEntity<Map<String, String>> handleGlobalException(Exception ex) {
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class,
             ConstraintViolationException.class,
             ValidationDataException.class})
-    public ResponseEntity<Map<String, String>> getException(Exception ex) {
-        if (ex instanceof MethodArgumentTypeMismatchException) {
-            return createResponseEntity(ex.getMessage());
-        }
+    public ResponseEntity<Map<String, String>> handleValidationException(Exception ex) {
         if (ex instanceof ConstraintViolationException) {
             Map<String, String> exceptions = new HashMap<>();
             ConstraintViolationException exception = (ConstraintViolationException) ex;
@@ -40,25 +36,29 @@ public class ExceptionValidationHandler {
                 String message = violation.getMessage();
                 exceptions.put(field, message);
             });
-            return createResponseEntity(exceptions.toString());
+            return createResponseEntity(Map.of("message: ", exceptions.toString()), HttpStatus.BAD_REQUEST);
         }
+
         if (ex instanceof ValidationDataException) {
-            return createResponseEntity("Ошибка: " + ex.getMessage());
+            return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
         }
-        return createResponseEntity(ex.getMessage());
+
+        return createResponseEntity(Map.of("message: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UnScoringDataException.class)
-    public ResponseEntity<Map<String, String>> scoringException(UnScoringDataException ex) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(Map.of("Отказ по причине: ", ex.getMessage()));
+    public ResponseEntity<Map<String, String>> handleUnScoringDataException(UnScoringDataException ex) {
+        return createResponseEntity(Map.of("Отказ по причине: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    private ResponseEntity<Map<String, String>> createResponseEntity(String message) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("message: ", message));
+    @ExceptionHandler(DateParseException.class)
+    public ResponseEntity<Map<String, String>> handleDataParseException(DateParseException ex) {
+        return createResponseEntity(Map.of("message: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    private ResponseEntity<Map<String, String>> createResponseEntity(Map<String, String> message,
+                                                                     HttpStatus status) {
+        return ResponseEntity.status(status).body(message);
     }
 
 

@@ -1,0 +1,1 @@
+CREATE DATABASE deal_db

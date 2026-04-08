@@ -1,3 +1,4 @@
+
 package app.gozenko.service;
 
 import app.gozenko.dto.CreditDto;
@@ -130,7 +131,7 @@ public class CalcCreditValueService {
         log.debug("overpayment={}", overpayment);
 
         BigDecimal avgTermDays = BigDecimal.valueOf(termMonths)
-                .multiply(BigDecimal.valueOf(DAYS / MONTHS / AVERAGE)); // term * (365/12/2)
+                .multiply(BigDecimal.valueOf(DAYS / MONTHS / AVERAGE));
         log.debug("angTermsDays={}", avgTermDays);
 
         BigDecimal psk = overpayment

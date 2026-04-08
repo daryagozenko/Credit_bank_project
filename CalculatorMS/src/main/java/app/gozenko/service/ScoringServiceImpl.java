@@ -51,8 +51,6 @@ public class ScoringServiceImpl implements ScoringService {
     @Value("${app.gozenko.rate-with-dependent}")
     private BigDecimal rateWithDependent;
 
-    private BigDecimal rate;
-
 
     @Override
     public CreditDto createScoringData(ScoringDataDto request) {
@@ -60,11 +58,10 @@ public class ScoringServiceImpl implements ScoringService {
         if (message.isPresent()) {
             throw new UnScoringDataException(message.get());
         }
-        initialValues(request);
-        updateTheLoanRate(request);
+        BigDecimal baseRate = initialValues(request);
+        BigDecimal finalRate = updateTheLoanRate(request, baseRate);
 
-        log.info("Start to main counting");
-        return calcCreditValueService.mainCounting(request, rate);
+        return calcCreditValueService.mainCounting(request, finalRate);
     }
 
 
@@ -93,9 +90,9 @@ public class ScoringServiceImpl implements ScoringService {
      * Main logic to calculating rate
      * @param request loan request
      */
-    private void updateTheLoanRate(ScoringDataDto request) {
+    private BigDecimal updateTheLoanRate(ScoringDataDto request, BigDecimal baseRate) {
         EmploymentDto employmentDto = request.getEmployment();
-        log.info("Beginning: rate={}", rate);
+        BigDecimal rate = baseRate;
 
         if (employmentDto.getPosition().equals(Position.MANAGER)) {
             rate = rate.subtract(rateToManager);
@@ -130,11 +127,13 @@ public class ScoringServiceImpl implements ScoringService {
             log.debug("rate subtract rateWithDependent={}", rate);
         }
 
+        return rate;
     }
 
-    private void initialValues(ScoringDataDto request) {
+    private BigDecimal initialValues(ScoringDataDto request) {
         Integer term = request.getTerm();
         BigDecimal amount = request.getAmount();
+        BigDecimal rate;
         log.info("Beginning amount={} and term={}", amount, term);
 
         if (request.getIsSalaryClient() && request.getIsInsuranceEnabled()) {
@@ -150,6 +149,7 @@ public class ScoringServiceImpl implements ScoringService {
             rate = checkValueService.createDefaultLoanOffer(amount, term).getRate();
             log.debug("rate with none salary client and insurance={}", rate);
         }
+        return rate;
     }
 
     private int calculateAge(LocalDate birthday) {

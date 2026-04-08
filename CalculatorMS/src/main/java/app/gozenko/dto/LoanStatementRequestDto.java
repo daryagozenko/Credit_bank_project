@@ -2,6 +2,7 @@ package app.gozenko.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -29,18 +30,20 @@ public class LoanStatementRequestDto {
     private Integer term;
 
     @Schema(description = "Имя", example = "dasha")
+    @NotNull
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Имя должно быть от 2 до 30 символов")
+            message = "Имя должно быть от 2 до 30 символов, символы латинские")
     private String firstName;
 
     @Schema(description = "Фамилия", example = "gozenko")
+    @NotNull
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Отчество должно быть от 2 до 30 символов")
+            message = "Фамилия должна быть от 2 до 30 символов, символы латинские")
     private String lastName;
 
     @Schema(description = "Отчество", example = "sergeevna")
     @Pattern(regexp = "^[a-zA-Z]{2,30}$",
-            message = "Фамилия должна быть от 2 до 30 символов")
+            message = "Отчество должно быть от 2 до 30 символов, символы латинские")
     private String middleName;
 
     @Schema(description = "Email", example = "email@bk.ru")

@@ -1,30 +1,36 @@
 package app.gozenko.service;
 
 import app.gozenko.dto.LoanOfferDto;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class CheckValueService {
 
     private static final BigDecimal BASE_PERCENT = BigDecimal.valueOf(100);
 
     private final CalcCreditValueService calcCreditValueService;
 
-    @Value("${app.gozenko.base-rate}")
-    private BigDecimal baseRate;
-    @Value("${app.gozenko.insurance}")
-    private BigDecimal insuranceRate;
-    @Value("${app.gozenko.rate-salary-client}")
-    private BigDecimal rateSalaryClient;
+    private final BigDecimal baseRate;
+    private final BigDecimal insuranceRate;
+    private final BigDecimal rateSalaryClient;
+
+    @Autowired
+    public CheckValueService(CalcCreditValueService calcCreditValueService,
+                             @Value("${app.gozenko.base-rate}") BigDecimal baseRate,
+                             @Value("${app.gozenko.insurance}") BigDecimal insuranceRate,
+                             @Value("${app.gozenko.rate-salary-client}") BigDecimal rateSalaryClient) {
+        this.calcCreditValueService = calcCreditValueService;
+        this.baseRate = baseRate;
+        this.insuranceRate = insuranceRate;
+        this.rateSalaryClient = rateSalaryClient;
+    }
 
 
     public LoanOfferDto createSalaryAndInsuranceLoanOffer(BigDecimal amount, Integer term) {
@@ -96,7 +102,6 @@ public class CheckValueService {
                                               Boolean isSalaryClient) {
         log.info("Build new LoanOfferDto");
         return LoanOfferDto.builder()
-                .statementId(UUID.randomUUID())
                 .requestedAmount(requestedAmount)
                 .totalAmount(totalAmount)
                 .term(term)
