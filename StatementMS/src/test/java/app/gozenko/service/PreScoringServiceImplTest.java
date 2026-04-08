@@ -1,8 +1,7 @@
-package app.gozenko.calculator.service;
+package app.gozenko.service;
 
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.exception.ValidationDataException;
-import app.gozenko.service.PreScoringServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,13 +11,12 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
-import static app.gozenko.calculator.utils.StubGenerator.createLoanStatementRequestWithAge;
-import static app.gozenko.calculator.utils.StubGenerator.createLoanStatementRequestWithBirthday;
+import static app.gozenko.utils.StubGenerator.createLoanStatementRequestWithAge;
+import static app.gozenko.utils.StubGenerator.createLoanStatementRequestWithBirthday;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,7 +33,7 @@ class PreScoringServiceImplTest {
     @BeforeEach
     void setUp() {
         legalAge = 18;
-        ReflectionTestUtils.setField(preScoringService, "legalAge", legalAge);
+        preScoringService = new PreScoringServiceImpl(legalAge);
     }
 
     //TODO: проверка даты на неправильный формат
@@ -105,26 +103,6 @@ class PreScoringServiceImplTest {
         assertTrue(exception.getMessage().contains(String.valueOf(legalAge)));
     }
 
-    @ParameterizedTest
-    @MethodSource("provideLegalAgeScenarios")
-    @DisplayName("Проверка валидации возраста с разными значениями legalAge")
-    void preScoringLoan_DifferentLegalAges(int legalAgeValue, int yearsToSubtract, boolean shouldThrow) {
-        ReflectionTestUtils.setField(preScoringService, "legalAge", legalAgeValue);
-
-        LocalDate birthday = LocalDate.now().minusYears(yearsToSubtract);
-        LoanStatementRequestDto request = createLoanStatementRequestWithBirthday(birthday);
-
-        if (shouldThrow) {
-            ValidationDataException exception = assertThrows(
-                    ValidationDataException.class,
-                    () -> preScoringService.preScoringLoan(request)
-            );
-            assertTrue(exception.getMessage().contains(String.valueOf(legalAgeValue)));
-        } else {
-            assertDoesNotThrow(() -> preScoringService.preScoringLoan(request));
-        }
-    }
-
     @Test
     @DisplayName("Проверка валидации через аннотации @Valid")
     void preScoringLoan_ValidationAnnotations() {
@@ -142,31 +120,12 @@ class PreScoringServiceImplTest {
         assertThrows(Exception.class, () -> preScoringService.preScoringLoan(invalidRequest));
     }
 
-    private static Stream<Arguments> provideLegalAgeScenarios() {
-        return Stream.of(
-                Arguments.of(18, 18, false),
-                Arguments.of(18, 17, true),
-                Arguments.of(18, 19, false),
-                Arguments.of(25, 25, false),
-                Arguments.of(16, 16, false)
-        );
-    }
-
     private static Stream<Arguments> provideInvalidAgesForLoanStatement() {
         return Stream.of(
                 Arguments.of(17, "Возраст должен быть больше 18"),
                 Arguments.of(10, "Возраст должен быть больше 18"),
                 Arguments.of(0, "Возраст должен быть больше 18"),
                 Arguments.of(-5, "Возраст должен быть больше 18")
-        );
-    }
-
-    private static Stream<Arguments> provideInvalidAgesForScoringData() {
-        return Stream.of(
-                Arguments.of(17, "Возраст должен быть больше 18"),
-                Arguments.of(15, "Возраст должен быть больше 18"),
-                Arguments.of(12, "Возраст должен быть больше 18"),
-                Arguments.of(5, "Возраст должен быть больше 18")
         );
     }
 

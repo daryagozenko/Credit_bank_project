@@ -6,7 +6,6 @@ import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.service.interfaces.LoanOfferService;
-import app.gozenko.service.interfaces.PreScoringService;
 import app.gozenko.service.interfaces.ScoringService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,7 +31,6 @@ import java.util.List;
 @Tag(name = "CalculatorController")
 public class CalculatorControllerImpl implements CalculatorController {
 
-    private final PreScoringService preScoringService;
     private final LoanOfferService loanOfferService;
     private final ScoringService scoringService;
 
@@ -62,8 +60,6 @@ public class CalculatorControllerImpl implements CalculatorController {
     @Override
     public ResponseEntity<List<LoanOfferDto>> calcConditionOfCredit(LoanStatementRequestDto loanState) {
         log.info("Input data in calcConditionOfCredit loanState-{}", loanState);
-        log.debug("Sending a LoanStatementRequest to preScoringService");
-        preScoringService.preScoringLoan(loanState);
 
         log.info("Successful create list of loanOffers");
         return ResponseEntity.status(HttpStatus.OK)

@@ -8,7 +8,6 @@ import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.exception.ValidationDataException;
 import app.gozenko.service.interfaces.LoanOfferService;
-import app.gozenko.service.interfaces.PreScoringService;
 import app.gozenko.service.interfaces.ScoringService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,19 +29,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CalculatorControllerImplTest {
-
-    @Mock
-    private PreScoringService preScoringService;
 
     @Mock
     private LoanOfferService loanOfferService;
@@ -94,7 +87,6 @@ class CalculatorControllerImplTest {
     @Test
     @DisplayName("Успешное получение кредитных предложений")
     void calcConditionOfCredit_Success() {
-        doNothing().when(preScoringService).preScoringLoan(any(LoanStatementRequestDto.class));
         doReturn(expectedLoanOffers)
                 .when(loanOfferService)
                 .createLoanOffers(any(BigDecimal.class), any(Integer.class));
@@ -108,28 +100,24 @@ class CalculatorControllerImplTest {
                 () -> assertEquals(4, response.getBody().size())
         );
 
-        verify(preScoringService).preScoringLoan(validLoanStatement);
         verify(loanOfferService).createLoanOffers(validLoanStatement.getAmount(), validLoanStatement.getTerm());
     }
 
     @Test
     @DisplayName("Проверка передачи правильных параметров в сервисы")
     void calcConditionOfCredit_VerifyParameters() {
-        doNothing().when(preScoringService).preScoringLoan(any(LoanStatementRequestDto.class));
         doReturn(expectedLoanOffers)
                 .when(loanOfferService)
                 .createLoanOffers(any(BigDecimal.class), any(Integer.class));
 
         calculatorController.calcConditionOfCredit(validLoanStatement);
 
-        verify(preScoringService).preScoringLoan(validLoanStatement);
         verify(loanOfferService).createLoanOffers(validLoanStatement.getAmount(), validLoanStatement.getTerm());
     }
 
     @Test
     @DisplayName("Проверка порядка предложений в ответе")
     void calcConditionOfCredit_VerifyOrder() {
-        doNothing().when(preScoringService).preScoringLoan(any(LoanStatementRequestDto.class));
         doReturn(expectedLoanOffers)
                 .when(loanOfferService)
                 .createLoanOffers(any(BigDecimal.class), any(Integer.class));
@@ -150,20 +138,6 @@ class CalculatorControllerImplTest {
                 () -> assertTrue(!thirdOffer.getIsInsuranceEnabled() && thirdOffer.getIsSalaryClient()),
                 () -> assertTrue(!fourthOffer.getIsInsuranceEnabled() && !fourthOffer.getIsSalaryClient())
         );
-    }
-
-    @Test
-    @DisplayName("Ошибка валидации при получении предложений")
-    void calcConditionOfCredit_ValidationFailed() {
-        String errorMessage = "Возраст должен быть больше 18";
-        doThrow(new ValidationDataException(errorMessage))
-                .when(preScoringService).preScoringLoan(any(LoanStatementRequestDto.class));
-
-        assertThrows(ValidationDataException.class,
-                () -> calculatorController.calcConditionOfCredit(validLoanStatement));
-
-        verify(preScoringService).preScoringLoan(validLoanStatement);
-        verify(loanOfferService, never()).createLoanOffers(any(), any());
     }
 
     @Test
@@ -221,7 +195,6 @@ class CalculatorControllerImplTest {
         for (BigDecimal testAmount : amounts) {
             LoanStatementRequestDto request = StubGenerator.createLoanStatementRequestWithAmount(testAmount);
 
-            doNothing().when(preScoringService).preScoringLoan(any(LoanStatementRequestDto.class));
             doReturn(expectedLoanOffers)
                     .when(loanOfferService)
                     .createLoanOffers(any(BigDecimal.class), any(Integer.class));
@@ -231,10 +204,7 @@ class CalculatorControllerImplTest {
             assertNotNull(response);
             assertEquals(HttpStatus.OK, response.getStatusCode());
 
-            verify(preScoringService).preScoringLoan(request);
             verify(loanOfferService).createLoanOffers(testAmount, request.getTerm());
-
-            reset(preScoringService, loanOfferService);
         }
     }
 
@@ -256,8 +226,6 @@ class CalculatorControllerImplTest {
             assertEquals(HttpStatus.OK, response.getStatusCode());
 
             verify(scoringService).createScoringData(request);
-
-            reset(preScoringService, scoringService);
         }
     }
 
