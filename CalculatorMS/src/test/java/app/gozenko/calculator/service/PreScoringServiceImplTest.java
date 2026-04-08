@@ -1,7 +1,6 @@
 package app.gozenko.calculator.service;
 
 import app.gozenko.dto.LoanStatementRequestDto;
-import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.exception.ValidationDataException;
 import app.gozenko.service.PreScoringServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,8 +19,6 @@ import java.util.stream.Stream;
 
 import static app.gozenko.calculator.utils.StubGenerator.createLoanStatementRequestWithAge;
 import static app.gozenko.calculator.utils.StubGenerator.createLoanStatementRequestWithBirthday;
-import static app.gozenko.calculator.utils.StubGenerator.createScoringRequestWithAge;
-import static app.gozenko.calculator.utils.StubGenerator.createValidScoringRequest;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,20 +38,14 @@ class PreScoringServiceImplTest {
         ReflectionTestUtils.setField(preScoringService, "legalAge", legalAge);
     }
 
+    //TODO: проверка даты на неправильный формат
+
     @Test
     @DisplayName("Успешный прескоринг LoanStatementRequestDto для совершеннолетнего клиента")
     void preScoringLoan_Success() {
         LoanStatementRequestDto request = createLoanStatementRequestWithAge(30);
 
         assertDoesNotThrow(() -> preScoringService.preScoringLoan(request));
-    }
-
-    @Test
-    @DisplayName("Успешный прескоринг ScoringDataDto для совершеннолетнего клиента")
-    void preScoringScoreData_Success() {
-        ScoringDataDto request = createValidScoringRequest();
-
-        assertDoesNotThrow(() -> preScoringService.preScoringScoreData(request));
     }
 
     @ParameterizedTest
@@ -67,20 +58,6 @@ class PreScoringServiceImplTest {
                 ValidationDataException.class,
                 () -> preScoringService.preScoringLoan(request)
         );
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideInvalidAgesForScoringData")
-    @DisplayName("Проверка исключений для ScoringDataDto при несовершеннолетнем возрасте")
-    void preScoringScoreData_Underage_ThrowsException(int age, String expectedMessage) {
-        ScoringDataDto request = createScoringRequestWithAge(age);
-
-        ValidationDataException exception = assertThrows(
-                ValidationDataException.class,
-                () -> preScoringService.preScoringScoreData(request)
-        );
-
         assertEquals(expectedMessage, exception.getMessage());
     }
 
@@ -163,25 +140,6 @@ class PreScoringServiceImplTest {
                 .build();
 
         assertThrows(Exception.class, () -> preScoringService.preScoringLoan(invalidRequest));
-    }
-
-    @Test
-    @DisplayName("Проверка валидации ScoringDataDto")
-    void preScoringScoreData_ValidationAnnotations() {
-        ScoringDataDto invalidRequest = ScoringDataDto.builder()
-                .amount(null)
-                .term(null)
-                .firstName("")
-                .lastName("")
-                .birthday(null)
-                .gender(null)
-                .passportSeries("")
-                .passportNumber("")
-                .maritalStatus(null)
-                .employment(null)
-                .build();
-
-        assertThrows(Exception.class, () -> preScoringService.preScoringScoreData(invalidRequest));
     }
 
     private static Stream<Arguments> provideLegalAgeScenarios() {

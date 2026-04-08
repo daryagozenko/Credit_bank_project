@@ -169,7 +169,6 @@ class CalculatorControllerImplTest {
     @Test
     @DisplayName("Успешный расчет кредита")
     void validateAndCalc_Success() {
-        doNothing().when(preScoringService).preScoringScoreData(any(ScoringDataDto.class));
         when(scoringService.createScoringData(any(ScoringDataDto.class)))
                 .thenReturn(expectedCreditDto);
 
@@ -187,49 +186,30 @@ class CalculatorControllerImplTest {
         assertEquals(expectedCreditDto.getTerm(), result.getTerm());
         assertEquals(expectedCreditDto.getRate(), result.getRate());
 
-        verify(preScoringService).preScoringScoreData(validScoringData);
         verify(scoringService).createScoringData(validScoringData);
     }
 
     @Test
     @DisplayName("Проверка передачи правильных параметров в scoringService")
     void validateAndCalc_VerifyParameters() {
-        doNothing().when(preScoringService).preScoringScoreData(any(ScoringDataDto.class));
         when(scoringService.createScoringData(any(ScoringDataDto.class)))
                 .thenReturn(expectedCreditDto);
 
         calculatorController.validateAndCalc(validScoringData);
 
-        verify(preScoringService).preScoringScoreData(validScoringData);
         verify(scoringService).createScoringData(validScoringData);
-    }
-
-    @Test
-    @DisplayName("Ошибка валидации при расчете кредита")
-    void validateAndCalc_ValidationFailed() {
-        String errorMessage = "Возраст должен быть больше 18";
-        doThrow(new ValidationDataException(errorMessage))
-                .when(preScoringService).preScoringScoreData(any(ScoringDataDto.class));
-
-        assertThrows(ValidationDataException.class,
-                () -> calculatorController.validateAndCalc(validScoringData));
-
-        verify(preScoringService).preScoringScoreData(validScoringData);
-        verify(scoringService, never()).createScoringData(any());
     }
 
     @Test
     @DisplayName("Ошибка скоринга при расчете кредита")
     void validateAndCalc_ScoringFailed() {
         String errorMessage = "Безработный";
-        doNothing().when(preScoringService).preScoringScoreData(any(ScoringDataDto.class));
         doThrow(new ValidationDataException(errorMessage))
                 .when(scoringService).createScoringData(any(ScoringDataDto.class));
 
         assertThrows(ValidationDataException.class,
                 () -> calculatorController.validateAndCalc(validScoringData));
 
-        verify(preScoringService).preScoringScoreData(validScoringData);
         verify(scoringService).createScoringData(validScoringData);
     }
 
@@ -267,7 +247,6 @@ class CalculatorControllerImplTest {
             ScoringDataDto request = StubGenerator.createValidScoringRequest();
             request.setTerm(testTerm);
 
-            doNothing().when(preScoringService).preScoringScoreData(any(ScoringDataDto.class));
             when(scoringService.createScoringData(any(ScoringDataDto.class)))
                     .thenReturn(expectedCreditDto);
 
@@ -276,7 +255,6 @@ class CalculatorControllerImplTest {
             assertNotNull(response);
             assertEquals(HttpStatus.OK, response.getStatusCode());
 
-            verify(preScoringService).preScoringScoreData(request);
             verify(scoringService).createScoringData(request);
 
             reset(preScoringService, scoringService);
@@ -287,7 +265,6 @@ class CalculatorControllerImplTest {
     @Test
     @DisplayName("Проверка возвращаемого статуса для разных сценариев")
     void validateAndCalc_ResponseStatus() {
-        doNothing().when(preScoringService).preScoringScoreData(any(ScoringDataDto.class));
         when(scoringService.createScoringData(any(ScoringDataDto.class)))
                 .thenReturn(expectedCreditDto);
 

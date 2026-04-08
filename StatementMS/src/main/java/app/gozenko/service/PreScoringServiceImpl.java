@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -25,10 +24,7 @@ public class PreScoringServiceImpl implements PreScoringService {
     public void preScoringLoan(LoanStatementRequestDto request) {
         log.debug("LoanStatement request: {}", request);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        try {
-            request.getBirthday().format(formatter);
-        } catch (Exception e) {
+        if (!request.getBirthday().toString().matches("yyyy-MM-dd")){
             throw new DateParseException("Дата должна соответствовать формату yyyy-mm-dd");
         }
 
