@@ -36,12 +36,8 @@ public class CalculatorClient {
                 .uri(URI_OFFERS)
                 .body(loanState)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                    handle4xxError(response);
-                })
-                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-                    handle5xxError(response);
-                })
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> handle4xxError(response))
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> handle5xxError(response))
                 .toEntity(new ParameterizedTypeReference<List<LoanOfferDto>>() {
                 })
                 .getBody();

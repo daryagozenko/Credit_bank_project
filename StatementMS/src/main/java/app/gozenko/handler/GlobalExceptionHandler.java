@@ -1,6 +1,7 @@
 package app.gozenko.handler;
 
-import app.gozenko.exception.DateParseException;
+import app.gozenko.exception.DealClientException;
+import app.gozenko.exception.DealServerException;
 import app.gozenko.exception.ValidationDataException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,13 +51,26 @@ public class GlobalExceptionHandler {
         return createResponseEntity(Map.of("message: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DateParseException.class)
-    public ResponseEntity<Map<String, String>> handleDataParseException(DateParseException ex) {
-        return createResponseEntity(Map.of("message: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<Map<String, String>> handleDataParseException(DateTimeParseException ex) {
+        String message = "Дата должна соответствовать формату yyyy-mm-dd";
+        return createResponseEntity(Map.of("message: ", message), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ValidationDataException.class)
     public ResponseEntity<Map<String, String>> handleValidationDataException(ValidationDataException ex) {
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DealServerException.class)
+    public ResponseEntity<Map<String, String>> handleDealServerException(DealServerException ex) {
+        log.warn("Deal server error");
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(DealClientException.class)
+    public ResponseEntity<Map<String, String>> handleDealClientException(DealClientException ex) {
+        log.warn("Deal client error");
         return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 

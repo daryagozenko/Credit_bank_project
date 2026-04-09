@@ -1,7 +1,6 @@
 package app.gozenko.service;
 
 import app.gozenko.dto.LoanStatementRequestDto;
-import app.gozenko.exception.DateParseException;
 import app.gozenko.exception.ValidationDataException;
 import app.gozenko.service.interfaces.PreScoringService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -28,13 +26,6 @@ public class PreScoringServiceImpl implements PreScoringService {
     @Override
     public void preScoringLoan(LoanStatementRequestDto request) {
         log.debug("LoanStatement request: {}", request);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        try {
-            request.getBirthday().format(formatter);
-        } catch (Exception e) {
-            throw new DateParseException("Дата должна соответствовать формату yyyy-mm-dd");
-        }
 
         if (!(checkLegalAge(request.getBirthday())))
             throw new ValidationDataException("Возраст должен быть больше " + legalAge);
