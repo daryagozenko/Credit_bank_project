@@ -41,6 +41,16 @@ public class DealClient {
                 .getBody();
     }
 
+    public void selectOffer(LoanOfferDto loanOffer){
+        restClient.post()
+                .uri(URI_OFFER)
+                .body(loanOffer)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> handle4xxError(response)))
+                .onStatus(HttpStatusCode::is5xxServerError, ((request, response) -> handle5xxError(response)))
+                .body(Void.class);
+    }
+
     private void handle5xxError(ClientHttpResponse response) {
         try {
             String errorBody = new String(response.getBody().readAllBytes());

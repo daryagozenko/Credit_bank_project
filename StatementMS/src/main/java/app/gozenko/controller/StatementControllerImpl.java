@@ -40,6 +40,9 @@ public class StatementControllerImpl implements StatementController {
     @PostMapping("/offer")
     @Override
     public ResponseEntity<Void> selectLoanOffer(LoanOfferDto loanOffer) {
-        return null;
+        log.info("Input data in selectLoanOffer loanOffer-{}", loanOffer);
+        dealCallingService.selectLoanOffer(loanOffer);
+        log.info("Successful select loan offer");
+        return ResponseEntity.ok().build();
     }
 }

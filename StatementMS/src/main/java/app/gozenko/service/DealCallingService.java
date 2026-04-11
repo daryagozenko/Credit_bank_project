@@ -17,9 +17,16 @@ public class DealCallingService {
     private final DealClient dealClient;
 
     public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto loanState) {
+        log.info("Input loanState - {}", loanState);
         List<LoanOfferDto> offers = dealClient.getLoanOffers(loanState);
         log.debug("getLoanOffers: offers-{}", offers);
 
         return offers;
+    }
+
+    public void selectLoanOffer(LoanOfferDto loanOffer){
+        log.info("Input loanOffer - {}", loanOffer);
+        dealClient.selectOffer(loanOffer);
+        log.info("Selecting done");
     }
 }
