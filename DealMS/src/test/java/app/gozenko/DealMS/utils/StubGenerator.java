@@ -224,6 +224,13 @@ public class StubGenerator {
                 .build();
     }
 
+    public static Statement createEmptyStatement(UUID id){
+        return Statement.builder()
+                .id(id)
+                .statusHistory(new ArrayList<>())
+                .build();
+    }
+
     public static Statement createStatement() {
         List<StatementStatusHistoryDto> statusHistory = new ArrayList<>();
         statusHistory.add(StatementStatusHistoryDto.builder()

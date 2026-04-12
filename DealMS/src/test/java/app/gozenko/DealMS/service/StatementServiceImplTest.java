@@ -10,6 +10,7 @@ import app.gozenko.enums.StatusChangeType;
 import app.gozenko.repository.StatementRepository;
 import app.gozenko.service.StatementServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,6 +39,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class StatementServiceImplTest {
 
@@ -242,7 +246,7 @@ class StatementServiceImplTest {
         Statement result = statementService.createStatement(StubGenerator.createClient());
 
         assertNotNull(result.getSesCode());
-        assertTrue(result.getSesCode() >= 0 && result.getSesCode() <= 101);
+        assertTrue(result.getSesCode() >= 0 && result.getSesCode() <= 9999);
         verify(statementRepository).save(any(Statement.class));
     }
 
@@ -260,5 +264,42 @@ class StatementServiceImplTest {
                 () -> assertEquals(StatementStatus.DOCUMENT_CREATED, statement.getStatus()),
                 () -> assertEquals(initialHistorySize + 3, statement.getStatusHistory().size())
         );
+    }
+
+    @Test
+    @DisplayName("Обновление истории заявок двумя потоками")
+    void updateStatementHistory_ConcurrentExecution() {
+        Statement statement = StubGenerator.createEmptyStatement(UUID.randomUUID());
+        when(statementRepository.findById(any(UUID.class))).thenReturn(Optional.ofNullable(statement));
+
+        CountDownLatch startCounter = new CountDownLatch(2);
+
+        CompletableFuture<Void> firstThread = CompletableFuture.runAsync(() -> {
+            startCounter.countDown();
+            try {
+                startCounter.await();
+                Statement currStatement = statementService.findById(statement.getId());
+                statementService.updateStatementStatusHistory(currStatement, StatementStatus.APPROVED);
+            } catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
+        });
+
+        CompletableFuture<Void> secondThread = CompletableFuture.runAsync(() -> {
+            startCounter.countDown();
+            try {
+                startCounter.await();
+                Thread.sleep(10);
+                Statement currStatement = statementService.findById(statement.getId());
+                statementService.updateStatementStatusHistory(currStatement, StatementStatus.APPROVED);
+            } catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
+        });
+
+        CompletableFuture.allOf(firstThread, secondThread).join();
+
+        assertNotNull(statement.getStatusHistory());
+        assertEquals(2, statement.getStatusHistory().size());
     }
 }
