@@ -7,7 +7,7 @@ import app.gozenko.exception.DealServerException;
 import app.gozenko.exception.JsonException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -19,15 +19,22 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class DealClient {
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
-    @Value("${app.gozenko.uri-statement}")
-    private String URI_STATEMENT;
-    @Value("${app.gozenko.uri-offer}")
-    private String URI_OFFER;
+    private final String URI_STATEMENT;
+    private final String URI_OFFER;
+
+    @Autowired
+    public DealClient(RestClient restClient, ObjectMapper objectMapper,
+                      @Value("${app.gozenko.uri-statement}") String URI_STATEMENT,
+                      @Value("${app.gozenko.uri-offer}") String URI_OFFER) {
+        this.restClient = restClient;
+        this.objectMapper = objectMapper;
+        this.URI_STATEMENT = URI_STATEMENT;
+        this.URI_OFFER = URI_OFFER;
+    }
 
     public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto loanState) {
         return restClient.post()
