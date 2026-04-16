@@ -67,22 +67,15 @@ public class StatementControllerImpl implements StatementController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Успешно",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = LoanOfferDto.class))
+                    description = "Успешно"
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Неверные параметры запроса",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+                    description = "Неверные параметры запроса"
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Внутренняя ошибка сервера",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+                    description = "Внутренняя ошибка сервера"
             )})
     public ResponseEntity<Void> selectLoanOffer(LoanOfferDto loanOffer) {
         log.info("Input data in selectLoanOffer loanOffer-{}", loanOffer);

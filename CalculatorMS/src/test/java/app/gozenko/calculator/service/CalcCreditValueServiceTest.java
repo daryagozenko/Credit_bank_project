@@ -118,7 +118,7 @@ class CalcCreditValueServiceTest {
                 () -> {
                     PaymentScheduleElementDto last = schedule.get(term - 1);
                     assertEquals(term, last.getNumber());
-                    assertEquals(0, BigDecimal.ZERO.setScale(2).compareTo(last.getRemainingDebt()));
+                    assertEquals(0, BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP).compareTo(last.getRemainingDebt()));
                 }
         );
     }
@@ -232,7 +232,7 @@ class CalcCreditValueServiceTest {
                     assertEquals(1, element.getNumber());
                     BigDecimal totalPayment = element.getInterestPayment().add(element.getDebtPayment());
                     assertEquals(0, totalPayment.compareTo(monthlyPayment));
-                    assertEquals(0, BigDecimal.ZERO.setScale(2).compareTo(element.getRemainingDebt()));
+                    assertEquals(0, BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP).compareTo(element.getRemainingDebt()));
                 }
         );
     }
