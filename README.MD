@@ -15,3 +15,4 @@
 ### 3. Swagger 
 - http://localhost:8086/swagger-ui/index.html - DealMS
 - http://localhost:8085/swagger-ui/index.html - CalculatorMS
+- http://localhost:8087/swagger-ui/index.html - StatementMS
