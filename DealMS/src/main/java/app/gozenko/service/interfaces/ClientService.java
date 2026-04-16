@@ -9,6 +9,6 @@ import java.util.UUID;
 
 public interface ClientService {
     Client createClient(LoanStatementRequestDto request);
-    Client findById(UUID clientId);
+    Client getClientById(UUID clientId);
     void updateClient(Statement statement, FinishRegistrationRequestDto finishRegistration);
 }

@@ -34,7 +34,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Client findById(UUID clientId) {
+    public Client getClientById(UUID clientId) {
         log.debug("input: clientId-{}", clientId);
         return clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Не найден клиент: " + clientId));
@@ -43,7 +43,9 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     @Override
     public void updateClient(Statement statement, FinishRegistrationRequestDto finishRegistration) {
-        Client client = findById(statement.getClient().getId());
+        UUID clientId = statement.getClient().getId();
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new EntityNotFoundException("Не найден клиент: " + clientId));
         log.debug("updateClient: client-{}", client);
         clientRepository.save(updateClientInfo(client, finishRegistration));
     }

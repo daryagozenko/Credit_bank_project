@@ -18,12 +18,14 @@ public class CreditServiceImpl implements CreditService {
 
     @Override
     public Credit createCredit(CreditDto creditDto) {
-        log.info("Credit saved");
+        log.info("Input: creditDto-${}", creditDto);
+        log.debug("Credit dto push into fill stage");
         return creditRepository.save(fillCreditInfo(creditDto));
     }
 
     private Credit fillCreditInfo(CreditDto creditDto) {
-        log.debug("input: creditDto-${}", creditDto);
+        log.debug("Input: creditDto-${}", creditDto);
+        log.info("Credit build");
         return Credit.builder()
                 .amount(creditDto.getAmount())
                 .term(creditDto.getTerm())

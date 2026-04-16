@@ -129,7 +129,7 @@ class ClientServiceImplTest {
         UUID clientId = UUID.randomUUID();
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(savedClient));
 
-        Client result = clientService.findById(clientId);
+        Client result = clientService.getClientById(clientId);
 
         assertNotNull(result);
         assertEquals(savedClient.getId(), result.getId());
@@ -144,7 +144,7 @@ class ClientServiceImplTest {
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
-                () -> clientService.findById(nonExistentId)
+                () -> clientService.getClientById(nonExistentId)
         );
 
         assertTrue(exception.getMessage().contains("Не найден клиент"));
