@@ -106,7 +106,7 @@ class CalcCreditValueServiceTest {
                 () -> assertEquals(term, schedule.size()),
 
                 () -> {
-                    PaymentScheduleElementDto first = schedule.get(0);
+                    PaymentScheduleElementDto first = schedule.getFirst();
                     assertEquals(1, first.getNumber());
                     assertNotNull(first.getDate());
                     assertEquals(0, expectedMonthlyPayment.compareTo(first.getTotalPayment()));
@@ -228,7 +228,7 @@ class CalcCreditValueServiceTest {
         assertAll("Проверка для одного месяца",
                 () -> assertEquals(1, schedule.size()),
                 () -> {
-                    PaymentScheduleElementDto element = schedule.get(0);
+                    PaymentScheduleElementDto element = schedule.getFirst();
                     assertEquals(1, element.getNumber());
                     BigDecimal totalPayment = element.getInterestPayment().add(element.getDebtPayment());
                     assertEquals(0, totalPayment.compareTo(monthlyPayment));
@@ -249,7 +249,7 @@ class CalcCreditValueServiceTest {
         assertAll("Проверка с нулевой суммой",
                 () -> assertNotNull(schedule),
                 () -> {
-                    PaymentScheduleElementDto first = schedule.get(0);
+                    PaymentScheduleElementDto first = schedule.getFirst();
                     assertEquals(0, BigDecimal.ZERO.compareTo(first.getTotalPayment()));
                     assertEquals(0, BigDecimal.ZERO.compareTo(first.getInterestPayment()));
                     assertEquals(0, BigDecimal.ZERO.compareTo(first.getDebtPayment()));

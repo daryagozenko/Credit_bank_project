@@ -36,8 +36,6 @@ class PreScoringServiceImplTest {
         preScoringService = new PreScoringServiceImpl(legalAge);
     }
 
-    //TODO: проверка даты на неправильный формат
-
     @Test
     @DisplayName("Успешный прескоринг LoanStatementRequestDto для совершеннолетнего клиента")
     void preScoringLoan_Success() {

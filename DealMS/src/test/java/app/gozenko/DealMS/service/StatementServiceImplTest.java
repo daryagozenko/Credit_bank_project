@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -281,7 +282,8 @@ class StatementServiceImplTest {
                 Statement currStatement = statementService.findById(statement.getId());
                 statementService.updateStatementStatusHistory(currStatement, StatementStatus.APPROVED);
             } catch (InterruptedException e) {
-                log.error(e.getMessage());
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         });
 
@@ -293,12 +295,14 @@ class StatementServiceImplTest {
                 Statement currStatement = statementService.findById(statement.getId());
                 statementService.updateStatementStatusHistory(currStatement, StatementStatus.APPROVED);
             } catch (InterruptedException e) {
-                log.error(e.getMessage());
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         });
 
-        CompletableFuture.allOf(firstThread, secondThread).join();
+        CompletableFuture<Void> allThreads = CompletableFuture.allOf(firstThread, secondThread);
 
+        assertDoesNotThrow(() -> allThreads.join());
         assertNotNull(statement.getStatusHistory());
         assertEquals(2, statement.getStatusHistory().size());
     }
