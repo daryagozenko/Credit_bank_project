@@ -2,6 +2,7 @@ package app.gozenko.handler;
 
 import app.gozenko.exception.UnScoringDataException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,6 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class ExceptionValidationHandler {
 
@@ -18,12 +20,14 @@ public class ExceptionValidationHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGlobalException(Exception ex) {
+        log.warn("Global exception dropped");
         return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class,
             ConstraintViolationException.class})
     public ResponseEntity<Map<String, String>> handleValidationException(Exception ex) {
+        log.warn("Validation error");
         if (ex instanceof ConstraintViolationException) {
             Map<String, String> exceptions = new HashMap<>();
             ConstraintViolationException exception = (ConstraintViolationException) ex;
@@ -41,6 +45,7 @@ public class ExceptionValidationHandler {
 
     @ExceptionHandler(UnScoringDataException.class)
     public ResponseEntity<Map<String, String>> handleUnScoringDataException(UnScoringDataException ex) {
+        log.warn("Scoring data error");
         return createResponseEntity(Map.of("Отказ по причине: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 

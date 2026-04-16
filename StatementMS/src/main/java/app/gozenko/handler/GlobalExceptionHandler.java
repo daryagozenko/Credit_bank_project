@@ -53,12 +53,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<Map<String, String>> handleDataParseException(DateTimeParseException ex) {
+        log.warn("DateTime parse error");
         String message = "Дата должна соответствовать формату yyyy-mm-dd";
         return createResponseEntity(Map.of("message: ", message), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ValidationDataException.class)
     public ResponseEntity<Map<String, String>> handleValidationDataException(ValidationDataException ex) {
+        log.warn("Validation on scoring data error");
         return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
