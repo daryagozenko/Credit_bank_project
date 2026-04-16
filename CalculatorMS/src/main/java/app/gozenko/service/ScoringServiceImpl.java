@@ -88,6 +88,28 @@ public class ScoringServiceImpl implements ScoringService {
 
     /**
      * Main logic to calculating rate
+     *
+     * <p>
+     * This method applies various adjustments to the base interest rate based on
+     * the applicant's personal and employment information. Each adjustment can
+     * either increase or decrease the rate depending on the specific criteria.
+     * </p>
+     *
+     * <p><b>Examples</b></p>
+     * <ul>
+     *   <li><b>Position adjustments:</b>
+     *     <ul>
+     *       <li>{@code MANAGER} - subtracts {@code rateToManager} from the rate</li>
+     *       <li>{@code TOP_MANAGER} - subtracts {@code rateToTopManager} from the rate</li>
+     *     </ul>
+     *   </li>
+     *   <li><b>Marital status adjustments:</b>
+     *     <ul>
+     *       <li>{@code MARRIED} - subtracts {@code rateMarried} from the rate</li>
+     *       <li>{@code DIVORCED} - adds {@code rateDivorced} to the rate</li>
+     *     </ul>
+     *   </li>
+     * </ul>
      * @param request loan request
      */
     private BigDecimal updateTheLoanRate(ScoringDataDto request, BigDecimal baseRate) {

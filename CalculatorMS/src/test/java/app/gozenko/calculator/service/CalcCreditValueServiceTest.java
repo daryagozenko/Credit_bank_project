@@ -40,6 +40,7 @@ class CalcCreditValueServiceTest {
 
     @BeforeEach
     void setUp() {
+        calcCreditValueService = new CalcCreditValueService(BigDecimal.valueOf(100));
         amount = new BigDecimal("1000000");
         term = 12;
         rate = new BigDecimal("20.00");

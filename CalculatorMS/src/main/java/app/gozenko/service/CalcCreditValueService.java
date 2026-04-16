@@ -5,6 +5,8 @@ import app.gozenko.dto.CreditDto;
 import app.gozenko.dto.PaymentScheduleElementDto;
 import app.gozenko.dto.ScoringDataDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,13 +19,18 @@ import java.util.List;
 @Service
 public class CalcCreditValueService {
 
-    private static final BigDecimal BASE_PERCENT = BigDecimal.valueOf(100);
     private static final Integer MIN_SCALE = 2;
     private static final Integer BASE_SCALE = 10;
     private static final Integer MONTHS = 12;
     private static final Integer DAYS = 365;
     private static final Integer AVERAGE = 2;
 
+    private BigDecimal BASE_PERCENT;
+
+    @Autowired
+    public CalcCreditValueService(@Value("${app.gozenko.base-percent}") BigDecimal BASE_PERCENT) {
+        this.BASE_PERCENT = BASE_PERCENT;
+    }
 
     /**
      * Calculating monthly payment
@@ -81,14 +88,14 @@ public class CalcCreditValueService {
         BigDecimal monthlyPayment = calcMonthlyPayment(
                 rate, amount, term
         );
-        log.info("Result: monthlyPayment={}", monthlyPayment);
+        log.debug("Result: monthlyPayment={}", monthlyPayment);
 
         List<PaymentScheduleElementDto> schedule = createPaymentSchedule(
                 amount, term, rate, monthlyPayment);
-        log.info("Result: list of schedule={}", schedule);
+        log.debug("Result: list of schedule={}", schedule);
 
         BigDecimal psk = calcPsk(amount, schedule, term);
-        log.info("Result: psk={}", psk);
+        log.debug("Result: psk={}", psk);
 
         log.info("Creating CreditDto");
         return CreditDto.builder()
