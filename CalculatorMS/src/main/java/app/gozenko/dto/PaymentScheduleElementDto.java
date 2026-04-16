@@ -17,14 +17,19 @@ import java.time.LocalDate;
 public class PaymentScheduleElementDto {
     @Schema(description = "Номер платежа", example = "1")
     private Integer number;
+
     @Schema(description = "Дата платежа", example = "2026-03-19")
     private LocalDate date;
-    @Schema(description = "Текущий платеж", example = "12000")
+
+    @Schema(description = "Текущий платеж", example = "12000.00", format = "decimal")
     private BigDecimal totalPayment;
-    @Schema(description = "Выплата процентов", example = "3000")
+
+    @Schema(description = "Выплата процентов", example = "3000.00", format = "decimal")
     private BigDecimal interestPayment;
-    @Schema(description = "Выплата долга", example = "9000")
+
+    @Schema(description = "Выплата долга", example = "9000.00", format = "decimal")
     private BigDecimal debtPayment;
-    @Schema(description = "Остаток долга", example = "60000")
+
+    @Schema(description = "Остаток долга", example = "60000.00", format = "decimal")
     private BigDecimal remainingDebt;
 }

@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Schema(name = "Оформление кредитной заявки")
 public class LoanStatementRequestDto {
 
-    @Schema(description = "Сумма кредита", example = "1000000")
+    @Schema(description = "Сумма кредита", example = "1000000.00", format = "decimal")
     private BigDecimal amount;
 
     @Schema(description = "Срок кредита в месяцах", example = "12")

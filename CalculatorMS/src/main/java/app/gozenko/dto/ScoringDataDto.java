@@ -85,7 +85,6 @@ public class ScoringDataDto {
     private Integer dependentAmount;
 
     @NotNull(message = "необходимо заполнить employment")
-    @Schema(description = "Информация о занятости")
     private EmploymentDto employment;
 
     @NotNull(message = "необходимо заполнить accountNumber")

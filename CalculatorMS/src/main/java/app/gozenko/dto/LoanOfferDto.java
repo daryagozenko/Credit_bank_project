@@ -19,19 +19,19 @@ public class LoanOfferDto {
     @Schema(description = "Идентификатор", example = "a1b2c3")
     private UUID statementId;
 
-    @Schema(description = "Запрашиваемая сумма", example = "50000")
+    @Schema(description = "Запрашиваемая сумма", example = "50000.00", format = "decimal")
     private BigDecimal requestedAmount;
 
-    @Schema(description = "Итоговая сумма", example = "55000")
+    @Schema(description = "Итоговая сумма", example = "55000.00", format = "decimal")
     private BigDecimal totalAmount;
 
     @Schema(description = "Срок", example = "6")
     private Integer term;
 
-    @Schema(description = "Ежемесячный платеж", example = "3000")
+    @Schema(description = "Ежемесячный платеж", example = "3000.00", format = "decimal")
     private BigDecimal monthlyPayment;
 
-    @Schema(description = "Ставка по кредиту", example = "15")
+    @Schema(description = "Ставка по кредиту", example = "15.50", format = "decimal")
     private BigDecimal rate;
 
     @Schema(description = "Наличие страховки", example = "true")
