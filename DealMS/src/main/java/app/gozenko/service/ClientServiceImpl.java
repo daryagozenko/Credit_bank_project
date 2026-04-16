@@ -26,7 +26,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Client createClient(LoanStatementRequestDto request) {
         log.debug("input: request-{}", request);
-        if(checkClientExist(request)){
+        if (checkClientExist(request)) {
             throw new ClientExistsException("Клиент с такими паспортными данными существует");
         }
         log.info("Client saved");

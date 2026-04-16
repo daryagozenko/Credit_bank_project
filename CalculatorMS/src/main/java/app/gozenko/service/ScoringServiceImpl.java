@@ -66,22 +66,32 @@ public class ScoringServiceImpl implements ScoringService {
 
 
     private Optional<String> checkConstraint(ScoringDataDto request) {
-        if (request.getEmployment().getEmploymentStatus().equals(EmploymentStatus.UNEMPLOYED))
+        if (request.getEmployment().getEmploymentStatus().equals(EmploymentStatus.UNEMPLOYED)) {
             return Optional.of("Безработный");
+        }
         if (request.getAmount().compareTo(request.getEmployment()
-                .getSalary().multiply(BigDecimal.valueOf(MAX_AMOUNT_DIFF_SALARY))) > 0)
+                .getSalary().multiply(BigDecimal.valueOf(MAX_AMOUNT_DIFF_SALARY))) > 0) {
             return Optional.of(String.format("Сумма займа больше, чем %d зарплаты", MAX_AMOUNT_DIFF_SALARY));
+        }
 
         int age = calculateAge(request.getBirthday());
-        if (age < MIN_AGE) return Optional.of(String.format("Моложе %d", MIN_AGE));
-        if (age > MAX_AGE) return Optional.of(String.format("Старше %d", MAX_AGE));
+        if (age < MIN_AGE) {
+            return Optional.of(String.format("Моложе %d", MIN_AGE));
+        }
+        if (age > MAX_AGE) {
+            return Optional.of(String.format("Старше %d", MAX_AGE));
+        }
 
         int workExpTotal = request.getEmployment().getWorkExperienceTotal();
-        if (workExpTotal < REQUIRED_COMMON_WORK_EXPERIENCE) return Optional.of(
-                String.format("Общий стаж работы менее %d месяцев", REQUIRED_COMMON_WORK_EXPERIENCE));
+        if (workExpTotal < REQUIRED_COMMON_WORK_EXPERIENCE) {
+            return Optional.of(
+                    String.format("Общий стаж работы менее %d месяцев", REQUIRED_COMMON_WORK_EXPERIENCE));
+        }
         int workExpCurr = request.getEmployment().getWorkExperienceCurrent();
-        if (workExpCurr < REQUIRED_TOTAL_WORK_EXPERIENCE) return Optional.of(
-                String.format("Текущий стаж работы менее %d месяцев", REQUIRED_TOTAL_WORK_EXPERIENCE));
+        if (workExpCurr < REQUIRED_TOTAL_WORK_EXPERIENCE) {
+            return Optional.of(
+                    String.format("Текущий стаж работы менее %d месяцев", REQUIRED_TOTAL_WORK_EXPERIENCE));
+        }
 
         return Optional.empty();
     }
@@ -110,6 +120,7 @@ public class ScoringServiceImpl implements ScoringService {
      *     </ul>
      *   </li>
      * </ul>
+     *
      * @param request loan request
      */
     private BigDecimal updateTheLoanRate(ScoringDataDto request, BigDecimal baseRate) {

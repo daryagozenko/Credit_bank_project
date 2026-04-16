@@ -35,7 +35,9 @@ public class CalculatorCallingService {
     public CreditDto calcCredit(ScoringDataDto scoringData) {
         CreditDto creditDto = calculatorClient.getCredit(scoringData);
         log.debug("calcCredit: creditDto-{}", creditDto);
-        if (creditDto == null) throw new UnloadedDataException("Кредит не поступил");
+        if (creditDto == null) {
+            throw new UnloadedDataException("Кредит не поступил");
+        }
         return creditDto;
     }
 }
