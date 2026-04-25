@@ -38,6 +38,7 @@
         <module>DealMS</module>
         <module>CalculatorMS</module>
         <module>StatementMS</module>
+        <module>DossierMS</module>
     </modules>
 
     <dependencyManagement>
