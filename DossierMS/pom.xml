@@ -12,6 +12,14 @@
 		<version>1.0.0</version>
 	</parent>
 
+	<dependencies>
+		<!-- Kafka -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
