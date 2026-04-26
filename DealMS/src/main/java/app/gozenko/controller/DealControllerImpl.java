@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,10 @@ public class DealControllerImpl implements DealController {
     private final ScoringDataServiceImpl scoringDataService;
     private final CreditServiceImpl creditService;
     private final CalculatorCallingService calculatorCallingService;
+    private final EmailServiceImpl emailService;
+
+    @Value("${kafka.topic.finish-registration}")
+    private String FINISH_REGISTRATION;
 
     @PostMapping("/statement")
     @Operation(summary = "расчет вариантов предложений по кредиту")
@@ -106,13 +111,11 @@ public class DealControllerImpl implements DealController {
         statementService.updateStatement(loanOffer);
         log.info("Statement in selectLoanOffer updated");
 
-        EmailMessageDto dto = EmailMessageDto.builder()
-                .address(null)
-                .statementId(null)
-                .theme(EmailTheme.FINISH_REGISTRATION)
-                .text("Мое сообщение!")
-                .build();
-        kafkaTemplate.send("finish-registration",
+        EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.FINISH_REGISTRATION,
+                loanOffer.getStatementId(),
+                "Вы успешно выбрали кредитное предложение");
+
+        kafkaTemplate.send(FINISH_REGISTRATION,
                 String.valueOf(loanOffer.getStatementId()), dto);
         return ResponseEntity.ok().build();
     }
