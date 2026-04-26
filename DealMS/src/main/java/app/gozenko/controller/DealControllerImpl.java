@@ -5,6 +5,7 @@ import app.gozenko.dto.*;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Credit;
 import app.gozenko.entity.Statement;
+import app.gozenko.enums.EmailTheme;
 import app.gozenko.enums.StatementStatus;
 import app.gozenko.service.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +36,7 @@ import java.util.UUID;
 public class DealControllerImpl implements DealController {
 
     @Autowired
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, EmailMessageDto> kafkaTemplate;
 
     private final ClientServiceImpl clientService;
     private final StatementServiceImpl statementService;
@@ -104,8 +105,15 @@ public class DealControllerImpl implements DealController {
 
         statementService.updateStatement(loanOffer);
         log.info("Statement in selectLoanOffer updated");
+
+        EmailMessageDto dto = EmailMessageDto.builder()
+                .address(null)
+                .statementId(null)
+                .theme(EmailTheme.FINISH_REGISTRATION)
+                .text("Мое сообщение!")
+                .build();
         kafkaTemplate.send("finish-registration",
-                String.valueOf(loanOffer.getStatementId()),"Мое сообщение!");
+                String.valueOf(loanOffer.getStatementId()), dto);
         return ResponseEntity.ok().build();
     }
 

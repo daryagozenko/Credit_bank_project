@@ -2,13 +2,15 @@ package app.gozenko.config;
 
 import app.gozenko.dto.EmailMessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Deserializer;
 
-@RequiredArgsConstructor
 public class EmailMessageDeserializer implements Deserializer<EmailMessageDto> {
 
     private final ObjectMapper objectMapper;
+
+    public EmailMessageDeserializer() {
+        this.objectMapper = new ObjectMapper();
+    }
 
     @Override
     public EmailMessageDto deserialize(String topic, byte[] data) {
