@@ -14,10 +14,20 @@ public class DossierControllerImpl {
 
     private final DossierServiceImpl dossierService;
 
-    @KafkaListener(topics = "finish-registration", groupId = "dossier-consumer")
-    public void finishRegistration(EmailMessageDto dto) {
-        log.info(dto.getText());
+    @KafkaListener(topics = {"finish-registration", "create-documents",
+            "send-documents", "send-ses", "credit-issued"},
+            groupId = "dossier-consumer")
+    public void sendingEmailWithSuccess(EmailMessageDto dto) {
+        log.info("Message in finishRegistrationAndDocuments - {}", dto.getText());
         dossierService.sendEmail(dto);
-        log.info("Sending successfully");
+        log.info("Sending in finishRegistrationAndDocuments successfully");
+    }
+
+    //TODO: сделать отлов отклонения по кредиту, также и в DealMS
+    @KafkaListener(topics = "statement-denied", groupId = "dossier-consumer")
+    public void sendingEmailWithDenied(EmailMessageDto dto) {
+        log.info("Message in createDocuments - {}", dto.getText());
+        dossierService.sendEmail(dto);
+        log.info("Sending in createDocuments successfully");
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +49,16 @@ public class DealControllerImpl implements DealController {
 
     @Value("${kafka.topic.finish-registration}")
     private String FINISH_REGISTRATION;
+    @Value("${kafka.topic.create-documents}")
+    private String CREATE_DOCUMENT;
+    @Value("${kafka.topic.send-documents}")
+    private String SEND_DOCUMENT;
+    @Value("${kafka.topic.send-ses}")
+    private String SEND_SES;
+    @Value("${kafka.topic.credit-issued}")
+    private String CREDIT_ISSUED;
+    @Value("${kafka.topic.statement-denied}")
+    private String STATEMENT_DENIED;
 
     @PostMapping("/statement")
     @Operation(summary = "расчет вариантов предложений по кредиту")
@@ -114,9 +125,12 @@ public class DealControllerImpl implements DealController {
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.FINISH_REGISTRATION,
                 loanOffer.getStatementId(),
                 "Вы успешно выбрали кредитное предложение");
+        log.debug("EmailMessage in selectLoanOffer-{}", dto);
 
         kafkaTemplate.send(FINISH_REGISTRATION,
                 String.valueOf(loanOffer.getStatementId()), dto);
+        log.info("Send to kafka in selectLoanOffer");
+
         return ResponseEntity.ok().build();
     }
 
@@ -166,7 +180,128 @@ public class DealControllerImpl implements DealController {
         statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
         statementService.addCredit(statement, credit);
 
+        EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.CREATE_DOCUMENTS,
+                statementId,
+                "Документы о сделке успешно созданы");
+        log.debug("EmailMessage in calculateCredit-{}", dto);
+
+        kafkaTemplate.send(CREATE_DOCUMENT,
+                String.valueOf(statementId), dto);
+        log.info("Send to kafka in calculateCredit");
+
         log.info("Credit in calculateCredit created");
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/document/{statementId}/send")
+    @Operation(summary = "запрос на отправку документов")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Успешно"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Неверные параметры запроса"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Внутренняя ошибка сервера"
+            )})
+    public ResponseEntity<Void> requestToSendDocuments(@PathVariable("statementId") UUID statementId) {
+        log.info("Input data in requestToSendDocuments id-{}", statementId);
+
+        Statement statement = statementService.findById(statementId);
+        log.debug("Statement in requestToSendDocuments-{}", statement);
+
+        statementService.updateStatementStatusHistory(statement, StatementStatus.PREPARE_DOCUMENTS);
+        log.debug("Set status PREPARE_DOCUMENTS");
+
+        EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.SEND_DOCUMENTS,
+                statementId,
+                "Документы о вашей сделке отправлены");
+        log.debug("EmailMessage in requestToSendDocuments-{}", dto);
+
+        kafkaTemplate.send(SEND_DOCUMENT,
+                String.valueOf(statementId), dto);
+        log.info("Send to kafka in requestToSendDocuments");
+
+        statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_CREATED);
+        log.debug("Set status DOCUMENT_CREATED");
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/document/{statementId}/sign")
+    @Operation(summary = "запрос на подписание документов")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Успешно"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Неверные параметры запроса"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Внутренняя ошибка сервера"
+            )})
+    public ResponseEntity<Void> requestToSignDocuments(@PathVariable("statementId") UUID statementId) {
+        log.info("Input data in requestToSignDocuments id-{}", statementId);
+
+        Statement statement = statementService.findById(statementId);
+        log.debug("Statement in requestToSignDocuments-{}", statement);
+
+        statementService.updateStatementSesCode(statement);
+        log.debug("Set ses code in statement");
+
+        EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.SEND_SES_CODE,
+                statementId,
+                "Вам отправлен код подтверждения: " + statement.getSesCode());
+        log.debug("EmailMessage in requestToSignDocuments-{}", dto);
+
+        kafkaTemplate.send(SEND_SES,
+                String.valueOf(statementId), dto);
+        log.info("Send to kafka in requestToSignDocuments");
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/document/{statementId}/code")
+    @Operation(summary = "подписание документов")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Успешно"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Неверные параметры запроса"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Внутренняя ошибка сервера"
+            )})
+    public ResponseEntity<Void> requestToVerifyCode(@PathVariable("statementId") UUID statementId) {
+        log.info("Input data in requestToVerifyCode id-{}", statementId);
+
+        Statement statement = statementService.findById(statementId);
+        log.debug("Statement in requestToVerifyCode-{}", statement);
+
+        statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_SIGNED);
+        statementService.updateStatementStatusHistory(statement, StatementStatus.CREDIT_ISSUED);
+        log.debug("Set status PREPARE_DOCUMENTS and CREDIT_ISSUED");
+
+        EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.CREDIT_ISSUED,
+                statementId,
+                "Сделка подтверждена!");
+        log.debug("EmailMessage in requestToVerifyCode-{}", dto);
+
+        kafkaTemplate.send(CREDIT_ISSUED,
+                String.valueOf(statementId), dto);
+        log.info("Send to kafka in requestToVerifyCode");
+
         return ResponseEntity.ok().build();
     }
 }

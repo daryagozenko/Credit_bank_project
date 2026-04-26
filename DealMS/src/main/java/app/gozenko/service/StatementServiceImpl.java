@@ -38,11 +38,17 @@ public class StatementServiceImpl implements StatementService {
                 .status(statusHistory.getLast().getStatus())
                 .client(client)
                 .statusHistory(statusHistory)
-                .sesCode((int) (Math.random() * MAX_SES_CODE))
                 .creationDate(LocalDateTime.now())
                 .build();
         log.info("Statement saved");
         return statementRepository.save(statement);
+    }
+
+    @Override
+    public void updateStatementSesCode(Statement statement) {
+        log.info("input: statement-{}", statement);
+        statement.setSesCode((int) (Math.random() * MAX_SES_CODE));
+        log.info("Statement ses code updated");
     }
 
     @Override
