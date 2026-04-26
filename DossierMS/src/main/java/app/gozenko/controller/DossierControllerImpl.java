@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 public class DossierControllerImpl {
 
     @KafkaListener(topics = "finish-registration", groupId = "dossier-consumer")
-    public void finishRegistration(String text){
+    public void finishRegistration(String text) {
         log.info(text);
     }
 }
