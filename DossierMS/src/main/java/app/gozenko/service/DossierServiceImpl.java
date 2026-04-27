@@ -1,6 +1,7 @@
 package app.gozenko.service;
 
 import app.gozenko.dto.EmailMessageDto;
+import app.gozenko.service.interfaces.DossierService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,10 +11,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DossierServiceImpl {
+public class DossierServiceImpl implements DossierService {
 
     private final JavaMailSender mailSender;
 
+    @Override
     public void sendEmail(EmailMessageDto dto){
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(dto.getAddress());
