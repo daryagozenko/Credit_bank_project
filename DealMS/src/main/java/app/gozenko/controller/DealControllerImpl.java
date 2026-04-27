@@ -1,13 +1,24 @@
 package app.gozenko.controller;
 
 import app.gozenko.controller.interfaces.DealController;
-import app.gozenko.dto.*;
+import app.gozenko.dto.CreditDto;
+import app.gozenko.dto.EmailMessageDto;
+import app.gozenko.dto.FinishRegistrationRequestDto;
+import app.gozenko.dto.LoanOfferDto;
+import app.gozenko.dto.LoanStatementRequestDto;
+import app.gozenko.dto.ScoringDataDto;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Credit;
 import app.gozenko.entity.Statement;
 import app.gozenko.enums.EmailTheme;
 import app.gozenko.enums.StatementStatus;
-import app.gozenko.service.*;
+import app.gozenko.exception.CalculatorClientException;
+import app.gozenko.service.CalculatorCallingService;
+import app.gozenko.service.ClientServiceImpl;
+import app.gozenko.service.CreditServiceImpl;
+import app.gozenko.service.EmailServiceImpl;
+import app.gozenko.service.ScoringDataServiceImpl;
+import app.gozenko.service.StatementServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -170,15 +181,28 @@ public class DealControllerImpl implements DealController {
         ScoringDataDto scoringData = scoringDataService.createScoringData(finishRegistration, statement);
         log.debug("Result in calculateCredit scoringData-{}", scoringData);
 
-        CreditDto creditDto = calculatorCallingService.calcCredit(scoringData);
-        log.debug("Result in calculateCredit creditDto-{}", creditDto);
+        try {
+            CreditDto creditDto = calculatorCallingService.calcCredit(scoringData);
+            log.debug("Result in calculateCredit creditDto-{}", creditDto);
 
-        clientService.updateClient(statement, finishRegistration);
+            clientService.updateClient(statement, finishRegistration);
 
-        Credit credit = creditService.createCredit(creditDto);
-        log.debug("Result in calculateCredit credit-{}", credit);
-        statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
-        statementService.addCredit(statement, credit);
+            Credit credit = creditService.createCredit(creditDto);
+            log.debug("Result in calculateCredit credit-{}", credit);
+            statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
+            statementService.addCredit(statement, credit);
+        } catch (CalculatorClientException ex) {
+            EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.STATEMENT_DENIED,
+                    statementId,
+                    "Сделка отклонена по причине: " + ex.getMessage());
+            log.debug("EmailMessage in calculateCredit-{}", dto);
+
+            kafkaTemplate.send(STATEMENT_DENIED,
+                    String.valueOf(statementId), dto);
+            log.info("Send to kafka in calculateCredit");
+
+            throw new CalculatorClientException(ex.getMessage());
+        }
 
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.CREATE_DOCUMENTS,
                 statementId,

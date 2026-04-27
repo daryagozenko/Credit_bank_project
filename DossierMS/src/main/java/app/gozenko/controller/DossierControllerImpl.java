@@ -23,7 +23,6 @@ public class DossierControllerImpl {
         log.info("Sending in finishRegistrationAndDocuments successfully");
     }
 
-    //TODO: сделать отлов отклонения по кредиту, также и в DealMS
     @KafkaListener(topics = "statement-denied", groupId = "dossier-consumer")
     public void sendingEmailWithDenied(EmailMessageDto dto) {
         log.info("Message in createDocuments - {}", dto.getText());
