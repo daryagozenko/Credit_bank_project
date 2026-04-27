@@ -26,6 +26,7 @@ import java.util.UUID;
 public class StatementServiceImpl implements StatementService {
 
     private static final Integer MAX_SES_CODE = 9999;
+    private static final Integer MIN_SES_CODE = 1111;
 
     private final StatementRepository statementRepository;
 
@@ -44,13 +45,17 @@ public class StatementServiceImpl implements StatementService {
         return statementRepository.save(statement);
     }
 
+    @Transactional
     @Override
     public void updateStatementSesCode(Statement statement) {
         log.info("input: statement-{}", statement);
-        statement.setSesCode((int) (Math.random() * MAX_SES_CODE));
+        int sesCode = MIN_SES_CODE + (int)(Math.random() * (MAX_SES_CODE - MIN_SES_CODE + 1));
+        statement.setSesCode(sesCode);
         log.info("Statement ses code updated");
+        statementRepository.save(statement);
     }
 
+    @Transactional
     @Override
     public Statement findById(UUID statementId) {
         log.debug("input: statementId-{}", statementId);
@@ -79,6 +84,7 @@ public class StatementServiceImpl implements StatementService {
         statementRepository.save(statement);
     }
 
+    @Transactional
     @Override
     public void updateStatementStatusHistory(Statement statement, StatementStatus status) {
         List<StatementStatusHistoryDto> history = statement.getStatusHistory();
@@ -91,8 +97,12 @@ public class StatementServiceImpl implements StatementService {
         }
         statement.setStatus(status);
         log.debug("statement-{}", statement);
+
+        log.info("Save statement in update history");
+        statementRepository.save(statement);
     }
 
+    @Transactional
     @Override
     public void addCredit(Statement statement, Credit credit) {
         statement.setCredit(credit);

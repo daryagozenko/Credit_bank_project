@@ -212,7 +212,7 @@ public class DealControllerImpl implements DealController {
         log.info("Input data in requestToSendDocuments id-{}", statementId);
 
         Statement statement = statementService.findById(statementId);
-        log.debug("Statement in requestToSendDocuments-{}", statement);
+        log.info("Statement in requestToSendDocuments-{}", statement);
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.PREPARE_DOCUMENTS);
         log.debug("Set status PREPARE_DOCUMENTS");
@@ -251,7 +251,7 @@ public class DealControllerImpl implements DealController {
         log.info("Input data in requestToSignDocuments id-{}", statementId);
 
         Statement statement = statementService.findById(statementId);
-        log.debug("Statement in requestToSignDocuments-{}", statement);
+        log.info("Statement in requestToSignDocuments-{}", statement);
 
         statementService.updateStatementSesCode(statement);
         log.debug("Set ses code in statement");
@@ -287,11 +287,12 @@ public class DealControllerImpl implements DealController {
         log.info("Input data in requestToVerifyCode id-{}", statementId);
 
         Statement statement = statementService.findById(statementId);
-        log.debug("Statement in requestToVerifyCode-{}", statement);
+        log.info("Statement in requestToVerifyCode-{}", statement);
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_SIGNED);
         statementService.updateStatementStatusHistory(statement, StatementStatus.CREDIT_ISSUED);
         log.debug("Set status PREPARE_DOCUMENTS and CREDIT_ISSUED");
+        log.info("Statement paste update history-{}", statement);
 
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.CREDIT_ISSUED,
                 statementId,
