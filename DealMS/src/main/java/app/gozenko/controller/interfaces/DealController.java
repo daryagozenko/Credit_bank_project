@@ -20,7 +20,8 @@ public interface DealController {
             @PathVariable("statementId") UUID statementId,
             @RequestBody @Valid FinishRegistrationRequestDto finishRegistration);
 
-    ResponseEntity<Void> verifyCode(@PathVariable("statementId") UUID statementId);
+    ResponseEntity<Void> verifyCode(@PathVariable("statementId") UUID statementId,
+                                    @PathVariable("code") Integer code);
 
     ResponseEntity<Void> signDocuments(@PathVariable("statementId") UUID statementId);
 

@@ -13,6 +13,7 @@ import app.gozenko.entity.Statement;
 import app.gozenko.enums.EmailTheme;
 import app.gozenko.enums.StatementStatus;
 import app.gozenko.exception.CalculatorClientException;
+import app.gozenko.exception.NotVerifyCodeException;
 import app.gozenko.service.CalculatorCallingService;
 import app.gozenko.service.ClientServiceImpl;
 import app.gozenko.service.CreditServiceImpl;
@@ -55,7 +56,7 @@ public class DealControllerImpl implements DealController {
             "Перейдите по ссылке для подписания документов: deal/document/{statementId}/sign";
     private static final String signDocumentsEmailText = "Вам отправлен код подтверждения: ";
     private static final String signDocumentsLinkEmailText = "\n Перейдите по ссылке для подтверждения сделки: " +
-            "deal/document/{statementId}/code";
+            "deal/document/{statementId}/code/{code}";
     private static final String verifyCodeEmailText = "Сделка подтверждена!";
     private static final String statementDeniedEmailText = "Сделка отклонена по причине: ";
 
@@ -309,7 +310,7 @@ public class DealControllerImpl implements DealController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/document/{statementId}/code")
+    @PostMapping("/document/{statementId}/code/{code}")
     @Operation(summary = "подписание документов")
     @ApiResponses(value = {
             @ApiResponse(
@@ -328,11 +329,15 @@ public class DealControllerImpl implements DealController {
                     responseCode = "500",
                     description = "Внутренняя ошибка сервера"
             )})
-    public ResponseEntity<Void> verifyCode(UUID statementId) {
-        log.info("Input data in verifyCode id-{}", statementId);
+    public ResponseEntity<Void> verifyCode(UUID statementId, Integer code) {
+        log.info("Input data in verifyCode id-{}, code-{}", statementId, code);
 
         Statement statement = statementService.findById(statementId);
         log.debug("Statement in verifyCode-{}", statement);
+
+        if(!code.equals(statement.getSesCode())){
+            throw new NotVerifyCodeException("Код верификации не совпадает");
+        }
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_SIGNED);
         statementService.updateStatementStatusHistory(statement, StatementStatus.CREDIT_ISSUED);

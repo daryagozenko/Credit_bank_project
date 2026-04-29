@@ -4,6 +4,7 @@ import app.gozenko.exception.CalculatorClientException;
 import app.gozenko.exception.CalculatorServerException;
 import app.gozenko.exception.ClientExistsException;
 import app.gozenko.exception.JsonException;
+import app.gozenko.exception.NotVerifyCodeException;
 import app.gozenko.exception.UnloadedDataException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -83,6 +84,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleCalculatorClientValidationExceptions(
             CalculatorClientException ex) {
         log.warn("Calculator client error");
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotVerifyCodeException.class)
+    public ResponseEntity<Map<String, String>> handleCalculatorClientValidationExceptions(
+            NotVerifyCodeException ex) {
+        log.warn("Verify codes do not matches");
         return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
