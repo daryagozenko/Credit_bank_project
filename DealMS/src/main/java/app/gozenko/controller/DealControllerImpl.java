@@ -33,7 +33,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +46,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "DealController")
 public class DealControllerImpl implements DealController {
+
+    private static final String selectLoanOfferEmailText = "Вы успешно выбрали кредитное предложение\n" +
+            "Перейдите по ссылке для финального рассчета кредита: deal/calculate/{statementId}";
+    private static final String calculateCreditEmailText = "Документы о сделке успешно созданы\n" +
+            "Перейдиет по ссылке для отправки документов: deal/document/{statementId}/send";
+    private static final String sendDocumentsEmailText = "Документы о вашей сделке отправлены\n" +
+            "Перейдите по ссылке для подписания документов: deal/document/{statementId}/sign";
+    private static final String signDocumentsEmailText = "Вам отправлен код подтверждения: ";
+    private static final String signDocumentsLinkEmailText = "\n Перейдите по ссылке для подтверждения сделки: " +
+            "deal/document/{statementId}/code";
+    private static final String verifyCodeEmailText = "Сделка подтверждена!";
+    private static final String statementDeniedEmailText = "Сделка отклонена по причине: ";
 
     @Autowired
     private final KafkaTemplate<String, EmailMessageDto> kafkaTemplate;
@@ -117,15 +128,15 @@ public class DealControllerImpl implements DealController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Неверные параметры запроса",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+                    description = "Неверные параметры запроса"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Заявка не найдена"
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Внутренняя ошибка сервера",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+                    description = "Внутренняя ошибка сервера"
             )})
     public ResponseEntity<Void> selectLoanOffer(LoanOfferDto loanOffer) {
         log.info("Input data in selectLoanOffer loanOffer-{}", loanOffer);
@@ -135,12 +146,12 @@ public class DealControllerImpl implements DealController {
 
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.FINISH_REGISTRATION,
                 loanOffer.getStatementId(),
-                "Вы успешно выбрали кредитное предложение");
+                selectLoanOfferEmailText);
         log.debug("EmailMessage in selectLoanOffer-{}", dto);
 
         kafkaTemplate.send(FINISH_REGISTRATION,
                 String.valueOf(loanOffer.getStatementId()), dto);
-        log.info("Send to kafka in selectLoanOffer");
+        log.info("Send to kafka topic {} in selectLoanOffer", FINISH_REGISTRATION);
 
         return ResponseEntity.ok().build();
     }
@@ -154,21 +165,15 @@ public class DealControllerImpl implements DealController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Неверные параметры запроса",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+                    description = "Неверные параметры запроса"
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Сущность не найдена в бд",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+                    description = "Заявка не найдена"
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Внутренняя ошибка сервера",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+                    description = "Внутренняя ошибка сервера"
             )})
     public ResponseEntity<Void> calculateCredit(
             UUID statementId,
@@ -189,29 +194,33 @@ public class DealControllerImpl implements DealController {
 
             Credit credit = creditService.createCredit(creditDto);
             log.debug("Result in calculateCredit credit-{}", credit);
+
             statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
             statementService.addCredit(statement, credit);
+            log.debug("Updated statement-{}", statement);
         } catch (CalculatorClientException ex) {
+            statementService.updateStatementStatusHistory(statement, StatementStatus.CC_DENIED);
+            log.debug("Updated statement status-{}", statement.getStatus());
             EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.STATEMENT_DENIED,
                     statementId,
-                    "Сделка отклонена по причине: " + ex.getMessage());
+                    statementDeniedEmailText + ex.getMessage());
             log.debug("EmailMessage in calculateCredit-{}", dto);
 
             kafkaTemplate.send(STATEMENT_DENIED,
                     String.valueOf(statementId), dto);
-            log.info("Send to kafka in calculateCredit");
+            log.info("Send to kafka topic {} in calculateCredit", STATEMENT_DENIED);
 
             throw new CalculatorClientException(ex.getMessage());
         }
 
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.CREATE_DOCUMENTS,
                 statementId,
-                "Документы о сделке успешно созданы");
+                calculateCreditEmailText);
         log.debug("EmailMessage in calculateCredit-{}", dto);
 
         kafkaTemplate.send(CREATE_DOCUMENT,
                 String.valueOf(statementId), dto);
-        log.info("Send to kafka in calculateCredit");
+        log.info("Send to kafka topic {} in calculateCredit", CREATE_DOCUMENT);
 
         log.info("Credit in calculateCredit created");
         return ResponseEntity.ok().build();
@@ -229,29 +238,33 @@ public class DealControllerImpl implements DealController {
                     description = "Неверные параметры запроса"
             ),
             @ApiResponse(
+                    responseCode = "404",
+                    description = "Заявка не найдена"
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "Внутренняя ошибка сервера"
             )})
-    public ResponseEntity<Void> requestToSendDocuments(@PathVariable("statementId") UUID statementId) {
-        log.info("Input data in requestToSendDocuments id-{}", statementId);
+    public ResponseEntity<Void> sendDocuments(UUID statementId) {
+        log.info("Input data in sendDocuments id-{}", statementId);
 
         Statement statement = statementService.findById(statementId);
-        log.info("Statement in requestToSendDocuments-{}", statement);
+        log.debug("Statement in sendDocuments-{}", statement);
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.PREPARE_DOCUMENTS);
-        log.debug("Set status PREPARE_DOCUMENTS");
+        log.debug("Set status-{}",statement.getStatus());
 
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.SEND_DOCUMENTS,
                 statementId,
-                "Документы о вашей сделке отправлены");
-        log.debug("EmailMessage in requestToSendDocuments-{}", dto);
+                sendDocumentsEmailText);
+        log.debug("EmailMessage in sendDocuments-{}", dto);
 
         kafkaTemplate.send(SEND_DOCUMENT,
                 String.valueOf(statementId), dto);
-        log.info("Send to kafka in requestToSendDocuments");
+        log.info("Send to kafka topic {} in sendDocuments", SEND_DOCUMENT);
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_CREATED);
-        log.debug("Set status DOCUMENT_CREATED");
+        log.debug("Set status-{}",statement.getStatus());
 
         return ResponseEntity.ok().build();
     }
@@ -268,26 +281,30 @@ public class DealControllerImpl implements DealController {
                     description = "Неверные параметры запроса"
             ),
             @ApiResponse(
+                    responseCode = "404",
+                    description = "Заявка не найдена"
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "Внутренняя ошибка сервера"
             )})
-    public ResponseEntity<Void> requestToSignDocuments(@PathVariable("statementId") UUID statementId) {
-        log.info("Input data in requestToSignDocuments id-{}", statementId);
+    public ResponseEntity<Void> signDocuments(UUID statementId) {
+        log.info("Input data in signDocuments id-{}", statementId);
 
         Statement statement = statementService.findById(statementId);
-        log.info("Statement in requestToSignDocuments-{}", statement);
+        log.info("Statement in signDocuments-{}", statement);
 
         statementService.updateStatementSesCode(statement);
         log.debug("Set ses code in statement");
 
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.SEND_SES_CODE,
                 statementId,
-                "Вам отправлен код подтверждения: " + statement.getSesCode());
-        log.debug("EmailMessage in requestToSignDocuments-{}", dto);
+                signDocumentsEmailText + statement.getSesCode() + signDocumentsLinkEmailText);
+        log.debug("EmailMessage in signDocuments-{}", dto);
 
         kafkaTemplate.send(SEND_SES,
                 String.valueOf(statementId), dto);
-        log.info("Send to kafka in requestToSignDocuments");
+        log.info("Send to kafka topic {} in signDocuments", SEND_SES);
 
         return ResponseEntity.ok().build();
     }
@@ -304,28 +321,31 @@ public class DealControllerImpl implements DealController {
                     description = "Неверные параметры запроса"
             ),
             @ApiResponse(
+                    responseCode = "404",
+                    description = "Заявка не найдена"
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "Внутренняя ошибка сервера"
             )})
-    public ResponseEntity<Void> requestToVerifyCode(@PathVariable("statementId") UUID statementId) {
-        log.info("Input data in requestToVerifyCode id-{}", statementId);
+    public ResponseEntity<Void> verifyCode(UUID statementId) {
+        log.info("Input data in verifyCode id-{}", statementId);
 
         Statement statement = statementService.findById(statementId);
-        log.info("Statement in requestToVerifyCode-{}", statement);
+        log.debug("Statement in verifyCode-{}", statement);
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_SIGNED);
         statementService.updateStatementStatusHistory(statement, StatementStatus.CREDIT_ISSUED);
-        log.debug("Set status PREPARE_DOCUMENTS and CREDIT_ISSUED");
-        log.info("Statement paste update history-{}", statement);
+        log.debug("Set status history-{}",statement.getStatusHistory());
 
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.CREDIT_ISSUED,
                 statementId,
-                "Сделка подтверждена!");
-        log.debug("EmailMessage in requestToVerifyCode-{}", dto);
+                verifyCodeEmailText);
+        log.debug("EmailMessage in verifyCode-{}", dto);
 
         kafkaTemplate.send(CREDIT_ISSUED,
                 String.valueOf(statementId), dto);
-        log.info("Send to kafka in requestToVerifyCode");
+        log.info("Send to kafka topic {} in verifyCode", CREDIT_ISSUED);
 
         return ResponseEntity.ok().build();
     }

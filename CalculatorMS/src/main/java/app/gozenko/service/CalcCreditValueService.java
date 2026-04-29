@@ -25,7 +25,7 @@ public class CalcCreditValueService {
     private static final Integer DAYS = 365;
     private static final Integer AVERAGE = 2;
 
-    private BigDecimal BASE_PERCENT;
+    private final BigDecimal BASE_PERCENT;
 
     @Autowired
     public CalcCreditValueService(@Value("${app.gozenko.base-percent}") BigDecimal BASE_PERCENT) {

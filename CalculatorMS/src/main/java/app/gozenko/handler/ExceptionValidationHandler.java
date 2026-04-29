@@ -28,9 +28,8 @@ public class ExceptionValidationHandler {
             ConstraintViolationException.class})
     public ResponseEntity<Map<String, String>> handleValidationException(Exception ex) {
         log.warn("Validation error");
-        if (ex instanceof ConstraintViolationException) {
+        if (ex instanceof ConstraintViolationException exception) {
             Map<String, String> exceptions = new HashMap<>();
-            ConstraintViolationException exception = (ConstraintViolationException) ex;
 
             exception.getConstraintViolations().forEach(violation -> {
                 String field = extractFieldName(violation.getPropertyPath().toString());

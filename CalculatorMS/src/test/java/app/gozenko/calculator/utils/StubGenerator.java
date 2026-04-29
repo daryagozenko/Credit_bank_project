@@ -1,7 +1,14 @@
 package app.gozenko.calculator.utils;
 
-import app.gozenko.dto.*;
-import app.gozenko.enums.*;
+import app.gozenko.dto.CreditDto;
+import app.gozenko.dto.EmploymentDto;
+import app.gozenko.dto.LoanOfferDto;
+import app.gozenko.dto.LoanStatementRequestDto;
+import app.gozenko.dto.ScoringDataDto;
+import app.gozenko.enums.EmploymentStatus;
+import app.gozenko.enums.Gender;
+import app.gozenko.enums.MaritalStatus;
+import app.gozenko.enums.Position;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

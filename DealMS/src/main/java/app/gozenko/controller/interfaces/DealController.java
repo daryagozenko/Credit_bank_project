@@ -19,4 +19,10 @@ public interface DealController {
     ResponseEntity<Void> calculateCredit(
             @PathVariable("statementId") UUID statementId,
             @RequestBody @Valid FinishRegistrationRequestDto finishRegistration);
+
+    ResponseEntity<Void> verifyCode(@PathVariable("statementId") UUID statementId);
+
+    ResponseEntity<Void> signDocuments(@PathVariable("statementId") UUID statementId);
+
+    ResponseEntity<Void> sendDocuments(@PathVariable("statementId") UUID statementId);
 }
