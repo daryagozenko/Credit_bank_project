@@ -69,7 +69,7 @@ public class StatementServiceImpl implements StatementService {
         UUID statementId = loanOffer.getStatementId();
         log.debug("updateStatement: statementId-{}", statementId);
 
-        Statement statement = findById(statementId);
+        Statement statement = findByIdWithLock(statementId);
         log.debug("updateStatement: statement-{}", statement);
 
         List<StatementStatusHistoryDto> history = statement.getStatusHistory();
@@ -87,19 +87,21 @@ public class StatementServiceImpl implements StatementService {
     @Transactional
     @Override
     public void updateStatementStatusHistory(Statement statement, StatementStatus status) {
-        List<StatementStatusHistoryDto> history = statement.getStatusHistory();
+        Statement actual = statementRepository.findByIdWithLock(statement.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Не найдено заявление: " + statement.getId()));
+        List<StatementStatusHistoryDto> history = actual.getStatusHistory();
         history.add(addNewStatus(status));
         log.debug("statement statusHistory-{}", history);
-        statement.setStatusHistory(history);
+        actual.setStatusHistory(history);
 
         if (status.equals(StatementStatus.CC_APPROVED)) {
-            statement.setSignDate(LocalDateTime.now());
+            actual.setSignDate(LocalDateTime.now());
         }
-        statement.setStatus(status);
-        log.debug("statement-{}", statement);
+        actual.setStatus(status);
+        log.debug("statement-{}", actual);
 
         log.info("Save statement in update history");
-        statementRepository.save(statement);
+        statementRepository.save(actual);
     }
 
     @Transactional
@@ -108,6 +110,13 @@ public class StatementServiceImpl implements StatementService {
         statement.setCredit(credit);
         log.debug("addCredit: statement-{}", statement);
         statementRepository.save(statement);
+    }
+
+    @Transactional
+    public Statement findByIdWithLock(UUID statementId) {
+        log.debug("Input: statementId-{}", statementId);
+        return statementRepository.findByIdWithLock(statementId)
+                .orElseThrow(() -> new EntityNotFoundException("Не найдено заявление: " + statementId));
     }
 
     private List<StatementStatusHistoryDto> createStatusHistory() {
