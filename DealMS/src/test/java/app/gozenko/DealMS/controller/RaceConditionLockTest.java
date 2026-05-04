@@ -9,6 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -19,11 +24,25 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@Testcontainers
 public class RaceConditionLockTest {
+
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14-alpine")
+            .withDatabaseName("test_db")
+            .withUsername("test")
+            .withPassword("test");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+    }
 
     private final StatementRepository repository;
     private final StatementService statementService;
-    private Statement actual;
     private UUID statementId;
 
     @Autowired
@@ -35,7 +54,7 @@ public class RaceConditionLockTest {
     @BeforeEach
     void init() {
         repository.deleteAllInBatch();
-        actual = Statement.builder()
+        Statement actual = Statement.builder()
                 .statusHistory(new ArrayList<>())
                 .build();
         actual = repository.saveAndFlush(actual);
@@ -73,7 +92,7 @@ public class RaceConditionLockTest {
 
         CompletableFuture<Void> allThreads = CompletableFuture.allOf(firstThread, secondThread);
 
-        assertDoesNotThrow(() -> allThreads.join());
+        assertDoesNotThrow(allThreads::join);
 
         Statement updatedStatement = repository.findById(statementId)
                 .orElseThrow(() -> new RuntimeException("Statement not found"));
