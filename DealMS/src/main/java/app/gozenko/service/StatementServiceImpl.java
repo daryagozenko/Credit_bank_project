@@ -26,7 +26,7 @@ import java.util.UUID;
 public class StatementServiceImpl implements StatementService {
 
     private static final Integer MAX_SES_CODE = 9999;
-    private static final Integer MIN_SES_CODE = 1111;
+    private static final Integer MIN_SES_CODE = 1000;
 
     private final StatementRepository statementRepository;
 

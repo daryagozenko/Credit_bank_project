@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
+import java.util.List;
+
 @Configuration
 public class KafkaTopicsConfig {
 
@@ -23,48 +25,19 @@ public class KafkaTopicsConfig {
     private String STATEMENT_DENIED;
 
     @Bean
-    public NewTopic finishRegistration(){
-        return TopicBuilder.name(FINISH_REGISTRATION)
-                .partitions(3)
-                .replicas(1)
-                .build();
+    public List<NewTopic> topics() {
+        return List.of(
+                createTopic(FINISH_REGISTRATION),
+                createTopic(CREATE_DOCUMENT),
+                createTopic(SEND_DOCUMENT),
+                createTopic(SEND_SES),
+                createTopic(CREDIT_ISSUED),
+                createTopic(STATEMENT_DENIED)
+        );
     }
 
-    @Bean
-    public NewTopic createDocuments(){
-        return TopicBuilder.name(CREATE_DOCUMENT)
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic sendDocuments(){
-        return TopicBuilder.name(SEND_DOCUMENT)
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic sendSes(){
-        return TopicBuilder.name(SEND_SES)
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic creditIssued(){
-        return TopicBuilder.name(CREDIT_ISSUED)
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic statementDenied(){
-        return TopicBuilder.name(STATEMENT_DENIED)
+    public NewTopic createTopic(String name) {
+        return TopicBuilder.name(name)
                 .partitions(3)
                 .replicas(1)
                 .build();

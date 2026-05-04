@@ -23,6 +23,6 @@ public class EmailServiceImpl implements EmailService {
         message.setText(dto.getText());
 
         mailSender.send(message);
-        log.info("Sending mail message");
+        log.info("Sending mail message - {}", message);
     }
 }

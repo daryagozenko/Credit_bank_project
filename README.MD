@@ -1,4 +1,4 @@
-# Руководство к запуску и тесированию проекта
+# Руководство к запуску и тестированию проекта
 
 ## В терминале:
 ### 1. Перейти из корневой папки в папку с sql скриптом
@@ -29,7 +29,7 @@
   - Вбить в строке название приложения и сгенерировать пароль (токен)
 - Изменить почту на свою:
   - spring.mail.username=gozenkodara80@gmail.com - в DossierMS
-  - gozenko.mail=gozenkodara80@gmail.com - в DealMS
+  - mail.receiver=gozenkodara80@gmail.com - в DealMS
 - В терминале: set MAIL_PASSWORD = созданный_токен
 
 ### 5. Для запуска docker контейнеров (Kafka и Zookeeper)
