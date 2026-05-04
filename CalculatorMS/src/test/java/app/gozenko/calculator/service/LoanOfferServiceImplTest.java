@@ -118,7 +118,7 @@ class LoanOfferServiceImplTest {
 
                 // Проверка первого предложения (со страховкой и зарплатой)
                 () -> {
-                    LoanOfferDto offer = result.get(0);
+                    LoanOfferDto offer = result.getFirst();
                     assertEquals(baseAmount, offer.getRequestedAmount());
                     assertEquals(baseTerm, offer.getTerm());
                     assertTrue(offer.getIsInsuranceEnabled());

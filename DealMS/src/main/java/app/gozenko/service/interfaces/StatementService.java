@@ -14,4 +14,6 @@ public interface StatementService {
     void updateStatement(LoanOfferDto loanOffer);
     void updateStatementStatusHistory(Statement statement, StatementStatus status);
     void addCredit(Statement statement, Credit credit);
+    void updateStatementSesCode(Statement statement);
+    Statement findByIdWithLock(UUID statementId);
 }

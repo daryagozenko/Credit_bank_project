@@ -27,18 +27,14 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException.class})
     public ResponseEntity<Map<String, String>> handleValidationExceptions(Exception ex) {
         log.warn("Validation error");
-        if (ex instanceof MethodArgumentNotValidException) {
+        if (ex instanceof MethodArgumentNotValidException e) {
             Map<String, String> errors = new HashMap<>();
-            MethodArgumentNotValidException e = (MethodArgumentNotValidException) ex;
-            e.getBindingResult().getFieldErrors().forEach(error -> {
-                errors.put(error.getField(), error.getDefaultMessage());
-            });
+            e.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
             return createResponseEntity(errors, HttpStatus.BAD_REQUEST);
         }
 
-        if (ex instanceof ConstraintViolationException) {
+        if (ex instanceof ConstraintViolationException exception) {
             Map<String, String> exceptions = new HashMap<>();
-            ConstraintViolationException exception = (ConstraintViolationException) ex;
 
             exception.getConstraintViolations().forEach(violation -> {
                 String field = extractFieldName(violation.getPropertyPath().toString());

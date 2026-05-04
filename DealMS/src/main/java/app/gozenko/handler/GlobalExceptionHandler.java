@@ -4,6 +4,7 @@ import app.gozenko.exception.CalculatorClientException;
 import app.gozenko.exception.CalculatorServerException;
 import app.gozenko.exception.ClientExistsException;
 import app.gozenko.exception.JsonException;
+import app.gozenko.exception.NotVerifyCodeException;
 import app.gozenko.exception.UnloadedDataException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -59,18 +60,14 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException.class})
     public ResponseEntity<Map<String, String>> handleValidationExceptions(Exception ex) {
         log.warn("Validation error");
-        if (ex instanceof MethodArgumentNotValidException) {
+        if (ex instanceof MethodArgumentNotValidException e) {
             Map<String, String> errors = new HashMap<>();
-            MethodArgumentNotValidException e = (MethodArgumentNotValidException) ex;
-            e.getBindingResult().getFieldErrors().forEach(error -> {
-                errors.put(error.getField(), error.getDefaultMessage());
-            });
+            e.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
             return createResponseEntity(errors, HttpStatus.BAD_REQUEST);
         }
 
-        if (ex instanceof ConstraintViolationException) {
+        if (ex instanceof ConstraintViolationException exception) {
             Map<String, String> exceptions = new HashMap<>();
-            ConstraintViolationException exception = (ConstraintViolationException) ex;
 
             exception.getConstraintViolations().forEach(violation -> {
                 String field = extractFieldName(violation.getPropertyPath().toString());
@@ -87,6 +84,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleCalculatorClientValidationExceptions(
             CalculatorClientException ex) {
         log.warn("Calculator client error");
+        return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotVerifyCodeException.class)
+    public ResponseEntity<Map<String, String>> handleCalculatorClientValidationExceptions(
+            NotVerifyCodeException ex) {
+        log.warn("Verify codes do not matches");
         return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
