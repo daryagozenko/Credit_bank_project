@@ -51,7 +51,7 @@ public class DealControllerImpl implements DealController {
     private static final String selectLoanOfferEmailText = "Вы успешно выбрали кредитное предложение\n" +
             "Перейдите по ссылке для финального рассчета кредита: deal/calculate/{statementId}";
     private static final String calculateCreditEmailText = "Документы о сделке успешно созданы\n" +
-            "Перейдиет по ссылке для отправки документов: deal/document/{statementId}/send";
+            "Перейдите по ссылке для отправки документов: deal/document/{statementId}/send";
     private static final String sendDocumentsEmailText = "Документы о вашей сделке отправлены\n" +
             "Перейдите по ссылке для подписания документов: deal/document/{statementId}/sign";
     private static final String signDocumentsEmailText = "Вам отправлен код подтверждения: ";
