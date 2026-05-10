@@ -7,6 +7,7 @@ import app.gozenko.dto.FinishRegistrationRequestDto;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
 import app.gozenko.dto.ScoringDataDto;
+import app.gozenko.dto.StatementResponseDto;
 import app.gozenko.entity.Client;
 import app.gozenko.entity.Credit;
 import app.gozenko.entity.Statement;
@@ -14,6 +15,7 @@ import app.gozenko.enums.EmailTheme;
 import app.gozenko.enums.StatementStatus;
 import app.gozenko.exception.CalculatorClientException;
 import app.gozenko.exception.NotVerifyCodeException;
+import app.gozenko.service.AdminService;
 import app.gozenko.service.CalculatorCallingService;
 import app.gozenko.service.ClientServiceImpl;
 import app.gozenko.service.CreditServiceImpl;
@@ -34,6 +36,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,14 +52,14 @@ import java.util.UUID;
 public class DealControllerImpl implements DealController {
 
     private static final String selectLoanOfferEmailText = "Вы успешно выбрали кредитное предложение\n" +
-            "Перейдите по ссылке для финального рассчета кредита: deal/calculate/{statementId}";
+            "Перейдите по ссылке для финального рассчета кредита: gateway/calculate/{statementId}";
     private static final String calculateCreditEmailText = "Документы о сделке успешно созданы\n" +
-            "Перейдите по ссылке для отправки документов: deal/document/{statementId}/send";
+            "Перейдите по ссылке для отправки документов: gateway/document/{statementId}/send";
     private static final String sendDocumentsEmailText = "Документы о вашей сделке отправлены\n" +
-            "Перейдите по ссылке для подписания документов: deal/document/{statementId}/sign";
+            "Перейдите по ссылке для подписания документов: gateway/document/{statementId}/sign";
     private static final String signDocumentsEmailText = "Вам отправлен код подтверждения: ";
     private static final String signDocumentsLinkEmailText = "\n Перейдите по ссылке для подтверждения сделки: " +
-            "deal/document/{statementId}/code/{code}";
+            "gateway/document/{statementId}/code/{code}";
     private static final String verifyCodeEmailText = "Сделка подтверждена!";
     private static final String statementDeniedEmailText = "Сделка отклонена по причине: ";
 
@@ -69,6 +72,7 @@ public class DealControllerImpl implements DealController {
     private final CreditServiceImpl creditService;
     private final CalculatorCallingService calculatorCallingService;
     private final EmailServiceImpl emailService;
+    private final AdminService adminService;
 
     @Value("${kafka.topic.finish-registration}")
     private String FINISH_REGISTRATION;
@@ -246,6 +250,7 @@ public class DealControllerImpl implements DealController {
                     responseCode = "500",
                     description = "Внутренняя ошибка сервера"
             )})
+    @Override
     public ResponseEntity<Void> sendDocuments(UUID statementId) {
         log.info("Input data in sendDocuments id-{}", statementId);
 
@@ -253,7 +258,7 @@ public class DealControllerImpl implements DealController {
         log.debug("Statement in sendDocuments-{}", statement);
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.PREPARE_DOCUMENTS);
-        log.debug("Set status-{}",statement.getStatus());
+        log.debug("Set status-{}", statement.getStatus());
 
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.SEND_DOCUMENTS,
                 statementId,
@@ -265,7 +270,7 @@ public class DealControllerImpl implements DealController {
         log.info("Send to kafka topic {} in sendDocuments", SEND_DOCUMENT);
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_CREATED);
-        log.debug("Set status-{}",statement.getStatus());
+        log.debug("Set status-{}", statement.getStatus());
 
         return ResponseEntity.ok().build();
     }
@@ -289,6 +294,7 @@ public class DealControllerImpl implements DealController {
                     responseCode = "500",
                     description = "Внутренняя ошибка сервера"
             )})
+    @Override
     public ResponseEntity<Void> signDocuments(UUID statementId) {
         log.info("Input data in signDocuments id-{}", statementId);
 
@@ -329,19 +335,20 @@ public class DealControllerImpl implements DealController {
                     responseCode = "500",
                     description = "Внутренняя ошибка сервера"
             )})
+    @Override
     public ResponseEntity<Void> verifyCode(UUID statementId, Integer code) {
         log.info("Input data in verifyCode id-{}, code-{}", statementId, code);
 
         Statement statement = statementService.findById(statementId);
         log.debug("Statement in verifyCode-{}", statement);
 
-        if(!code.equals(statement.getSesCode())){
+        if (!code.equals(statement.getSesCode())) {
             throw new NotVerifyCodeException("Код верификации не совпадает");
         }
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_SIGNED);
         statementService.updateStatementStatusHistory(statement, StatementStatus.CREDIT_ISSUED);
-        log.debug("Set status history-{}",statement.getStatusHistory());
+        log.debug("Set status history-{}", statement.getStatusHistory());
 
         EmailMessageDto dto = emailService.createEmailMessage(EmailTheme.CREDIT_ISSUED,
                 statementId,
@@ -353,5 +360,69 @@ public class DealControllerImpl implements DealController {
         log.info("Send to kafka topic {} in verifyCode", CREDIT_ISSUED);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/admin/statement/{statementId}")
+    @Operation(summary = "получить заявку по id (админский запрос)")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Успешно",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Заявка не найдена",
+                    content = @Content(schema = @Schema(hidden = true))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Внутренняя ошибка сервера",
+                    content = @Content(schema = @Schema(hidden = true))
+            )})
+    @Override
+    public ResponseEntity<StatementResponseDto> getStatement(UUID statementId) {
+        log.info("Input data in getStatement id-{}", statementId);
+
+        Statement statement = statementService.findById(statementId);
+        log.debug("Statement-{}", statement);
+
+        StatementResponseDto statementResponseDto = adminService.getStatementResponse(statement);
+        log.info("Result statement response-{}", statementResponseDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(statementResponseDto);
+    }
+
+    @GetMapping("/admin/statement")
+    @Operation(summary = "получить все заявки (админский запрос)")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Успешно",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE)
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Заявки отсутствуют",
+                    content = @Content(schema = @Schema(hidden = true))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Внутренняя ошибка сервера",
+                    content = @Content(schema = @Schema(hidden = true))
+            )})
+    @Override
+    public ResponseEntity<List<StatementResponseDto>> getAllStatements() {
+        log.info("Input getAllStatements");
+
+        List<Statement> statements = statementService.findAllStatements();
+        log.debug("All statements-{}", statements);
+
+        List<StatementResponseDto> allStatementsResponseDto = adminService.getAllStatementsResponse(statements);
+        log.info("Result statements response-{}", allStatementsResponseDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(allStatementsResponseDto);
     }
 }

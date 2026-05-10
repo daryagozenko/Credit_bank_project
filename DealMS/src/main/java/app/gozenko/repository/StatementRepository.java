@@ -11,9 +11,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface StatementRepository extends JpaRepository<Statement, UUID> {
-    @Override
-    Optional<Statement> findById(UUID uuid);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM Statement s WHERE s.id = :id")
     Optional<Statement> findByIdWithLock(@Param("id") UUID id);
