@@ -23,13 +23,13 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/vi/statement")
+@RequestMapping("/api/v1/statement")
 public class StatementControllerImpl implements StatementController {
 
     private final DealCallingService dealCallingService;
     private final PreScoringService preScoringService;
 
-    @PostMapping("/")
+    @PostMapping("/statement")
     @Override
     @ApiResponses(value = {
             @ApiResponse(

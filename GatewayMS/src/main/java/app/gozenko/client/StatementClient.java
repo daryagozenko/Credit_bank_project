@@ -22,7 +22,7 @@ public class StatementClient {
     @Value("${app.gozenko.uri-offer}")
     private String URI_OFFER;
 
-    public StatementClient(@Qualifier("statementClient") RestClient restClient,
+    public StatementClient(@Qualifier("statementClientBean") RestClient restClient,
                            CommonErrorHandler errorHandler) {
         this.restClient = restClient;
         this.errorHandler = errorHandler;

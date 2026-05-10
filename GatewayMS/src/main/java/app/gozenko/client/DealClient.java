@@ -26,7 +26,7 @@ public class DealClient {
     @Value("${app.gozenko.uri-verify}")
     private String URI_VERIFY;
 
-    public DealClient(@Qualifier("dealClient") RestClient restClient,
+    public DealClient(@Qualifier("dealClientBean") RestClient restClient,
                       CommonErrorHandler errorHandler) {
         this.restClient = restClient;
         this.errorHandler = errorHandler;

@@ -19,6 +19,7 @@
 - http://localhost:8085/swagger-ui/index.html - CalculatorMS
 - http://localhost:8087/swagger-ui/index.html - StatementMS
 - http://localhost:8088/swagger-ui/index.html - DossierMS
+- http://localhost:8089/swagger-ui/index.html - GatewayMS
 
 ## Для теста DossierMS:
 ### 4. Установить переменную окружения для отправки письма на почту

@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 @OpenAPIDefinition(
         info = @Info(
                 title = "GatewayMS",
-                description = "Полное офрмление кредита"
+                description = "Полное оформление кредита"
         )
 )
 public class OpenApiConfig {

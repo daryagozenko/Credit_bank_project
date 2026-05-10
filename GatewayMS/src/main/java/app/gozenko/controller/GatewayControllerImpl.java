@@ -31,10 +31,11 @@ import java.util.UUID;
 @Tag(name = "GatewayController")
 public class GatewayControllerImpl implements GatewayController {
 
-    private StatementCallingService statementCallingService;
-    private DealCallingService dealCallingService;
+    private final StatementCallingService statementCallingService;
+    private final DealCallingService dealCallingService;
 
     @PostMapping("/statement")
+    @Operation(summary = "первичный рассчет кредитного предложения")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -66,6 +67,7 @@ public class GatewayControllerImpl implements GatewayController {
     }
 
     @PostMapping("/offer")
+    @Operation(summary = "выбор варианта кредитования")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",

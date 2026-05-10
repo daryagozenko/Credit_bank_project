@@ -25,14 +25,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CommonServerException.class)
     public ResponseEntity<Map<String, String>> handleCommonServerException(CommonServerException ex) {
-        log.warn("Calculator server error");
+        log.warn("Server error in gateway");
         return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(CommonClientException.class)
     public ResponseEntity<Map<String, String>> handleCommonClientValidationExceptions(
             CommonClientException ex) {
-        log.warn("Calculator client error");
+        log.warn("Client error in gateway");
         return createResponseEntity(Map.of("error: ", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 

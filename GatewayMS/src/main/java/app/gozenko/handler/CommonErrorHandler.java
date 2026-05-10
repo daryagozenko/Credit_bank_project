@@ -29,7 +29,7 @@ public class CommonErrorHandler {
 
             throw new CommonServerException(errorMessage);
         } catch (IOException ex) {
-            throw new JsonException("Ошибка в микросервисе калькулятора "+ex);
+            throw new JsonException("Ошибка парсинга json "+ex);
         }
     }
 
