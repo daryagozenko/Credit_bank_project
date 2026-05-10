@@ -10,4 +10,7 @@ public interface DossierKafkaConsumer {
 
     void sendingDeniedEmail(@Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                             EmailMessageDto dto);
+
+    void sendingSuccessEmailWithUpdateDocument(@Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                                               EmailMessageDto dto);
 }

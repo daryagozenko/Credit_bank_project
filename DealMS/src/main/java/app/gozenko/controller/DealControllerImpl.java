@@ -38,6 +38,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -269,9 +270,6 @@ public class DealControllerImpl implements DealController {
                 String.valueOf(statementId), dto);
         log.info("Send to kafka topic {} in sendDocuments", SEND_DOCUMENT);
 
-        statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_CREATED);
-        log.debug("Set status-{}", statement.getStatus());
-
         return ResponseEntity.ok().build();
     }
 
@@ -424,5 +422,16 @@ public class DealControllerImpl implements DealController {
         log.info("Result statements response-{}", allStatementsResponseDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(allStatementsResponseDto);
+    }
+
+    @PutMapping("/admin/statement/{statementId}/status")
+    @Operation(summary = "обновить статус заявки по id (админский запрос)")
+    @Override
+    public void putStatementStatus(UUID statementId) {
+        log.info("Input statementId in putStatementStatus-{}", statementId);
+
+        Statement statement = statementService.findById(statementId);
+        statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_CREATED);
+        log.info("Set status-{}", statement.getStatus());
     }
 }
