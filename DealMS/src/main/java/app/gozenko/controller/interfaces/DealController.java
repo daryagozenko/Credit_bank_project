@@ -32,5 +32,5 @@ public interface DealController {
 
     ResponseEntity<List<StatementResponseDto>> getAllStatements();
 
-    void putStatementStatus(@PathVariable("statementId") UUID statementId);
+    ResponseEntity<StatementResponseDto> putStatementStatus(@PathVariable("statementId") UUID statementId);
 }

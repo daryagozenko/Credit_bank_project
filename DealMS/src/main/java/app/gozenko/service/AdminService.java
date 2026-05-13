@@ -21,13 +21,13 @@ public class AdminService {
         List<StatementResponseDto> result = new ArrayList<>();
 
         for (Statement s : statements) {
-            result.add(getStatementResponse(s));
+            result.add(buildStatementResponse(s));
         }
         log.debug("Result list statements-{}", statements);
         return result;
     }
 
-    public StatementResponseDto getStatementResponse(Statement statement) {
+    public StatementResponseDto buildStatementResponse(Statement statement) {
         log.info("Input statement-{}", statement);
         StatementResponseDto dto = StatementResponseDto.builder()
                 .id(statement.getId())
@@ -40,17 +40,17 @@ public class AdminService {
                 .build();
 
         if (statement.getClient() != null) {
-            dto.setClient(clientResponse(statement.getClient()));
+            dto.setClient(buildClientResponse(statement.getClient()));
         }
 
         if (statement.getCredit() != null) {
-            dto.setCredit(creditResponse(statement.getCredit()));
+            dto.setCredit(buildCreditResponse(statement.getCredit()));
         }
 
         return dto;
     }
 
-    private ClientResponseDto clientResponse(Client client) {
+    private ClientResponseDto buildClientResponse(Client client) {
         log.info("Input client-{}", client);
         return ClientResponseDto.builder()
                 .id(client.getId())
@@ -68,7 +68,7 @@ public class AdminService {
                 .build();
     }
 
-    private CreditResponseDto creditResponse(Credit credit) {
+    private CreditResponseDto buildCreditResponse(Credit credit) {
         log.info("Input credit-{}", credit);
         return CreditResponseDto.builder()
                 .id(credit.getId())

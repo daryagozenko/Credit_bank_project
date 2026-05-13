@@ -52,15 +52,21 @@ import java.util.UUID;
 @Tag(name = "DealController")
 public class DealControllerImpl implements DealController {
 
+    private static final String SERVICE_SOURCE = "gateway";
+    private static final String CALCULATE_PATH = "/calculate/{statementId}";
+    private static final String DOCUMENT_SEND_PATH = "/document/{statementId}/send";
+    private static final String DOCUMENT_SIGN_PATH = "/document/{statementId}/sign";
+    private static final String DOCUMENT_CODE_PATH = "/document/{statementId}/code/{code}";
+
     private static final String selectLoanOfferEmailText = "Вы успешно выбрали кредитное предложение\n" +
-            "Перейдите по ссылке для финального рассчета кредита: gateway/calculate/{statementId}";
+            "Перейдите по ссылке для финального рассчета кредита: %s%s".formatted(SERVICE_SOURCE, CALCULATE_PATH);
     private static final String calculateCreditEmailText = "Документы о сделке успешно созданы\n" +
-            "Перейдите по ссылке для отправки документов: gateway/document/{statementId}/send";
+            "Перейдите по ссылке для отправки документов: %s%s".formatted(SERVICE_SOURCE, DOCUMENT_SEND_PATH);
     private static final String sendDocumentsEmailText = "Документы о вашей сделке отправлены\n" +
-            "Перейдите по ссылке для подписания документов: gateway/document/{statementId}/sign";
+            "Перейдите по ссылке для подписания документов: %s%s".formatted(SERVICE_SOURCE, DOCUMENT_SIGN_PATH);
     private static final String signDocumentsEmailText = "Вам отправлен код подтверждения: ";
     private static final String signDocumentsLinkEmailText = "\n Перейдите по ссылке для подтверждения сделки: " +
-            "gateway/document/{statementId}/code/{code}";
+            "%s%s".formatted(SERVICE_SOURCE, DOCUMENT_CODE_PATH);
     private static final String verifyCodeEmailText = "Сделка подтверждена!";
     private static final String statementDeniedEmailText = "Сделка отклонена по причине: ";
 
@@ -360,8 +366,9 @@ public class DealControllerImpl implements DealController {
         return ResponseEntity.ok().build();
     }
 
+    @Tag(name = "Admin control board", description = "API для управления заявками администратором")
     @GetMapping("/admin/statement/{statementId}")
-    @Operation(summary = "получить заявку по id (админский запрос)")
+    @Operation(summary = "получение заявки по id (админский запрос)")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -386,14 +393,14 @@ public class DealControllerImpl implements DealController {
         Statement statement = statementService.findById(statementId);
         log.debug("Statement-{}", statement);
 
-        StatementResponseDto statementResponseDto = adminService.getStatementResponse(statement);
+        StatementResponseDto statementResponseDto = adminService.buildStatementResponse(statement);
         log.info("Result statement response-{}", statementResponseDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(statementResponseDto);
     }
 
     @GetMapping("/admin/statement")
-    @Operation(summary = "получить все заявки (админский запрос)")
+    @Operation(summary = "получение всех заявок (админский запрос)")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -425,13 +432,17 @@ public class DealControllerImpl implements DealController {
     }
 
     @PutMapping("/admin/statement/{statementId}/status")
-    @Operation(summary = "обновить статус заявки по id (админский запрос)")
+    @Operation(summary = "обновление статуса заявки по id (админский запрос)")
     @Override
-    public void putStatementStatus(UUID statementId) {
+    public ResponseEntity<StatementResponseDto> putStatementStatus(UUID statementId) {
         log.info("Input statementId in putStatementStatus-{}", statementId);
 
         Statement statement = statementService.findById(statementId);
         statementService.updateStatementStatusHistory(statement, StatementStatus.DOCUMENT_CREATED);
-        log.info("Set status-{}", statement.getStatus());
+        log.debug("Set status in put-{}", statement.getStatus());
+
+        StatementResponseDto responseDto = adminService.buildStatementResponse(statement);
+        log.info("Statement response-{}", responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

@@ -119,7 +119,6 @@ public class StatementServiceImpl implements StatementService {
                 .orElseThrow(() -> new EntityNotFoundException("Не найдено заявление: " + statementId));
     }
 
-    @Transactional
     public List<Statement> findAllStatements() {
         log.debug("Find all statements");
         return statementRepository.findAll();
