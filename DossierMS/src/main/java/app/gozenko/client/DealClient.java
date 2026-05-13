@@ -14,13 +14,13 @@ import java.util.UUID;
 public class DealClient {
 
     private final RestClient restClient;
-    @Value("${app.gozenko.uri-put-document-status}")
-    private String URI_PUT_DOCUMENT_STATUS;
+    @Value("${app.gozenko.path-put-document-status}")
+    private String path_put_document_status;
 
     public void putDocumentStatus(UUID statementId) {
         log.debug("Input statementId-{}", statementId);
         restClient.put()
-                .uri(URI_PUT_DOCUMENT_STATUS, statementId)
+                .uri(path_put_document_status, statementId)
                 .retrieve()
                 .body(Void.class);
     }

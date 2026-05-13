@@ -20,14 +20,14 @@ public class CalculatorClient {
 
     private final RestClient restClient;
     private final ClientErrorHandler errorHandler;
-    @Value("${app.gozenko.uri-offers}")
-    private String URI_OFFERS;
-    @Value("${app.gozenko.uri-calc}")
-    private String URI_CALC;
+    @Value("${app.gozenko.path-offers}")
+    private String path_offers;
+    @Value("${app.gozenko.path-calc}")
+    private String path_calc;
 
     public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto loanState) {
         return restClient.post()
-                .uri(URI_OFFERS)
+                .uri(path_offers)
                 .body(loanState)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) ->
@@ -41,7 +41,7 @@ public class CalculatorClient {
 
     public CreditDto getCredit(ScoringDataDto scoringData) {
         return restClient.post()
-                .uri(URI_CALC)
+                .uri(path_calc)
                 .body(scoringData)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) ->

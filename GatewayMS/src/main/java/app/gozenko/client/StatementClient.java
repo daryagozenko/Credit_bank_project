@@ -17,10 +17,10 @@ public class StatementClient {
 
     private final RestClient restClient;
     private final CommonErrorHandler errorHandler;
-    @Value("${app.gozenko.uri-statement}")
-    private String URI_STATEMENT;
-    @Value("${app.gozenko.uri-offer}")
-    private String URI_OFFER;
+    @Value("${app.gozenko.path-statement}")
+    private String path_statement;
+    @Value("${app.gozenko.path-offer}")
+    private String path_offer;
 
     public StatementClient(@Qualifier("statementClientBean") RestClient restClient,
                            CommonErrorHandler errorHandler) {
@@ -30,7 +30,7 @@ public class StatementClient {
 
     public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto loanState) {
         return restClient.post()
-                .uri(URI_STATEMENT)
+                .uri(path_statement)
                 .body(loanState)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, ((request, response) ->
@@ -44,7 +44,7 @@ public class StatementClient {
 
     public void selectOffer(LoanOfferDto loanOffer) {
         restClient.post()
-                .uri(URI_OFFER)
+                .uri(path_offer)
                 .body(loanOffer)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, ((request, response) ->

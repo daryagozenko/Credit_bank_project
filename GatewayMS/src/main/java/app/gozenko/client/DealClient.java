@@ -15,16 +15,14 @@ public class DealClient {
 
     private final RestClient restClient;
     private final CommonErrorHandler errorHandler;
-    @Value("${app.gozenko.uri-credit}")
-    private String URI_CREDIT;
-    @Value("${app.gozenko.uri-offer}")
-    private String URI_OFFER;
-    @Value("${app.gozenko.uri-send-documents}")
-    private String URI_SEND_DOCUMENTS;
-    @Value("${app.gozenko.uri-sign-documents}")
-    private String URI_SIGN_DOCUMENTS;
-    @Value("${app.gozenko.uri-verify}")
-    private String URI_VERIFY;
+    @Value("${app.gozenko.path-credit}")
+    private String path_credit;
+    @Value("${app.gozenko.path-send-documents}")
+    private String path_send_documents;
+    @Value("${app.gozenko.path-sign-documents}")
+    private String path_sign_documents;
+    @Value("${app.gozenko.path-verify}")
+    private String path_verify;
 
     public DealClient(@Qualifier("dealClientBean") RestClient restClient,
                       CommonErrorHandler errorHandler) {
@@ -36,7 +34,7 @@ public class DealClient {
             UUID statementId,
             FinishRegistrationRequestDto finishRegistration) {
         restClient.post()
-                .uri(URI_CREDIT, statementId)
+                .uri(path_credit, statementId)
                 .body(finishRegistration)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, ((request, response) ->
@@ -44,12 +42,11 @@ public class DealClient {
                 .onStatus(HttpStatusCode::is5xxServerError, ((request, response) ->
                         errorHandler.handleErrors(response, response.getStatusCode())))
                 .body(Void.class);
-
     }
 
     public void sendDocuments(UUID statementId) {
         restClient.post()
-                .uri(URI_SEND_DOCUMENTS, statementId)
+                .uri(path_send_documents, statementId)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, ((request, response) ->
                         errorHandler.handleErrors(response, response.getStatusCode())))
@@ -60,7 +57,7 @@ public class DealClient {
 
     public void signDocuments(UUID statementId) {
         restClient.post()
-                .uri(URI_SIGN_DOCUMENTS, statementId)
+                .uri(path_sign_documents, statementId)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, ((request, response) ->
                         errorHandler.handleErrors(response, response.getStatusCode())))
@@ -71,7 +68,7 @@ public class DealClient {
 
     public void verifyCode(UUID statementId, Integer code) {
         restClient.post()
-                .uri(URI_VERIFY, statementId, code)
+                .uri(path_verify, statementId, code)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, ((request, response) ->
                         errorHandler.handleErrors(response, response.getStatusCode())))

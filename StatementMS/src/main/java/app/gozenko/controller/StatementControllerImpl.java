@@ -29,7 +29,7 @@ public class StatementControllerImpl implements StatementController {
     private final DealCallingService dealCallingService;
     private final PreScoringService preScoringService;
 
-    @PostMapping("/statement")
+    @PostMapping("/")
     @Override
     @ApiResponses(value = {
             @ApiResponse(
