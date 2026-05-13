@@ -37,11 +37,8 @@ public class AdminService {
                 .signDate(statement.getSignDate())
                 .sesCode(statement.getSesCode())
                 .statusHistory(statement.getStatusHistory())
+                .client(buildClientResponse(statement.getClient()))
                 .build();
-
-        if (statement.getClient() != null) {
-            dto.setClient(buildClientResponse(statement.getClient()));
-        }
 
         if (statement.getCredit() != null) {
             dto.setCredit(buildCreditResponse(statement.getCredit()));

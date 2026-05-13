@@ -399,6 +399,7 @@ public class DealControllerImpl implements DealController {
         return ResponseEntity.status(HttpStatus.OK).body(statementResponseDto);
     }
 
+    @Tag(name = "Admin control board", description = "API для управления заявками администратором")
     @GetMapping("/admin/statement")
     @Operation(summary = "получение всех заявок (админский запрос)")
     @ApiResponses(value = {
@@ -431,6 +432,7 @@ public class DealControllerImpl implements DealController {
         return ResponseEntity.status(HttpStatus.OK).body(allStatementsResponseDto);
     }
 
+    @Tag(name = "Admin control board", description = "API для управления заявками администратором")
     @PutMapping("/admin/statement/{statementId}/status")
     @Operation(summary = "обновление статуса заявки по id (админский запрос)")
     @Override
