@@ -5,7 +5,7 @@ services:
     image: postgres:15
     container_name: postgres-bank
     environment:
-      POSTGRES_DB: credit_bank
+      POSTGRES_DB: deal_db
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
@@ -47,7 +47,7 @@ services:
     environment:
       KAFKA_BROKER_ID: "1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
       KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: "18000"
@@ -67,7 +67,7 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "8086:8080"
+      - "8086:8084"
     networks:
       - bank-network
     restart: unless-stopped
@@ -78,7 +78,7 @@ services:
     depends_on:
       - deal-ms
     ports:
-      - "8085:8080"
+      - "8085:8084"
     networks:
       - bank-network
     restart: unless-stopped
@@ -89,7 +89,7 @@ services:
     depends_on:
       - deal-ms
     ports:
-      - "8087:8080"
+      - "8087:8084"
     networks:
       - bank-network
     restart: unless-stopped
@@ -104,7 +104,7 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
     ports:
-      - "8088:8080"
+      - "8088:8084"
     networks:
       - bank-network
     restart: unless-stopped
@@ -117,7 +117,7 @@ services:
       - calculator-ms
       - statement-ms
     ports:
-      - "8089:8080"
+      - "8089:8084"
     networks:
       - bank-network
     restart: unless-stopped
