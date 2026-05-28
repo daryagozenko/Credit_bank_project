@@ -38,3 +38,7 @@
 
 ### 6. Для запуска интеграционного теста
 - проверить что движок docker запущен
+
+mvn clean package -DskipTests
+docker-compose up -d --build
+docker-compose logs -f
