@@ -6,14 +6,23 @@ import app.gozenko.entity.Credit;
 import app.gozenko.entity.Statement;
 import app.gozenko.enums.StatementStatus;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface StatementService {
     Statement createStatement(Client client);
+
     Statement findById(UUID statementId);
+
     void updateStatement(LoanOfferDto loanOffer);
+
     void updateStatementStatusHistory(Statement statement, StatementStatus status);
+
     void addCredit(Statement statement, Credit credit);
+
     void updateStatementSesCode(Statement statement);
+
     Statement findByIdWithLock(UUID statementId);
+
+    List<Statement> findAllStatements();
 }

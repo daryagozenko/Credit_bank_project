@@ -12,27 +12,27 @@ import java.util.List;
 public class KafkaTopicsConfig {
 
     @Value("${kafka.topic.finish-registration}")
-    private String FINISH_REGISTRATION;
+    private String finish_registration;
     @Value("${kafka.topic.create-documents}")
-    private String CREATE_DOCUMENT;
+    private String create_document;
     @Value("${kafka.topic.send-documents}")
-    private String SEND_DOCUMENT;
+    private String send_document;
     @Value("${kafka.topic.send-ses}")
-    private String SEND_SES;
+    private String send_ses;
     @Value("${kafka.topic.credit-issued}")
-    private String CREDIT_ISSUED;
+    private String credit_issued;
     @Value("${kafka.topic.statement-denied}")
-    private String STATEMENT_DENIED;
+    private String statement_denied;
 
     @Bean
     public List<NewTopic> topics() {
         return List.of(
-                createTopic(FINISH_REGISTRATION),
-                createTopic(CREATE_DOCUMENT),
-                createTopic(SEND_DOCUMENT),
-                createTopic(SEND_SES),
-                createTopic(CREDIT_ISSUED),
-                createTopic(STATEMENT_DENIED)
+                createTopic(finish_registration),
+                createTopic(create_document),
+                createTopic(send_document),
+                createTopic(send_ses),
+                createTopic(credit_issued),
+                createTopic(statement_denied)
         );
     }
 

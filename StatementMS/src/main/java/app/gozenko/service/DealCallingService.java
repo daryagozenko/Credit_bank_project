@@ -24,7 +24,7 @@ public class DealCallingService {
         return offers;
     }
 
-    public void selectLoanOffer(LoanOfferDto loanOffer){
+    public void selectLoanOffer(LoanOfferDto loanOffer) {
         log.info("Input loanOffer - {}", loanOffer);
         dealClient.selectOffer(loanOffer);
         log.info("Selecting done");

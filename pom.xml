@@ -39,6 +39,7 @@
         <module>CalculatorMS</module>
         <module>StatementMS</module>
         <module>DossierMS</module>
+        <module>GatewayMS</module>
     </modules>
 
     <dependencyManagement>

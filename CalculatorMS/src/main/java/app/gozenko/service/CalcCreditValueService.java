@@ -25,11 +25,11 @@ public class CalcCreditValueService {
     private static final Integer DAYS = 365;
     private static final Integer AVERAGE = 2;
 
-    private final BigDecimal BASE_PERCENT;
+    private final BigDecimal base_percent;
 
     @Autowired
-    public CalcCreditValueService(@Value("${app.gozenko.base-percent}") BigDecimal BASE_PERCENT) {
-        this.BASE_PERCENT = BASE_PERCENT;
+    public CalcCreditValueService(@Value("${app.gozenko.base-percent}") BigDecimal base_percent) {
+        this.base_percent = base_percent;
     }
 
     /**
@@ -50,7 +50,7 @@ public class CalcCreditValueService {
         log.info("Beginning calcMonthlyRate: totalRate={}, totalAmount={}, term={}",
                 totalRate, totalAmount, term);
         BigDecimal monthlyRate = totalRate
-                .divide(BASE_PERCENT, BASE_SCALE, RoundingMode.HALF_UP)
+                .divide(base_percent, BASE_SCALE, RoundingMode.HALF_UP)
                 .divide(BigDecimal.valueOf(MONTHS), BASE_SCALE, RoundingMode.HALF_UP);
 
         BigDecimal one = BigDecimal.ONE;
@@ -145,7 +145,7 @@ public class CalcCreditValueService {
                 .divide(loanAmount, BASE_SCALE, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(DAYS))
                 .divide(avgTermDays, BASE_SCALE, RoundingMode.HALF_UP)
-                .multiply(BASE_PERCENT);
+                .multiply(base_percent);
 
         return psk.setScale(MIN_SCALE, RoundingMode.HALF_UP);
     }
@@ -179,7 +179,7 @@ public class CalcCreditValueService {
         List<PaymentScheduleElementDto> schedule = new ArrayList<>();
 
         BigDecimal monthlyRate = annualRate
-                .divide(BASE_PERCENT, BASE_SCALE, RoundingMode.HALF_UP)
+                .divide(base_percent, BASE_SCALE, RoundingMode.HALF_UP)
                 .divide(BigDecimal.valueOf(MONTHS), BASE_SCALE, RoundingMode.HALF_UP);
 
         LocalDate currentDate = LocalDate.now();

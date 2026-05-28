@@ -3,6 +3,7 @@ package app.gozenko.controller.interfaces;
 import app.gozenko.dto.FinishRegistrationRequestDto;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
+import app.gozenko.dto.StatementResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,4 +27,10 @@ public interface DealController {
     ResponseEntity<Void> signDocuments(@PathVariable("statementId") UUID statementId);
 
     ResponseEntity<Void> sendDocuments(@PathVariable("statementId") UUID statementId);
+
+    ResponseEntity<StatementResponseDto> getStatement(@PathVariable("statementId") UUID statementId);
+
+    ResponseEntity<List<StatementResponseDto>> getAllStatements();
+
+    ResponseEntity<StatementResponseDto> putStatementStatus(@PathVariable("statementId") UUID statementId);
 }

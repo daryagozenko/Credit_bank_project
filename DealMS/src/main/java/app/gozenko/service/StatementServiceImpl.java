@@ -119,6 +119,11 @@ public class StatementServiceImpl implements StatementService {
                 .orElseThrow(() -> new EntityNotFoundException("Не найдено заявление: " + statementId));
     }
 
+    public List<Statement> findAllStatements() {
+        log.debug("Find all statements");
+        return statementRepository.findAll();
+    }
+
     private List<StatementStatusHistoryDto> createStatusHistory() {
         List<StatementStatusHistoryDto> statusHistory = new ArrayList<>();
         statusHistory.add(StatementStatusHistoryDto.builder()

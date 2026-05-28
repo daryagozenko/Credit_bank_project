@@ -21,7 +21,7 @@ public class EmailServiceImpl implements EmailService {
         return EmailMessageDto.builder()
                 .address(toAddress)
                 .theme(theme)
-                .statementId(statementId.getLeastSignificantBits())
+                .statementId(statementId)
                 .text(text)
                 .build();
     }
