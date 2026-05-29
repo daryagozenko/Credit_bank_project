@@ -56,7 +56,9 @@ services:
     restart: unless-stopped
 
   deal-ms:
-    build: ./DealMS
+    build:
+      context: .
+      dockerfile: DealMS/Dockerfile
     container_name: deal-ms
     depends_on:
       postgres-db:
@@ -73,7 +75,9 @@ services:
     restart: unless-stopped
 
   calculator-ms:
-    build: ./CalculatorMS
+    build:
+      context: .
+      dockerfile: CalculatorMS/Dockerfile
     container_name: calculator-ms
     depends_on:
       - deal-ms
@@ -84,7 +88,9 @@ services:
     restart: unless-stopped
 
   statement-ms:
-    build: ./StatementMS
+    build:
+      context: .
+      dockerfile: StatementMS/Dockerfile
     container_name: statement-ms
     depends_on:
       - deal-ms
@@ -95,7 +101,9 @@ services:
     restart: unless-stopped
 
   dossier-ms:
-    build: ./DossierMS
+    build:
+      context: .
+      dockerfile: DossierMS/Dockerfile
     container_name: dossier-ms
     depends_on:
       kafka:
@@ -110,7 +118,9 @@ services:
     restart: unless-stopped
 
   gateway-ms:
-    build: ./GatewayMS
+    build:
+      context: .
+      dockerfile: GatewayMS/Dockerfile
     container_name: gateway-ms
     depends_on:
       - deal-ms
