@@ -17,6 +17,11 @@ jobs:
 
       - name: Build and start containers
         run: docker compose up -d --build
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
 
       - name: Wait for services health
         run: |
