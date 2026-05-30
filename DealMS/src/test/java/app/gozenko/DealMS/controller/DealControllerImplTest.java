@@ -200,7 +200,8 @@ class DealControllerImplTest {
                 .thenReturn(expectedCreditDto);
         doNothing().when(clientService).updateClient(any(Statement.class), any(FinishRegistrationRequestDto.class));
         when(creditService.createCredit(any(CreditDto.class))).thenReturn(savedCredit);
-        doNothing().when(statementService).updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
+        doNothing().when(statementService)
+                .updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
         doNothing().when(statementService).addCredit(any(Statement.class), any(Credit.class));
 
         ResponseEntity<Void> response = dealController.calculateCredit(statementId, validFinishRegistration);
@@ -227,7 +228,8 @@ class DealControllerImplTest {
                 .thenReturn(expectedCreditDto);
         doNothing().when(clientService).updateClient(any(Statement.class), any(FinishRegistrationRequestDto.class));
         when(creditService.createCredit(any(CreditDto.class))).thenReturn(savedCredit);
-        doNothing().when(statementService).updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
+        doNothing().when(statementService)
+                .updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
         doNothing().when(statementService).addCredit(any(Statement.class), any(Credit.class));
 
         dealController.calculateCredit(statementId, validFinishRegistration);
@@ -332,7 +334,8 @@ class DealControllerImplTest {
                 .thenReturn(expectedCreditDto);
         doNothing().when(clientService).updateClient(any(Statement.class), any(FinishRegistrationRequestDto.class));
         when(creditService.createCredit(any(CreditDto.class))).thenReturn(savedCredit);
-        doNothing().when(statementService).updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
+        doNothing().when(statementService)
+                .updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
         doNothing().when(statementService).addCredit(any(Statement.class), any(Credit.class));
 
         ResponseEntity<Void> response = dealController.calculateCredit(statementId, validFinishRegistration);

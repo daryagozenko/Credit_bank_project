@@ -135,7 +135,8 @@ class StatementServiceImplTest {
         assertAll("Проверка обновленного заявления",
                 () -> assertEquals(StatementStatus.APPROVED, updatedStatement.getStatus()),
                 () -> assertNotNull(updatedStatement.getAppliedOffer()),
-                () -> assertEquals(loanOffer.getRequestedAmount(), updatedStatement.getAppliedOffer().getRequestedAmount()),
+                () -> assertEquals(loanOffer.getRequestedAmount(),
+                        updatedStatement.getAppliedOffer().getRequestedAmount()),
                 () -> assertEquals(loanOffer.getTerm(), updatedStatement.getAppliedOffer().getTerm()),
                 () -> assertTrue(updatedStatement.getStatusHistory().size() > 1)
         );

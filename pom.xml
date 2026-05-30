@@ -33,6 +33,7 @@
 
         <jacoco.version>0.8.12</jacoco.version>
         <coverllas.version>4.3.0</coverllas.version>
+        <checkstyle.version>3.3.1</checkstyle.version>
     </properties>
 
     <modules>
@@ -140,6 +141,27 @@
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
                     <version>${coverllas.version}</version>
+                </plugin>
+
+                <!-- Checkstyle -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${checkstyle.version}</version>
+                    <configuration>
+                        <configLocation>checkstyle.xml</configLocation>
+                        <violationSeverity>error</violationSeverity>
+                        <failOnViolation>true</failOnViolation>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
