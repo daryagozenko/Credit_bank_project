@@ -1,7 +1,9 @@
 package app.gozenko.DealMS.controller;
 
+import app.gozenko.entity.Client;
 import app.gozenko.entity.Statement;
 import app.gozenko.enums.StatementStatus;
+import app.gozenko.repository.ClientRepository;
 import app.gozenko.repository.StatementRepository;
 import app.gozenko.service.interfaces.StatementService;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,19 +44,33 @@ public class RaceConditionLockTest {
     }
 
     private final StatementRepository repository;
+    private final ClientRepository clientRepository;
     private final StatementService statementService;
     private UUID statementId;
 
     @Autowired
-    public RaceConditionLockTest(StatementRepository repository, StatementService statementService) {
+    public RaceConditionLockTest(StatementRepository repository,
+                                 ClientRepository clientRepository,
+                                 StatementService statementService) {
         this.repository = repository;
+        this.clientRepository = clientRepository;
         this.statementService = statementService;
     }
 
     @BeforeEach
     void init() {
         repository.deleteAllInBatch();
+        clientRepository.deleteAllInBatch();
+
+        Client client = Client.builder()
+                .firstName("Test")
+                .lastName("Test")
+                .middleName("Test")
+                .build();
+        client = clientRepository.saveAndFlush(client);
+
         Statement actual = Statement.builder()
+                .client(client)
                 .statusHistory(new ArrayList<>())
                 .build();
         actual = repository.saveAndFlush(actual);

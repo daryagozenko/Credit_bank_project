@@ -32,6 +32,7 @@
         <springdoc-openapi-starter-webmvc-ui.version>2.8.16</springdoc-openapi-starter-webmvc-ui.version>
 
         <jacoco.version>0.8.12</jacoco.version>
+        <coverllas.version>4.3.0</coverllas.version>
     </properties>
 
     <modules>
@@ -133,6 +134,12 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>${coverllas.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

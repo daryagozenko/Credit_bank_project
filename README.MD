@@ -43,3 +43,5 @@ mvn clean package -DskipTests
 docker-compose up -d --build
 docker-compose logs -f
 docker builder prune -a -f  - очистка кеша сборки
+
+mvn clean test jacoco:report coveralls:report -DrepoToken (из .env)

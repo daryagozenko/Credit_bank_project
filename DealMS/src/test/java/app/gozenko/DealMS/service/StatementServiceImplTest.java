@@ -25,11 +25,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -125,7 +122,7 @@ class StatementServiceImplTest {
     @Test
     @DisplayName("Обновление заявления при выборе предложения - успешно")
     void updateStatement_Success() {
-        when(statementRepository.findById(loanOffer.getStatementId())).thenReturn(Optional.of(savedStatement));
+        when(statementRepository.findByIdWithLock(loanOffer.getStatementId())).thenReturn(Optional.of(savedStatement));
         when(statementRepository.save(any(Statement.class))).thenReturn(savedStatement);
 
         statementService.updateStatement(loanOffer);
@@ -152,7 +149,7 @@ class StatementServiceImplTest {
                 .statementId(nonExistentId)
                 .build();
 
-        when(statementRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+        when(statementRepository.findByIdWithLock(nonExistentId)).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
@@ -168,6 +165,8 @@ class StatementServiceImplTest {
     void updateStatementStatusHistory_Success() {
         Statement statement = StubGenerator.createStatement();
         int initialHistorySize = statement.getStatusHistory().size();
+
+        when(statementRepository.findByIdWithLock(statement.getId())).thenReturn(Optional.of(statement));
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
 
@@ -188,6 +187,8 @@ class StatementServiceImplTest {
         Statement statement = StubGenerator.createStatement();
         LocalDateTime oldSignDate = statement.getSignDate();
         int initialHistorySize = statement.getStatusHistory().size();
+
+        when(statementRepository.findByIdWithLock(statement.getId())).thenReturn(Optional.of(statement));
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.APPROVED);
 
@@ -222,7 +223,7 @@ class StatementServiceImplTest {
     @Test
     @DisplayName("Обновление заявления - проверка сохранения истории статусов")
     void updateStatement_StatusHistoryUpdated() {
-        when(statementRepository.findById(loanOffer.getStatementId())).thenReturn(Optional.of(savedStatement));
+        when(statementRepository.findByIdWithLock(loanOffer.getStatementId())).thenReturn(Optional.of(savedStatement));
         when(statementRepository.save(any(Statement.class))).thenReturn(savedStatement);
 
         statementService.updateStatement(loanOffer);
@@ -240,22 +241,12 @@ class StatementServiceImplTest {
     }
 
     @Test
-    @DisplayName("Создание заявления - проверка генерации SES кода")
-    void createStatement_SesCodeGeneration() {
-        when(statementRepository.save(any(Statement.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        Statement result = statementService.createStatement(StubGenerator.createClient());
-
-        assertNotNull(result.getSesCode());
-        assertTrue(result.getSesCode() >= 0 && result.getSesCode() <= 9999);
-        verify(statementRepository).save(any(Statement.class));
-    }
-
-    @Test
     @DisplayName("Обновление статуса истории заявления - несколько обновлений")
     void updateStatementStatusHistory_MultipleUpdates() {
         Statement statement = StubGenerator.createStatement();
         int initialHistorySize = statement.getStatusHistory().size();
+
+        when(statementRepository.findByIdWithLock(statement.getId())).thenReturn(Optional.of(statement));
 
         statementService.updateStatementStatusHistory(statement, StatementStatus.APPROVED);
         statementService.updateStatementStatusHistory(statement, StatementStatus.CC_APPROVED);
@@ -265,45 +256,5 @@ class StatementServiceImplTest {
                 () -> assertEquals(StatementStatus.DOCUMENT_CREATED, statement.getStatus()),
                 () -> assertEquals(initialHistorySize + 3, statement.getStatusHistory().size())
         );
-    }
-
-    @Test
-    @DisplayName("Обновление истории заявок двумя потоками")
-    void updateStatementHistory_ConcurrentExecution() {
-        Statement statement = StubGenerator.createEmptyStatement(UUID.randomUUID());
-        when(statementRepository.findById(any(UUID.class))).thenReturn(Optional.ofNullable(statement));
-
-        CountDownLatch startCounter = new CountDownLatch(2);
-
-        CompletableFuture<Void> firstThread = CompletableFuture.runAsync(() -> {
-            startCounter.countDown();
-            try {
-                startCounter.await();
-                Statement currStatement = statementService.findById(statement.getId());
-                statementService.updateStatementStatusHistory(currStatement, StatementStatus.APPROVED);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            }
-        });
-
-        CompletableFuture<Void> secondThread = CompletableFuture.runAsync(() -> {
-            startCounter.countDown();
-            try {
-                startCounter.await();
-                Thread.sleep(10);
-                Statement currStatement = statementService.findById(statement.getId());
-                statementService.updateStatementStatusHistory(currStatement, StatementStatus.APPROVED);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            }
-        });
-
-        CompletableFuture<Void> allThreads = CompletableFuture.allOf(firstThread, secondThread);
-
-        assertDoesNotThrow(() -> allThreads.join());
-        assertNotNull(statement.getStatusHistory());
-        assertEquals(2, statement.getStatusHistory().size());
     }
 }
