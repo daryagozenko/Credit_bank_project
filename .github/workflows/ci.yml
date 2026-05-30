@@ -16,7 +16,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build and start containers
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       - name: Wait for services health
         run: |
