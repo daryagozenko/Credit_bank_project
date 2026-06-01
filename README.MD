@@ -39,9 +39,21 @@
 ### 6. Для запуска интеграционного теста
 - проверить что движок docker запущен
 
-mvn clean package -DskipTests
-docker-compose up -d --build
-docker-compose logs -f
-docker builder prune -a -f  - очистка кеша сборки
 
-mvn clean test jacoco:report coveralls:report -DrepoToken (из .env)
+# Запуск и тестирование через контейнеры
+## 1. Установить переменные окружения
+Создать файл .env в корне проекта:
+  - DB_USERNAME=<значение>
+  - DB_PASSWORD=<значение>
+  - MAIL_USERNAME=<значение>
+  - MAIL_PASSWORD=<значение>
+  - COVERALLS_REPO_TOKEN=<значение>
+## 2. Через терминал выполнить
+- docker-compose up -d --build
+
+## 3. Дополнительно
+Команда очистки кеша сборки:
+- docker builder prune -a -f
+
+Команда для генерации coveralls отчета:
+- mvn clean test jacoco:report coveralls:report -DrepoToken (из .env)
