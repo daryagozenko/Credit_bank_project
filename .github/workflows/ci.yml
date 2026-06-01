@@ -60,10 +60,7 @@ jobs:
       - name: Upload to Coveralls
         uses: coverallsapp/github-action@v2
         with:
-          file: |
-            DealMS/target/site/jacoco/jacoco.xml
-            CalculatorMS/target/site/jacoco/jacoco.xml
-            StatementMS/target/site/jacoco/jacoco.xml
+          base-path: .
           format: jacoco
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
