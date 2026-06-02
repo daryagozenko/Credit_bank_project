@@ -1,11 +1,11 @@
 package app.gozenko.DealMS;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@Disabled("требуется настройка БД")
+@ActiveProfiles("test")
 class DealMsApplicationTests {
 
     @Test
