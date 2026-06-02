@@ -96,7 +96,7 @@
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>${coverllas.version}</version>
+				<version>${coveralls.version}</version>
 			</plugin>
 
 			<!-- JaCoCo Plugin -->

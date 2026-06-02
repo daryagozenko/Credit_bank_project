@@ -57,3 +57,10 @@
 
 Команда для генерации coveralls отчета:
 - mvn clean test jacoco:report coveralls:report -DrepoToken (из .env)
+
+## 4. Адреса контейнеров микросервисов внутри docker-сети:
+- http://calculator-ms:8084 - CalculatorMS
+- http://deal-ms:8084 - DealMS
+- http://statement-ms:8084 - StatementMS
+- http://dossier-ms:8084 - DossierMS
+- http://gateway-ms:8084 - GatewayMS

@@ -12,7 +12,7 @@ import app.gozenko.entity.Client;
 import app.gozenko.entity.Credit;
 import app.gozenko.entity.Statement;
 import app.gozenko.enums.StatementStatus;
-import app.gozenko.service.CalculatorCallingService;
+import app.gozenko.service.CalculatorCallingServiceImpl;
 import app.gozenko.service.ClientServiceImpl;
 import app.gozenko.service.CreditServiceImpl;
 import app.gozenko.service.EmailServiceImpl;
@@ -60,7 +60,7 @@ class DealControllerImplTest {
     private CreditServiceImpl creditService;
 
     @Mock
-    private CalculatorCallingService calculatorCallingService;
+    private CalculatorCallingServiceImpl calculatorCallingService;
 
     @Mock
     private EmailServiceImpl emailService;
