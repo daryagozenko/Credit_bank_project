@@ -57,10 +57,29 @@ jobs:
       - name: Run tests with coverage
         run: mvn clean verify jacoco:report
 
-      - name: Upload to Coveralls
+      - name: Upload DealMS coverage
         uses: coverallsapp/github-action@v2
         with:
-          base-path: .
+          file: DealMS/target/site/jacoco/jacoco.xml
           format: jacoco
+          git-subdir: DealMS/src/main/java
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+      - name: Upload CalculatorMS coverage
+        uses: coverallsapp/github-action@v2
+        with:
+          file: CalculatorMS/target/site/jacoco/jacoco.xml
+          format: jacoco
+          git-subdir: CalculatorMS/src/main/java
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+      - name: Upload StatementMS coverage
+        uses: coverallsapp/github-action@v2
+        with:
+          file: StatementMS/target/site/jacoco/jacoco.xml
+          format: jacoco
+          git-subdir: StatementMS/src/main/java
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
