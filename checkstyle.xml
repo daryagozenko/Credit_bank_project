@@ -13,7 +13,25 @@
         <module name="AvoidStarImport"/>
         <module name="UnusedImports"/>
         <module name="ClassFanOutComplexity">
-            <property name="max" value="40"/>
+            <property name="max" value="25"/>
+            <property name="excludedPackages" value="
+                java.lang,
+                java.util,
+                java.io,
+                java.math,
+                java.time,
+                javax.servlet,
+                org.springframework.beans.factory.annotation,
+                org.springframework.beans.factory.annotation,
+                org.springframework.http,
+                org.springframework.web.bind.annotation,
+                org.springframework.kafka.core,
+                io.swagger.v3.oas.annotations,
+                lombok,
+                org.apache.commons,
+                com.fasterxml.jackson.databind,
+                lombok.extern.slf4j
+            "/>
         </module>
     </module>
 
