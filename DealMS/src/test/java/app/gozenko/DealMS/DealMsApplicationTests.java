@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Disabled("требуется настройка БД")
 class DealMsApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }

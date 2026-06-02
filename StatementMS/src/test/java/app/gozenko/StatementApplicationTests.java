@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Disabled("тест не требуется")
 class StatementApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }

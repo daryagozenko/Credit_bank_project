@@ -12,5 +12,11 @@
     <module name="TreeWalker">
         <module name="AvoidStarImport"/>
         <module name="UnusedImports"/>
+        <module name="ClassFanOutComplexity">
+            <property name="max" value="40"/>
+        </module>
     </module>
+
+    <module name="FileTabCharacter"/>
+
 </module>
