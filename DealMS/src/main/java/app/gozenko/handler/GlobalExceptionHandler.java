@@ -62,7 +62,8 @@ public class GlobalExceptionHandler {
         log.warn("Validation error");
         if (ex instanceof MethodArgumentNotValidException e) {
             Map<String, String> errors = new HashMap<>();
-            e.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+            e.getBindingResult().getFieldErrors()
+                    .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
             return createResponseEntity(errors, HttpStatus.BAD_REQUEST);
         }
 

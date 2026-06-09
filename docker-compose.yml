@@ -1,6 +1,28 @@
 name: credit_bank_project
 
 services:
+  postgres-db:
+    image: postgres:15
+    container_name: postgres-bank
+    environment:
+      POSTGRES_DB: deal_db
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./DealMS/src/main/java/app/gozenko/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - bank-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d deal_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     container_name: zookeeper-bank
@@ -8,9 +30,9 @@ services:
       ZOOKEEPER_CLIENT_PORT: "2181"
       ZOOKEEPER_TICK_TIME: "2000"
     ports:
-      - "2181:2181"
+      - "2182:2181"
     networks:
-      - kafka-network
+      - bank-network
     restart: unless-stopped
 
   kafka:
@@ -21,19 +43,102 @@ services:
         condition: service_started
         required: true
     ports:
-      - "9092:9092"
+      - "9093:9092"
     environment:
       KAFKA_BROKER_ID: "1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
       KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: "18000"
     networks:
-      - kafka-network
-    restart: on-failure
+      - bank-network
+    restart: unless-stopped
+
+  deal-ms:
+    build:
+      context: .
+      dockerfile: DealMS/Dockerfile
+    container_name: deal-ms
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8086:8084"
+    networks:
+      - bank-network
+    restart: unless-stopped
+
+  calculator-ms:
+    build:
+      context: .
+      dockerfile: CalculatorMS/Dockerfile
+    container_name: calculator-ms
+    depends_on:
+      - deal-ms
+    ports:
+      - "8085:8084"
+    networks:
+      - bank-network
+    restart: unless-stopped
+
+  statement-ms:
+    build:
+      context: .
+      dockerfile: StatementMS/Dockerfile
+    container_name: statement-ms
+    depends_on:
+      - deal-ms
+    ports:
+      - "8087:8084"
+    networks:
+      - bank-network
+    restart: unless-stopped
+
+  dossier-ms:
+    build:
+      context: .
+      dockerfile: DossierMS/Dockerfile
+    container_name: dossier-ms
+    depends_on:
+      kafka:
+        condition: service_started
+    environment:
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+    ports:
+      - "8088:8084"
+    networks:
+      - bank-network
+    restart: unless-stopped
+
+  gateway-ms:
+    build:
+      context: .
+      dockerfile: GatewayMS/Dockerfile
+    container_name: gateway-ms
+    depends_on:
+      - deal-ms
+      - calculator-ms
+      - statement-ms
+    ports:
+      - "8089:8084"
+    networks:
+      - bank-network
+    restart: unless-stopped
 
 networks:
-  kafka-network:
+  bank-network:
     driver: bridge
-    name: kafka-network
+    name: bank-network
+
+volumes:
+  postgres-data:
+    name: postgres-bank-data

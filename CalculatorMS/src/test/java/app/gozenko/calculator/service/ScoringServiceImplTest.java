@@ -262,7 +262,8 @@ class ScoringServiceImplTest {
 
         assertNotNull(result);
         assertEquals(expectedRate, result.getRate(),
-                String.format("Для параметров: position=%s, marital=%s, gender=%s, age=%d, dependents=%d, createInsuranceLoanOffer=%s, createSalaryLoanOffer=%s",
+                String.format("Для параметров: position=%s, marital=%s, gender=%s, age=%d, dependents=%d, " +
+                                "createInsuranceLoanOffer=%s, createSalaryLoanOffer=%s",
                         position, maritalStatus, gender, age, dependentAmount, isInsuranceEnabled, isSalaryClient));
     }
 

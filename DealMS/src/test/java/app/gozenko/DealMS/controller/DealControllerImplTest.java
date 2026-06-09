@@ -3,6 +3,7 @@ package app.gozenko.DealMS.controller;
 import app.gozenko.DealMS.utils.StubGenerator;
 import app.gozenko.controller.DealControllerImpl;
 import app.gozenko.dto.CreditDto;
+import app.gozenko.dto.EmailMessageDto;
 import app.gozenko.dto.FinishRegistrationRequestDto;
 import app.gozenko.dto.LoanOfferDto;
 import app.gozenko.dto.LoanStatementRequestDto;
@@ -11,9 +12,10 @@ import app.gozenko.entity.Client;
 import app.gozenko.entity.Credit;
 import app.gozenko.entity.Statement;
 import app.gozenko.enums.StatementStatus;
-import app.gozenko.service.CalculatorCallingService;
+import app.gozenko.service.CalculatorCallingServiceImpl;
 import app.gozenko.service.ClientServiceImpl;
 import app.gozenko.service.CreditServiceImpl;
+import app.gozenko.service.EmailServiceImpl;
 import app.gozenko.service.ScoringDataServiceImpl;
 import app.gozenko.service.StatementServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +60,13 @@ class DealControllerImplTest {
     private CreditServiceImpl creditService;
 
     @Mock
-    private CalculatorCallingService calculatorCallingService;
+    private CalculatorCallingServiceImpl calculatorCallingService;
+
+    @Mock
+    private EmailServiceImpl emailService;
+
+    @Mock
+    private KafkaTemplate<String, EmailMessageDto> kafkaTemplate;
 
     @InjectMocks
     private DealControllerImpl dealController;
@@ -191,7 +200,8 @@ class DealControllerImplTest {
                 .thenReturn(expectedCreditDto);
         doNothing().when(clientService).updateClient(any(Statement.class), any(FinishRegistrationRequestDto.class));
         when(creditService.createCredit(any(CreditDto.class))).thenReturn(savedCredit);
-        doNothing().when(statementService).updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
+        doNothing().when(statementService)
+                .updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
         doNothing().when(statementService).addCredit(any(Statement.class), any(Credit.class));
 
         ResponseEntity<Void> response = dealController.calculateCredit(statementId, validFinishRegistration);
@@ -218,7 +228,8 @@ class DealControllerImplTest {
                 .thenReturn(expectedCreditDto);
         doNothing().when(clientService).updateClient(any(Statement.class), any(FinishRegistrationRequestDto.class));
         when(creditService.createCredit(any(CreditDto.class))).thenReturn(savedCredit);
-        doNothing().when(statementService).updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
+        doNothing().when(statementService)
+                .updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
         doNothing().when(statementService).addCredit(any(Statement.class), any(Credit.class));
 
         dealController.calculateCredit(statementId, validFinishRegistration);
@@ -323,7 +334,8 @@ class DealControllerImplTest {
                 .thenReturn(expectedCreditDto);
         doNothing().when(clientService).updateClient(any(Statement.class), any(FinishRegistrationRequestDto.class));
         when(creditService.createCredit(any(CreditDto.class))).thenReturn(savedCredit);
-        doNothing().when(statementService).updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
+        doNothing().when(statementService)
+                .updateStatementStatusHistory(any(Statement.class), eq(StatementStatus.CC_APPROVED));
         doNothing().when(statementService).addCredit(any(Statement.class), any(Credit.class));
 
         ResponseEntity<Void> response = dealController.calculateCredit(statementId, validFinishRegistration);

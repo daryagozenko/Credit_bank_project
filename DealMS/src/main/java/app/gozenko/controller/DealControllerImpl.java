@@ -16,7 +16,7 @@ import app.gozenko.enums.StatementStatus;
 import app.gozenko.exception.CalculatorClientException;
 import app.gozenko.exception.NotVerifyCodeException;
 import app.gozenko.service.AdminService;
-import app.gozenko.service.CalculatorCallingService;
+import app.gozenko.service.CalculatorCallingServiceImpl;
 import app.gozenko.service.ClientServiceImpl;
 import app.gozenko.service.CreditServiceImpl;
 import app.gozenko.service.EmailServiceImpl;
@@ -77,7 +77,7 @@ public class DealControllerImpl implements DealController {
     private final StatementServiceImpl statementService;
     private final ScoringDataServiceImpl scoringDataService;
     private final CreditServiceImpl creditService;
-    private final CalculatorCallingService calculatorCallingService;
+    private final CalculatorCallingServiceImpl calculatorCallingService;
     private final EmailServiceImpl emailService;
     private final AdminService adminService;
 
